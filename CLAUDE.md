@@ -210,15 +210,22 @@ All templates must avoid:
 - Manage skills (tag-based UI)
 - API endpoints for profile updates
 
-✅ **Phase 1.75 - Document Parsing Backend** (Complete) ✨ NEW
+✅ **Phase 1.75 - Document Parsing Backend** (Complete)
 - FastAPI backend for resume document parsing
 - Support for PDF, DOCX, and TXT file formats
 - Claude AI integration for structuring parsed content
 - Next.js API proxy route (`/api/parse-resume`)
 - Development scripts and Docker configuration
 
+✅ **Phase 2 - Resume Upload UI** (Complete) ✨ NEW
+- Drag-and-drop file upload component
+- AI-powered resume parsing interface
+- Parsed data display with structured sections
+- Save imported data to Supabase profile
+- Dashboard integration with import button
+- Full error handling and loading states
+
 **Next Phases:**
-- Phase 2: Resume Upload UI (file upload component + display structured data)
 - Phase 3: AI Integration (Claude API for job description parsing)
 - Phase 4: Resume Generation (AI-tailored content)
 - Phase 5: Resume Editor (live preview, templates)
