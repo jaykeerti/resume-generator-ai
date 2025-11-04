@@ -36,15 +36,30 @@ npm run lint         # Run ESLint
 
 ```
 resume-generator-ai/
-├── app/                    # Next.js App Router pages & layouts
-│   ├── layout.tsx         # Root layout with font configuration
-│   ├── page.tsx           # Home page
-│   └── globals.css        # Global Tailwind styles
-├── public/                # Static assets
-└── [future directories]
-    ├── components/        # Reusable React components (to be created)
-    ├── lib/              # Utility functions, API clients (to be created)
-    └── api/              # API routes (to be created as app/api/*)
+├── app/                       # Next.js App Router pages & layouts
+│   ├── auth/                  # Authentication pages (signin, signup, callback)
+│   ├── dashboard/             # User dashboard
+│   ├── onboarding/            # 5-step onboarding wizard
+│   ├── profile/               # Profile editing page ✨ NEW
+│   ├── api/                   # API routes
+│   │   └── profile/           # Profile update endpoints ✨ NEW
+│   ├── layout.tsx             # Root layout with font configuration
+│   ├── page.tsx               # Landing page
+│   └── globals.css            # Global Tailwind styles
+├── components/
+│   ├── auth/                  # Authentication forms
+│   ├── dashboard/             # Dashboard components
+│   ├── onboarding/            # Onboarding wizard & steps
+│   └── profile/               # Profile editing components ✨ NEW
+│       └── editors/           # Individual section editors
+├── lib/
+│   ├── auth/                  # Auth server actions
+│   ├── supabase/              # Supabase client configs
+│   └── types/                 # TypeScript type definitions
+├── hooks/                     # React hooks (useAuth)
+├── supabase/
+│   └── migrations/            # Database schema migrations
+└── public/                    # Static assets
 ```
 
 ## Planned Architecture (See Readme.md for full details)
@@ -69,17 +84,25 @@ Key tables to implement:
 - `ai_section_config` - configurable AI prompts per resume section
 - `subscription_history` - Stripe subscription tracking
 
-### API Routes (to be implemented in `app/api/`)
+### API Routes
+
+**Implemented:**
 ```
-/api/auth/*                 # Authentication endpoints
-/api/onboarding/complete    # Save onboarding data
-/api/profile               # Get/update user profile
-/api/job-description/parse  # Parse job posting with Claude
-/api/resume/generate       # Generate tailored resume
-/api/resume/[id]           # CRUD operations on resumes
-/api/resume/[id]/export    # PDF generation
-/api/subscription/*        # Stripe integration
-/api/webhook/stripe        # Stripe webhooks
+✅ /api/profile/personal      # Update personal information
+✅ /api/profile/experience    # Update work experience
+✅ /api/profile/education     # Update education
+✅ /api/profile/skills        # Update skills
+```
+
+**To be implemented:**
+```
+/api/auth/*                  # Authentication endpoints (Supabase handles most)
+/api/job-description/parse   # Parse job posting with Claude
+/api/resume/generate         # Generate tailored resume
+/api/resume/[id]             # CRUD operations on resumes
+/api/resume/[id]/export      # PDF generation
+/api/subscription/*          # Stripe integration
+/api/webhook/stripe          # Stripe webhooks
 ```
 
 ### AI Integration Strategy
@@ -121,13 +144,30 @@ All templates must avoid:
 
 ## Development Phases (from Readme.md)
 
-Current phase: **Phase 1 - Foundation**
-- Next.js + Supabase + Vercel setup ✓ (Next.js initialized)
-- Auth implementation (pending)
-- Database schema creation (pending)
-- Basic UI framework (pending)
+**Completed Phases:**
 
-Next phases: Onboarding → AI Integration → Resume Editor → Export/Limits → Payments → Polish
+✅ **Phase 1 - Foundation** (Complete)
+- Next.js + Supabase + Vercel setup
+- Authentication (email/password + Google OAuth)
+- Database schema with RLS policies
+- 5-step onboarding wizard
+- User dashboard with tier management
+- Landing page
+
+✅ **Phase 1.5 - Profile Editing** (Complete) ✨ NEW
+- `/profile` page with tabbed interface
+- Edit personal information
+- Manage work experience (add/edit/delete)
+- Manage education (add/edit/delete)
+- Manage skills (tag-based UI)
+- API endpoints for profile updates
+
+**Next Phases:**
+- Phase 2: AI Integration (Claude API for job description parsing)
+- Phase 3: Resume Generation (AI-tailored content)
+- Phase 4: Resume Editor (live preview, templates)
+- Phase 5: PDF Export
+- Phase 6: Stripe Payments
 
 ## Configuration Files
 
