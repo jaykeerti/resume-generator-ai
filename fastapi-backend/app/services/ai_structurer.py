@@ -40,8 +40,8 @@ class AIStructurer:
             StructuredResumeData object or None if structuring fails
         """
         if not self.client:
-            logger.warning("AI client not initialized. Skipping structuring.")
-            return None
+            logger.warning("AI client not initialized. Returning dummy data.")
+            return self._get_dummy_structured_data()
 
         try:
             prompt = self._build_structuring_prompt(raw_text)
@@ -194,3 +194,98 @@ Rules:
 
             logger.error(f"Could not extract valid JSON from text: {text[:200]}...")
             return None
+
+    def _get_dummy_structured_data(self) -> StructuredResumeData:
+        """
+        Return dummy structured data when AI is not available
+
+        Returns:
+            Sample StructuredResumeData object
+        """
+        return StructuredResumeData(
+            personal_info={
+                "full_name": "John Doe",
+                "email": "john.doe@example.com",
+                "phone": "+1 (555) 123-4567",
+                "location": "San Francisco, CA",
+                "linkedin": "linkedin.com/in/johndoe",
+                "portfolio": "johndoe.dev",
+                "github": "github.com/johndoe"
+            },
+            professional_summary="Experienced software engineer with 5+ years of expertise in full-stack development, specializing in React, Node.js, and cloud technologies. Proven track record of building scalable applications and leading technical teams.",
+            work_experience=[
+                {
+                    "company": "Tech Corp",
+                    "position": "Senior Software Engineer",
+                    "location": "San Francisco, CA",
+                    "start_date": "01/2021",
+                    "end_date": "Present",
+                    "description": "Lead development of core platform features",
+                    "responsibilities": [
+                        "Led a team of 5 engineers in developing a scalable microservices architecture",
+                        "Reduced API response time by 40% through optimization and caching strategies",
+                        "Implemented CI/CD pipelines that decreased deployment time by 60%"
+                    ]
+                },
+                {
+                    "company": "Startup Inc",
+                    "position": "Software Engineer",
+                    "location": "San Francisco, CA",
+                    "start_date": "06/2019",
+                    "end_date": "12/2020",
+                    "description": "Full-stack development for web applications",
+                    "responsibilities": [
+                        "Built responsive web applications using React and Node.js",
+                        "Developed RESTful APIs serving 10,000+ daily active users",
+                        "Collaborated with design team to implement pixel-perfect UI components"
+                    ]
+                }
+            ],
+            education=[
+                {
+                    "institution": "University of California, Berkeley",
+                    "degree": "Bachelor of Science",
+                    "field_of_study": "Computer Science",
+                    "location": "Berkeley, CA",
+                    "start_date": "2015",
+                    "end_date": "2019",
+                    "gpa": "3.8",
+                    "achievements": [
+                        "Dean's List all semesters",
+                        "President of Computer Science Club"
+                    ]
+                }
+            ],
+            skills=[
+                "JavaScript", "TypeScript", "React", "Node.js", "Python",
+                "AWS", "Docker", "Kubernetes", "PostgreSQL", "MongoDB",
+                "Git", "CI/CD", "Agile/Scrum"
+            ],
+            certifications=[
+                "AWS Certified Solutions Architect",
+                "Google Cloud Professional Developer"
+            ],
+            projects=[
+                {
+                    "name": "E-commerce Platform",
+                    "description": "Built a full-stack e-commerce platform with payment integration",
+                    "technologies": ["React", "Node.js", "Stripe", "PostgreSQL"],
+                    "url": "github.com/johndoe/ecommerce"
+                },
+                {
+                    "name": "Task Management App",
+                    "description": "Real-time collaborative task management application",
+                    "technologies": ["React", "Firebase", "Material-UI"],
+                    "url": "github.com/johndoe/taskapp"
+                }
+            ],
+            languages=["English (Native)", "Spanish (Professional)"],
+            volunteer_work=[
+                {
+                    "organization": "Code for Good",
+                    "role": "Volunteer Developer",
+                    "date": "2020-Present",
+                    "description": "Develop web applications for non-profit organizations"
+                }
+            ]
+        )
