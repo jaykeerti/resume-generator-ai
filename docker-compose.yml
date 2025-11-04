@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Next.js Frontend
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile.nextjs
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - FASTAPI_URL=http://fastapi:8000
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - fastapi
+    command: npm run dev
+
+  # FastAPI Backend
+  fastapi:
+    build:
+      context: ./fastapi-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - NEXTJS_URL=http://nextjs:3000
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./fastapi-backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+networks:
+  default:
+    name: resume-generator-network

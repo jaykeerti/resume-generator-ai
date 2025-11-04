@@ -230,13 +230,14 @@ Each saved resume shows:
 ## 8. Technical Implementation Notes
 
 ### 8.1 Tech Stack
-- **Frontend:** Next.js 14+ (React, TypeScript)
-- **Backend:** Next.js API routes
+- **Frontend:** Next.js 16+ (React, TypeScript)
+- **Backend:** Next.js API routes + FastAPI (Python) for document parsing
 - **Database:** Supabase (PostgreSQL)
 - **Auth:** Supabase Auth
-- **AI:** Claude API (Anthropic)
+- **AI:** Claude API (Anthropic) - used in both Next.js and FastAPI
+- **Document Parsing:** PyPDF (PDF), python-docx (DOCX), TXT support
 - **Payments:** Stripe
-- **Hosting:** Vercel
+- **Hosting:** Vercel (Next.js) + FastAPI deployment (Railway/Render/etc)
 - **PDF Generation:** `@react-pdf/renderer` or `puppeteer`
 
 ### 8.2 Database Schema (High Level)
@@ -327,6 +328,7 @@ Return 3-5 optimized bullet points.
 
 ### 8.4 Key API Endpoints
 
+**Next.js API Routes:**
 ```
 POST /api/auth/signup
 POST /api/auth/signin
@@ -335,6 +337,8 @@ POST /api/auth/google
 POST /api/onboarding/complete
 GET  /api/profile
 PUT  /api/profile
+
+✅ POST /api/parse-resume           (proxy to FastAPI - IMPLEMENTED)
 
 POST /api/job-description/parse
 GET  /api/job-descriptions/recent
@@ -350,6 +354,12 @@ POST /api/resume/:id/export (PDF generation)
 POST /api/subscription/create-checkout
 POST /api/subscription/manage
 POST /api/webhook/stripe (for subscription updates)
+```
+
+**FastAPI Backend Endpoints:**
+```
+✅ POST /api/parse-resume          (parse PDF/DOCX/TXT resumes - IMPLEMENTED)
+✅ GET  /health                     (health check - IMPLEMENTED)
 ```
 
 ---
@@ -385,7 +395,8 @@ POST /api/webhook/stripe (for subscription updates)
 ## 10. Future Enhancements (Post-MVP)
 
 ### Phase 2
-- Resume import/parsing (upload existing resume)
+- ✅ **Resume import/parsing (upload existing resume)** - Backend implemented
+- Resume upload UI component
 - DOCX export
 - Cover letter generation
 - LinkedIn import
@@ -437,45 +448,64 @@ POST /api/webhook/stripe (for subscription updates)
 
 ## 12. Development Phases
 
-### Phase 1: Foundation (Week 1-2)
-- Set up Next.js + Supabase + Vercel
-- Implement auth (email + Google)
-- Database schema creation
-- Basic UI framework
+### ✅ Phase 1: Foundation (COMPLETED)
+- ✅ Set up Next.js + Supabase + Vercel
+- ✅ Implement auth (email + Google)
+- ✅ Database schema creation
+- ✅ Basic UI framework
+- ✅ 5-step onboarding form
+- ✅ User dashboard with tier management
+- ✅ Landing page
 
-### Phase 2: Onboarding (Week 3)
-- Multi-step onboarding form
-- Data validation and storage
-- Profile management UI
+### ✅ Phase 1.5: Profile Management (COMPLETED)
+- ✅ Profile editing page with tabbed interface
+- ✅ Edit personal information
+- ✅ Manage work experience (CRUD)
+- ✅ Manage education (CRUD)
+- ✅ Manage skills (tag-based UI)
+- ✅ API endpoints for profile updates
 
-### Phase 3: AI Integration (Week 4-5)
+### ✅ Phase 1.75: Document Parsing Backend (COMPLETED)
+- ✅ FastAPI backend service
+- ✅ PDF, DOCX, TXT parsing
+- ✅ Claude AI integration for structuring
+- ✅ Next.js API proxy routes
+- ✅ Development and Docker scripts
+
+### 🚧 Phase 2: Resume Upload UI (NEXT)
+- Resume upload component
+- Display parsed/structured data
+- Edit imported resume data
+- Save to Supabase
+
+### Phase 3: AI Integration
 - Claude API integration
 - Job description parsing
 - Resume content generation
 - AI configuration system
 
-### Phase 4: Resume Editor (Week 6)
+### Phase 4: Resume Editor
 - Content editor interface
 - Live preview
 - Template system (3 templates)
 
-### Phase 5: Export & Limits (Week 7)
+### Phase 5: Export & Limits
 - PDF generation
 - Generation counter
 - Free tier enforcement
 
-### Phase 6: Payments (Week 8)
+### Phase 6: Payments
 - Stripe integration
 - Subscription management
 - Upgrade flow
 
-### Phase 7: Polish & Testing (Week 9-10)
+### Phase 7: Polish & Testing
 - Bug fixes
 - Performance optimization
 - User testing
 - Documentation
 
-### Phase 8: Launch (Week 11)
+### Phase 8: Launch
 - Deploy to production
 - Marketing site/landing page
 - Launch!

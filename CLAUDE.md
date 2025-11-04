@@ -8,25 +8,52 @@ AI-powered resume generator that tailors resumes based on job descriptions using
 
 ## Tech Stack
 
-- **Frontend/Backend:** Next.js 16 (App Router)
-- **Language:** TypeScript (strict mode enabled)
+- **Frontend:** Next.js 16 (App Router)
+- **Backend:** FastAPI (Python) for document parsing
+- **Language:** TypeScript (strict mode enabled) + Python 3.11+
 - **Styling:** Tailwind CSS v4
-- **Planned Integrations:**
+- **Integrations:**
   - Database: Supabase (PostgreSQL)
   - Auth: Supabase Auth (email/password + Google OAuth)
-  - AI: Claude API (Anthropic)
-  - Payments: Stripe
-  - PDF Generation: `@react-pdf/renderer` or `puppeteer`
-  - Hosting: Vercel
+  - AI: Claude API (Anthropic) - used in both Next.js and FastAPI
+  - Document Parsing: PyPDF (PDF), python-docx (DOCX)
+  - Payments: Stripe (planned)
+  - PDF Generation: `@react-pdf/renderer` or `puppeteer` (planned)
+  - Hosting: Vercel (Next.js) + FastAPI deployment
 
 ## Development Commands
 
-### Development
+### Quick Start (Both Services)
+```bash
+./dev.sh             # Start both Next.js (port 3000) and FastAPI (port 8000)
+```
+
+### Individual Services
+
+**Next.js Frontend:**
 ```bash
 npm run dev          # Start dev server at http://localhost:3000
 npm run build        # Build production bundle
 npm run start        # Start production server
 npm run lint         # Run ESLint
+```
+
+**FastAPI Backend:**
+```bash
+cd fastapi-backend
+./run.sh             # Start FastAPI server at http://localhost:8000
+
+# Or manually:
+cd fastapi-backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python main.py
+```
+
+**Docker (Both Services):**
+```bash
+docker-compose up    # Start both services in containers
 ```
 
 ### Path Aliases
@@ -40,9 +67,10 @@ resume-generator-ai/
 │   ├── auth/                  # Authentication pages (signin, signup, callback)
 │   ├── dashboard/             # User dashboard
 │   ├── onboarding/            # 5-step onboarding wizard
-│   ├── profile/               # Profile editing page ✨ NEW
+│   ├── profile/               # Profile editing page
 │   ├── api/                   # API routes
-│   │   └── profile/           # Profile update endpoints ✨ NEW
+│   │   ├── profile/           # Profile update endpoints
+│   │   └── parse-resume/      # Proxy to FastAPI backend ✨ NEW
 │   ├── layout.tsx             # Root layout with font configuration
 │   ├── page.tsx               # Landing page
 │   └── globals.css            # Global Tailwind styles
@@ -50,7 +78,7 @@ resume-generator-ai/
 │   ├── auth/                  # Authentication forms
 │   ├── dashboard/             # Dashboard components
 │   ├── onboarding/            # Onboarding wizard & steps
-│   └── profile/               # Profile editing components ✨ NEW
+│   └── profile/               # Profile editing components
 │       └── editors/           # Individual section editors
 ├── lib/
 │   ├── auth/                  # Auth server actions
@@ -59,7 +87,20 @@ resume-generator-ai/
 ├── hooks/                     # React hooks (useAuth)
 ├── supabase/
 │   └── migrations/            # Database schema migrations
-└── public/                    # Static assets
+├── public/                    # Static assets
+├── fastapi-backend/           # Python FastAPI backend ✨ NEW
+│   ├── main.py                # FastAPI app entry point
+│   ├── requirements.txt       # Python dependencies
+│   ├── Dockerfile             # Docker configuration
+│   ├── app/
+│   │   ├── models/
+│   │   │   └── schemas.py     # Pydantic response models
+│   │   └── services/
+│   │       ├── document_parser.py   # PDF/DOCX/TXT parsing
+│   │       └── ai_structurer.py     # Claude AI integration
+│   └── .env.example           # Environment variables template
+├── dev.sh                     # Start both services ✨ NEW
+└── docker-compose.yml         # Docker orchestration ✨ NEW
 ```
 
 ## Planned Architecture (See Readme.md for full details)
@@ -86,12 +127,19 @@ Key tables to implement:
 
 ### API Routes
 
-**Implemented:**
+**Implemented (Next.js):**
 ```
 ✅ /api/profile/personal      # Update personal information
 ✅ /api/profile/experience    # Update work experience
 ✅ /api/profile/education     # Update education
 ✅ /api/profile/skills        # Update skills
+✅ /api/parse-resume          # Proxy to FastAPI for document parsing ✨ NEW
+```
+
+**Implemented (FastAPI Backend):**
+```
+✅ POST /api/parse-resume     # Parse uploaded resume (PDF/DOCX/TXT) ✨ NEW
+✅ GET  /health               # Backend health check ✨ NEW
 ```
 
 **To be implemented:**
@@ -154,7 +202,7 @@ All templates must avoid:
 - User dashboard with tier management
 - Landing page
 
-✅ **Phase 1.5 - Profile Editing** (Complete) ✨ NEW
+✅ **Phase 1.5 - Profile Editing** (Complete)
 - `/profile` page with tabbed interface
 - Edit personal information
 - Manage work experience (add/edit/delete)
@@ -162,12 +210,20 @@ All templates must avoid:
 - Manage skills (tag-based UI)
 - API endpoints for profile updates
 
+✅ **Phase 1.75 - Document Parsing Backend** (Complete) ✨ NEW
+- FastAPI backend for resume document parsing
+- Support for PDF, DOCX, and TXT file formats
+- Claude AI integration for structuring parsed content
+- Next.js API proxy route (`/api/parse-resume`)
+- Development scripts and Docker configuration
+
 **Next Phases:**
-- Phase 2: AI Integration (Claude API for job description parsing)
-- Phase 3: Resume Generation (AI-tailored content)
-- Phase 4: Resume Editor (live preview, templates)
-- Phase 5: PDF Export
-- Phase 6: Stripe Payments
+- Phase 2: Resume Upload UI (file upload component + display structured data)
+- Phase 3: AI Integration (Claude API for job description parsing)
+- Phase 4: Resume Generation (AI-tailored content)
+- Phase 5: Resume Editor (live preview, templates)
+- Phase 6: PDF Export
+- Phase 7: Stripe Payments
 
 ## Configuration Files
 
@@ -176,15 +232,40 @@ All templates must avoid:
 - `eslint.config.mjs` - ESLint with Next.js rules
 - `postcss.config.mjs` - PostCSS with Tailwind v4
 
-## Environment Variables (to be configured)
+## Environment Variables
 
-Create `.env.local`:
-```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-ANTHROPIC_API_KEY=
+### Next.js (`.env.local`)
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# FastAPI Backend URL
+FASTAPI_URL=http://localhost:8000  # Development
+# FASTAPI_URL=https://your-fastapi-deployment.com  # Production
+
+# Stripe (Future)
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+```
+
+### FastAPI Backend (`fastapi-backend/.env`)
+```bash
+# Server
+PORT=8000
+NEXTJS_URL=http://localhost:3000
+
+# Anthropic AI
+ANTHROPIC_API_KEY=your_anthropic_api_key
+
+# Logging
+LOG_LEVEL=INFO
+```
+
+**Setup:** Copy `.env.example` files and fill in your values:
+```bash
+cp .env.example .env.local
+cp fastapi-backend/.env.example fastapi-backend/.env
 ```
