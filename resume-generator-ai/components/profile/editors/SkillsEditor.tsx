@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function SkillsEditor({ data }: Props) {
-  const [skills, setSkills] = useState<Skills>(data)
+  const [skills, setSkills] = useState<Skills>(data || { technical: [], soft: [] })
   const [techInput, setTechInput] = useState('')
   const [softInput, setSoftInput] = useState('')
   const [saving, setSaving] = useState(false)
@@ -100,7 +100,7 @@ export function SkillsEditor({ data }: Props) {
             </button>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
-            {skills.technical.map((skill, index) => (
+            {skills.technical?.map((skill, index) => (
               <span
                 key={index}
                 className="flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-sm dark:bg-zinc-800"
@@ -138,7 +138,7 @@ export function SkillsEditor({ data }: Props) {
             </button>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
-            {skills.soft.map((skill, index) => (
+            {skills.soft?.map((skill, index) => (
               <span
                 key={index}
                 className="flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-sm dark:bg-zinc-800"

@@ -57,7 +57,7 @@ export default function ImportPage() {
       // Save personal info
       if (parsedData.personal_info) {
         const personalResponse = await fetch('/api/profile/personal', {
-          method: 'PUT',
+          method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             full_name: parsedData.personal_info.full_name,
@@ -116,7 +116,7 @@ export default function ImportPage() {
       // Save skills
       if (parsedData.skills && parsedData.skills.length > 0) {
         await fetch('/api/profile/skills', {
-          method: 'PUT',
+          method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             skills: parsedData.skills,

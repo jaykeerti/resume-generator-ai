@@ -10,7 +10,18 @@
       "Bash(git push:*)",
       "Bash(rm:*)",
       "Bash(mv:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(vercel ls:*)",
+      "Bash(vercel logs:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install)",
+      "Bash(vercel inspect:*)",
+      "Bash(curl -s https://resume-generator-ai-sandy.vercel.app/api/parse-resume)",
+      "Bash(python main.py:*)",
+      "Bash(cat:*)",
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []
