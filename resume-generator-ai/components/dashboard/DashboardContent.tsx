@@ -34,6 +34,12 @@ export function DashboardContent({ user, profile, resumes }: Props) {
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold">Resume Generator AI</h1>
             <div className="flex items-center gap-4">
+              <a
+                href="/profile"
+                className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              >
+                Edit Profile
+              </a>
               <span className="text-sm text-zinc-600 dark:text-zinc-400">{user.email}</span>
               <form action={signOut}>
                 <button
