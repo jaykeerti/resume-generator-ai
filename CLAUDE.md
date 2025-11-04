@@ -56,6 +56,46 @@ python main.py
 docker-compose up    # Start both services in containers
 ```
 
+### Deployment
+
+**Next.js Frontend (Vercel):**
+```bash
+cd resume-generator-ai
+vercel --prod        # Deploy to production
+```
+
+**Deployment Status:**
+- Production URL: https://resume-generator-j1uw29feb-jaykeertis-projects.vercel.app
+- Auto-deploys from `main` branch
+- Environment variables configured in Vercel dashboard
+
+**FastAPI Backend Deployment:**
+The FastAPI backend needs to be deployed separately:
+
+**Option 1: Railway**
+```bash
+cd fastapi-backend
+railway login
+railway init
+railway up
+```
+
+**Option 2: Render**
+```bash
+# Connect your GitHub repo to Render
+# Set build command: pip install -r requirements.txt
+# Set start command: uvicorn main:app --host 0.0.0.0 --port $PORT
+```
+
+**Option 3: DigitalOcean App Platform**
+```bash
+# Deploy via DigitalOcean dashboard
+# Connect GitHub repo
+# Configure Python app with uvicorn
+```
+
+**Important:** After deploying FastAPI backend, update the `FASTAPI_URL` environment variable in Vercel to point to your production FastAPI URL.
+
 ### Path Aliases
 - `@/*` maps to project root (configured in `tsconfig.json`)
 
