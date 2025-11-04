@@ -59,18 +59,51 @@ docker-compose up    # Start both services in containers
 ### Deployment
 
 **Next.js Frontend (Vercel):**
+
+**IMPORTANT:** The Next.js project is in the `resume-generator-ai/` subdirectory. Vercel must be configured with the correct root directory.
+
 ```bash
+# Deploy from the Next.js project directory
 cd resume-generator-ai
-vercel --prod        # Deploy to production
+vercel --prod --yes        # Deploy to production
+
+# Common Vercel commands
+vercel ls                  # List deployments
+vercel logs                # View deployment logs
+vercel env ls              # List environment variables
+vercel env pull            # Pull env vars to local .env file
+vercel inspect <URL>       # Inspect deployment details
 ```
 
+**Vercel Project Configuration:**
+- **Root Directory**: MUST be set to `resume-generator-ai` in Vercel dashboard
+  - Go to: Settings → General → Root Directory → Set to `resume-generator-ai`
+  - Without this, deployments will fail with "Couldn't find any pages or app directory" error
+- **Build Command**: `npm run build` (default)
+- **Output Directory**: `.next` (default)
+- **Install Command**: `npm install` (default)
+
 **Deployment Status:**
-- Production URL: https://resume-generator-j1uw29feb-jaykeertis-projects.vercel.app
-- Auto-deploys from `main` branch
+- Production URL: https://resume-generator-ai-sandy.vercel.app
+- Auto-deploys from `main` branch to production
 - Environment variables configured in Vercel dashboard
+- `.vercel` directory is located in `resume-generator-ai/.vercel/`
+
+**Vercel Environment Variables:**
+```bash
+# View all environment variables
+cd resume-generator-ai && vercel env ls
+
+# Add new environment variable
+vercel env add VARIABLE_NAME production
+
+# Remove environment variable
+vercel env rm VARIABLE_NAME production
+```
 
 **FastAPI Backend Deployment:**
-The FastAPI backend needs to be deployed separately:
+
+The FastAPI backend needs to be deployed separately. It returns dummy data when `ANTHROPIC_API_KEY` is not configured, allowing frontend testing without AI setup.
 
 **Option 1: Railway**
 ```bash
@@ -78,6 +111,10 @@ cd fastapi-backend
 railway login
 railway init
 railway up
+
+# Add environment variables in Railway dashboard:
+# - ANTHROPIC_API_KEY (optional - uses dummy data if not set)
+# - PORT (Railway sets automatically)
 ```
 
 **Option 2: Render**
@@ -85,6 +122,8 @@ railway up
 # Connect your GitHub repo to Render
 # Set build command: pip install -r requirements.txt
 # Set start command: uvicorn main:app --host 0.0.0.0 --port $PORT
+# Add environment variables:
+# - ANTHROPIC_API_KEY (optional - uses dummy data if not set)
 ```
 
 **Option 3: DigitalOcean App Platform**
@@ -92,9 +131,56 @@ railway up
 # Deploy via DigitalOcean dashboard
 # Connect GitHub repo
 # Configure Python app with uvicorn
+# Add environment variables in dashboard
 ```
 
-**Important:** After deploying FastAPI backend, update the `FASTAPI_URL` environment variable in Vercel to point to your production FastAPI URL.
+**After Deploying FastAPI Backend:**
+1. Copy your FastAPI production URL (e.g., `https://your-app.railway.app`)
+2. Update `FASTAPI_URL` in Vercel:
+   ```bash
+   cd resume-generator-ai
+   vercel env add FASTAPI_URL production
+   # Enter your FastAPI URL when prompted
+   ```
+3. Redeploy Next.js app: `vercel --prod`
+
+**FastAPI Dummy Data Mode:**
+- Backend returns sample resume data when `ANTHROPIC_API_KEY` is not set
+- This allows full frontend testing without AI API costs
+- To enable real AI parsing, add `ANTHROPIC_API_KEY` to your backend deployment
+
+### Deployment Troubleshooting
+
+**Error: "Couldn't find any pages or app directory"**
+- **Cause**: Vercel is looking in the wrong directory (root instead of `resume-generator-ai/`)
+- **Fix**:
+  1. Go to Vercel Dashboard → Settings → General
+  2. Set **Root Directory** to `resume-generator-ai`
+  3. Save and redeploy
+
+**Error: "FastAPI backend is not responding" (502)**
+- **Cause**: `FASTAPI_URL` not configured or FastAPI backend not deployed
+- **Fix**:
+  1. Deploy FastAPI backend first (Railway/Render/DigitalOcean)
+  2. Add `FASTAPI_URL` environment variable in Vercel with your backend URL
+  3. Redeploy Next.js app
+
+**Error: "Your project's URL and Key are required to create a Supabase client"**
+- **Cause**: Supabase environment variables not set
+- **Fix**: Add these to Vercel environment variables:
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  - `SUPABASE_SERVICE_ROLE_KEY`
+
+**Vercel Auto-Deploy Not Working**
+- Check that GitHub integration is connected
+- Verify production branch is set to `main`
+- Check deployment logs for errors: `vercel logs --prod`
+
+**Build Succeeds But Site Shows 500 Error**
+- Check runtime logs: `vercel logs <deployment-url>`
+- Verify all environment variables are set correctly
+- Test locally first: `cd resume-generator-ai && npm run build && npm start`
 
 ### Path Aliases
 - `@/*` maps to project root (configured in `tsconfig.json`)
