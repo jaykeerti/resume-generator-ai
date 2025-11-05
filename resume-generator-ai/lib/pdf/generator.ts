@@ -13,21 +13,21 @@ export async function generateResumePDF({ resume, addWatermark }: PDFGenerationO
   try {
     console.log('Starting PDF generation for resume:', resume.id)
 
+    // Get the Chromium executable path - downloads from GitHub releases
+    const executablePath = await chromium.executablePath(
+      'https://github.com/Sparticuz/chromium/releases/download/v123.0.1/chromium-v123.0.1-pack.tar'
+    )
+    console.log('Chromium executable path:', executablePath)
+
     // Launch headless Chrome
     console.log('Launching browser...')
     browser = await puppeteer.launch({
-      args: [
-        ...chromium.args,
-        '--disable-gpu',
-        '--disable-dev-shm-usage',
-        '--disable-setuid-sandbox',
-        '--no-sandbox',
-      ],
+      args: chromium.args,
       defaultViewport: {
         width: 1280,
-        height: 720,
+        height: 720
       },
-      executablePath: await chromium.executablePath(),
+      executablePath,
       headless: true,
     })
 
