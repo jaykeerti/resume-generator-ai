@@ -238,7 +238,7 @@ Each saved resume shows:
 - **Document Parsing:** PyPDF (PDF), python-docx (DOCX), TXT support
 - **Payments:** Stripe
 - **Hosting:** Vercel (Next.js) + FastAPI deployment (Railway/Render/etc)
-- **PDF Generation:** `@react-pdf/renderer` or `puppeteer`
+- **PDF Generation:** ✅ Puppeteer + @sparticuz/chromium (serverless compatible)
 
 ### 8.2 Database Schema (High Level)
 
@@ -343,13 +343,13 @@ PUT  /api/profile
 POST /api/job-description/parse
 GET  /api/job-descriptions/recent
 
-POST /api/resume/generate
-GET  /api/resume/:id
-PUT  /api/resume/:id
-DELETE /api/resume/:id
+✅ POST /api/resume/create          (create new resume - IMPLEMENTED)
+✅ GET  /api/resume/:id             (get resume by ID - IMPLEMENTED)
+✅ PUT  /api/resume/:id             (update resume - IMPLEMENTED)
+✅ DELETE /api/resume/:id           (delete resume - IMPLEMENTED)
 GET  /api/resumes (list all for user)
 
-POST /api/resume/:id/export (PDF generation)
+✅ POST /api/resume/:id/export      (PDF generation with Puppeteer - IMPLEMENTED)
 
 POST /api/subscription/create-checkout
 POST /api/subscription/manage
@@ -367,22 +367,23 @@ POST /api/webhook/stripe (for subscription updates)
 ## 9. MVP Success Criteria
 
 ### 9.1 Core Functionality
-- [ ] User can sign up with email or Google
-- [ ] User completes onboarding flow with base information
+- [x] User can sign up with email or Google
+- [x] User completes onboarding flow with base information
+- [x] User can import existing resume (PDF/DOCX/TXT)
 - [ ] User can paste job description
 - [ ] AI successfully generates tailored resume content
-- [ ] User can select from 3+ templates
-- [ ] User can edit generated content
-- [ ] User can export to PDF
-- [ ] Free tier limit (5 generations) enforced
+- [x] User can select from 3+ templates (Classic, Modern, Minimal)
+- [x] User can edit generated content (section-by-section editor)
+- [x] User can export to PDF
+- [x] Free tier limit (5 generations) enforced
 - [ ] Pro subscription flow works end-to-end
 
 ### 9.2 Quality Metrics
 - Resume generation completes in < 30 seconds
 - AI-generated content is relevant and accurate
-- PDF export is professional and ATS-friendly
-- No data loss during editing sessions
-- Mobile-responsive (at minimum for viewing)
+- [x] PDF export is professional and ATS-friendly
+- [x] No data loss during editing sessions (auto-save with 2-second debounce)
+- [x] Mobile-responsive (swipeable tabs for editor, viewing optimized)
 
 ### 9.3 User Experience
 - Onboarding completion rate > 70%
@@ -485,15 +486,24 @@ POST /api/webhook/stripe (for subscription updates)
 - Resume content generation
 - AI configuration system
 
-### Phase 4: Resume Editor
-- Content editor interface
-- Live preview
-- Template system (3 templates)
+### ✅ Phase 4: Resume Editor (COMPLETED - Phase 5)
+- ✅ Content editor interface with section-by-section editing
+- ✅ Live preview with real-time updates
+- ✅ Template system (3 professional templates: Classic, Modern, Minimal)
+- ✅ Template customization (colors, fonts, sizes)
+- ✅ Auto-save functionality (2-second debounce)
+- ✅ 3-column desktop layout (Editing | Preview | Styling)
+- ✅ Mobile responsive with swipeable tabs (Edit/Preview)
+- ✅ Styling controls in bottom sheet modal (mobile)
 
-### Phase 5: Export & Limits
-- PDF generation
-- Generation counter
-- Free tier enforcement
+### ✅ Phase 5: Export & Limits (COMPLETED - Phase 6)
+- ✅ Server-side PDF generation with Puppeteer + Chromium
+- ✅ Generation counter tracking in database
+- ✅ Free tier enforcement (5 PDF exports max)
+- ✅ Watermark for free tier PDFs
+- ✅ Success toast notifications after download
+- ✅ Smooth UX (no page refresh, local state updates)
+- ✅ Pro tier: Unlimited exports without watermark
 
 ### Phase 6: Payments
 - Stripe integration

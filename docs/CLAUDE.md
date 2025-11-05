@@ -17,8 +17,8 @@ AI-powered resume generator that tailors resumes based on job descriptions using
   - Auth: Supabase Auth (email/password + Google OAuth)
   - AI: Claude API (Anthropic) - used in both Next.js and FastAPI
   - Document Parsing: PyPDF (PDF), python-docx (DOCX)
+  - PDF Generation: Puppeteer + @sparticuz/chromium (serverless) ✅ Implemented
   - Payments: Stripe (planned)
-  - PDF Generation: `@react-pdf/renderer` or `puppeteer` (planned)
   - Hosting: Vercel (Next.js) + FastAPI deployment
 
 ## Development Commands
@@ -192,29 +192,55 @@ resume-generator-ai/
 ├── app/                       # Next.js App Router pages & layouts
 │   ├── auth/                  # Authentication pages (signin, signup, callback)
 │   ├── dashboard/             # User dashboard
+│   │   └── loading.tsx        # Dashboard loading skeleton ✨ NEW
+│   ├── import/                # Resume import page
 │   ├── onboarding/            # 5-step onboarding wizard
 │   ├── profile/               # Profile editing page
+│   ├── resume/                # Resume-related pages ✨ NEW
+│   │   ├── new/               # Create new resume
+│   │   └── editor/[id]/       # Edit resume with live preview
 │   ├── api/                   # API routes
 │   │   ├── profile/           # Profile update endpoints
-│   │   └── parse-resume/      # Proxy to FastAPI backend ✨ NEW
+│   │   ├── parse-resume/      # Proxy to FastAPI backend
+│   │   └── resume/            # Resume CRUD endpoints ✨ NEW
+│   │       ├── create/        # Create new resume
+│   │       └── [id]/          # Get/update/delete resume
+│   │           └── export/    # PDF export endpoint
 │   ├── layout.tsx             # Root layout with font configuration
 │   ├── page.tsx               # Landing page
-│   └── globals.css            # Global Tailwind styles
+│   └── globals.css            # Global Tailwind styles with input fixes
 ├── components/
 │   ├── auth/                  # Authentication forms
 │   ├── dashboard/             # Dashboard components
+│   ├── import/                # Resume import components
 │   ├── onboarding/            # Onboarding wizard & steps
-│   └── profile/               # Profile editing components
-│       └── editors/           # Individual section editors
+│   ├── profile/               # Profile editing components
+│   │   └── editors/           # Individual section editors
+│   ├── resume/                # Resume editor components ✨ NEW
+│   │   ├── ResumeEditor.tsx   # Main editor with auto-save
+│   │   └── editors/           # Section editors (6 total)
+│   ├── templates/             # Resume templates ✨ NEW
+│   │   ├── base/              # Base template components
+│   │   ├── ClassicTemplate.tsx
+│   │   ├── ModernTemplate.tsx
+│   │   ├── MinimalTemplate.tsx
+│   │   ├── TemplateRenderer.tsx
+│   │   └── TemplateSelector.tsx
+│   └── ui/                    # UI components ✨ NEW
+│       └── UserProfileDropdown.tsx  # Circular avatar dropdown
 ├── lib/
 │   ├── auth/                  # Auth server actions
+│   ├── pdf/                   # PDF generation ✨ NEW
+│   │   └── generator.ts       # Puppeteer PDF generation
 │   ├── supabase/              # Supabase client configs
+│   ├── templates/             # Template configurations
 │   └── types/                 # TypeScript type definitions
+│       └── resume.ts          # Resume types (extended)
 ├── hooks/                     # React hooks (useAuth)
 ├── supabase/
 │   └── migrations/            # Database schema migrations
 ├── public/                    # Static assets
-├── fastapi-backend/           # Python FastAPI backend ✨ NEW
+├── fastapi-backend/           # Python FastAPI backend
 │   ├── main.py                # FastAPI app entry point
 │   ├── requirements.txt       # Python dependencies
 │   ├── Dockerfile             # Docker configuration
@@ -225,8 +251,12 @@ resume-generator-ai/
 │   │       ├── document_parser.py   # PDF/DOCX/TXT parsing
 │   │       └── ai_structurer.py     # Claude AI integration
 │   └── .env.example           # Environment variables template
-├── dev.sh                     # Start both services ✨ NEW
-└── docker-compose.yml         # Docker orchestration ✨ NEW
+├── docs/
+│   └── CLAUDE.md              # This file
+├── dev.sh                     # Start both services
+├── docker-compose.yml         # Docker orchestration
+├── PHASE5_IMPLEMENTATION_PLAN.md  # Phase 5 documentation ✨ NEW
+└── Readme.md                  # Project specification
 ```
 
 ## Planned Architecture (See Readme.md for full details)
@@ -255,28 +285,29 @@ Key tables to implement:
 
 **Implemented (Next.js):**
 ```
-✅ /api/profile/personal      # Update personal information
-✅ /api/profile/experience    # Update work experience
-✅ /api/profile/education     # Update education
-✅ /api/profile/skills        # Update skills
-✅ /api/parse-resume          # Proxy to FastAPI for document parsing ✨ NEW
+✅ /api/profile/personal          # Update personal information
+✅ /api/profile/experience        # Update work experience
+✅ /api/profile/education         # Update education
+✅ /api/profile/skills            # Update skills
+✅ /api/parse-resume              # Proxy to FastAPI for document parsing
+✅ /api/resume/create             # Create new resume from user profile ✨ NEW
+✅ /api/resume/[id]               # GET/PUT/DELETE resume operations ✨ NEW
+✅ /api/resume/[id]/export        # POST - PDF generation with Puppeteer ✨ NEW
 ```
 
 **Implemented (FastAPI Backend):**
 ```
-✅ POST /api/parse-resume     # Parse uploaded resume (PDF/DOCX/TXT) ✨ NEW
-✅ GET  /health               # Backend health check ✨ NEW
+✅ POST /api/parse-resume         # Parse uploaded resume (PDF/DOCX/TXT)
+✅ GET  /health                   # Backend health check
 ```
 
 **To be implemented:**
 ```
-/api/auth/*                  # Authentication endpoints (Supabase handles most)
-/api/job-description/parse   # Parse job posting with Claude
-/api/resume/generate         # Generate tailored resume
-/api/resume/[id]             # CRUD operations on resumes
-/api/resume/[id]/export      # PDF generation
-/api/subscription/*          # Stripe integration
-/api/webhook/stripe          # Stripe webhooks
+/api/auth/*                      # Authentication endpoints (Supabase handles most)
+/api/job-description/parse       # Parse job posting with Claude
+/api/resume/generate             # Generate AI-tailored resume
+/api/subscription/*              # Stripe integration
+/api/webhook/stripe              # Stripe webhooks
 ```
 
 ### AI Integration Strategy
@@ -343,7 +374,7 @@ All templates must avoid:
 - Next.js API proxy route (`/api/parse-resume`)
 - Development scripts and Docker configuration
 
-✅ **Phase 2 - Resume Upload UI** (Complete) ✨ NEW
+✅ **Phase 2 - Resume Upload UI** (Complete)
 - Drag-and-drop file upload component
 - AI-powered resume parsing interface
 - Parsed data display with structured sections
@@ -351,11 +382,37 @@ All templates must avoid:
 - Dashboard integration with import button
 - Full error handling and loading states
 
+✅ **Phase 5 - Resume Editor & Templates** (Complete) ✨ NEW
+- Complete resume editor with live preview
+- 3 professional templates (Classic, Modern, Minimal)
+- Template customization (colors, fonts, sizes)
+- Section-by-section editing (Personal Info, Summary, Experience, Education, Skills, Additional)
+- Auto-save functionality (2-second debounce)
+- 3-column desktop layout (Editing | Preview | Styling)
+- Mobile responsive with swipeable tabs (Edit/Preview)
+- Styling controls in bottom sheet modal (mobile)
+- Real-time preview updates
+
+✅ **Phase 6 - PDF Export** (Complete) ✨ NEW
+- Server-side PDF generation with Puppeteer + Chromium
+- Downloads from GitHub releases (serverless compatible)
+- Free tier: 5 PDF exports with watermark
+- Pro tier: Unlimited exports without watermark
+- Generation count tracking and enforcement
+- Success toast notifications
+- Smooth UX (no page refresh, local state updates)
+- Detailed error logging for debugging
+
+**Additional Features Completed:**
+- ✅ User profile dropdown with circular avatar
+- ✅ Delete resume functionality
+- ✅ Input text visibility improvements (better contrast)
+- ✅ Performance optimizations (sign-in speed, parallel queries)
+- ✅ Mobile swipeable tabs for resume editor
+
 **Next Phases:**
 - Phase 3: AI Integration (Claude API for job description parsing)
 - Phase 4: Resume Generation (AI-tailored content)
-- Phase 5: Resume Editor (live preview, templates)
-- Phase 6: PDF Export
 - Phase 7: Stripe Payments
 
 ## Configuration Files
