@@ -27,6 +27,7 @@ export function DashboardContent({ user, profile, resumes: initialResumes }: Pro
   const [resumes, setResumes] = useState(initialResumes)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
+  const [showSuccessToast, setShowSuccessToast] = useState(false)
 
   const remainingGenerations =
     profile.subscription_tier === 'pro' ? null : Math.max(0, 5 - profile.generation_count)
@@ -61,8 +62,13 @@ export function DashboardContent({ user, profile, resumes: initialResumes }: Pro
       document.body.removeChild(a)
       window.URL.revokeObjectURL(url)
 
-      // Refresh page to update generation count
-      window.location.reload()
+      // Show success notification
+      setShowSuccessToast(true)
+
+      // Wait 2 seconds then refresh to update generation count
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000)
     } catch (error) {
       console.error('Error downloading resume:', error)
       alert('Failed to generate PDF. Please try again.')
@@ -250,6 +256,21 @@ export function DashboardContent({ user, profile, resumes: initialResumes }: Pro
           )}
         </div>
       </main>
+
+      {/* Success Toast Notification */}
+      {showSuccessToast && (
+        <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-5 fade-in">
+          <div className="bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+            <svg className="w-6 h-6 flex-shrink-0" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div>
+              <p className="font-semibold">PDF Downloaded Successfully!</p>
+              <p className="text-sm text-green-100">Check your Downloads folder</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
