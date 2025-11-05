@@ -4,6 +4,12 @@ import React, { useState, useCallback, useEffect, useRef } from 'react'
 import type { Resume, ResumeContent, TemplateCustomization, TemplateId } from '@/lib/types/resume'
 import { TemplateSelector } from '@/components/templates/TemplateSelector'
 import { TemplateRenderer } from '@/components/templates/TemplateRenderer'
+import { PersonalInfoEditor } from '@/components/resume/editors/PersonalInfoEditor'
+import { SummaryEditor } from '@/components/resume/editors/SummaryEditor'
+import { ExperienceEditor } from '@/components/resume/editors/ExperienceEditor'
+import { EducationEditor } from '@/components/resume/editors/EducationEditor'
+import { SkillsEditor } from '@/components/resume/editors/SkillsEditor'
+import { AdditionalSectionsEditor } from '@/components/resume/editors/AdditionalSectionsEditor'
 import { TEMPLATES } from '@/lib/templates/config'
 
 interface ResumeEditorProps {
@@ -156,22 +162,40 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
               />
             )}
             {activeTab === 'personal' && (
-              <div className="text-gray-600">Personal Info Editor (Coming soon)</div>
+              <PersonalInfoEditor
+                personalInfo={content.personal_info}
+                onChange={(personalInfo) => setContent({ ...content, personal_info: personalInfo })}
+              />
             )}
             {activeTab === 'summary' && (
-              <div className="text-gray-600">Summary Editor (Coming soon)</div>
+              <SummaryEditor
+                summary={content.professional_summary || ''}
+                onChange={(summary) => setContent({ ...content, professional_summary: summary })}
+              />
             )}
             {activeTab === 'experience' && (
-              <div className="text-gray-600">Experience Editor (Coming soon)</div>
+              <ExperienceEditor
+                experiences={content.work_experience}
+                onChange={(work_experience) => setContent({ ...content, work_experience })}
+              />
             )}
             {activeTab === 'education' && (
-              <div className="text-gray-600">Education Editor (Coming soon)</div>
+              <EducationEditor
+                education={content.education}
+                onChange={(education) => setContent({ ...content, education })}
+              />
             )}
             {activeTab === 'skills' && (
-              <div className="text-gray-600">Skills Editor (Coming soon)</div>
+              <SkillsEditor
+                skills={content.skills}
+                onChange={(skills) => setContent({ ...content, skills })}
+              />
             )}
             {activeTab === 'additional' && (
-              <div className="text-gray-600">Additional Sections Editor (Coming soon)</div>
+              <AdditionalSectionsEditor
+                sections={content.additional_sections}
+                onChange={(additional_sections) => setContent({ ...content, additional_sections })}
+              />
             )}
           </div>
         </aside>

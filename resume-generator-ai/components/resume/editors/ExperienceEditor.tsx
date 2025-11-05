@@ -1,0 +1,327 @@
+'use client'
+
+import React, { useState } from 'react'
+import type { ResumeWorkExperience } from '@/lib/types/resume'
+
+interface ExperienceEditorProps {
+  experiences: ResumeWorkExperience[]
+  onChange: (experiences: ResumeWorkExperience[]) => void
+}
+
+export function ExperienceEditor({ experiences, onChange }: ExperienceEditorProps) {
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [isAdding, setIsAdding] = useState(false)
+
+  const emptyExperience: ResumeWorkExperience = {
+    company: '',
+    job_title: '',
+    start_date: '',
+    end_date: '',
+    is_current: false,
+    location: '',
+    responsibilities: ['']
+  }
+
+  const handleAdd = () => {
+    setIsAdding(true)
+    setEditingIndex(null)
+  }
+
+  const handleSaveNew = (experience: ResumeWorkExperience) => {
+    onChange([...experiences, experience])
+    setIsAdding(false)
+  }
+
+  const handleUpdate = (index: number, experience: ResumeWorkExperience) => {
+    const updated = [...experiences]
+    updated[index] = experience
+    onChange(updated)
+    setEditingIndex(null)
+  }
+
+  const handleDelete = (index: number) => {
+    if (confirm('Are you sure you want to delete this work experience?')) {
+      onChange(experiences.filter((_, i) => i !== index))
+    }
+  }
+
+  const handleMoveUp = (index: number) => {
+    if (index === 0) return
+    const updated = [...experiences]
+    ;[updated[index - 1], updated[index]] = [updated[index], updated[index - 1]]
+    onChange(updated)
+  }
+
+  const handleMoveDown = (index: number) => {
+    if (index === experiences.length - 1) return
+    const updated = [...experiences]
+    ;[updated[index], updated[index + 1]] = [updated[index + 1], updated[index]]
+    onChange(updated)
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-sm font-semibold text-gray-700">Work Experience</h3>
+        <button
+          onClick={handleAdd}
+          className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          + Add Experience
+        </button>
+      </div>
+
+      {experiences.length === 0 && !isAdding && (
+        <div className="text-center py-8 text-gray-500 text-sm">
+          No work experience added yet. Click "Add Experience" to get started.
+        </div>
+      )}
+
+      {experiences.map((exp, index) => (
+        <div key={index}>
+          {editingIndex === index ? (
+            <ExperienceForm
+              experience={exp}
+              onSave={(updated) => handleUpdate(index, updated)}
+              onCancel={() => setEditingIndex(null)}
+            />
+          ) : (
+            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h4 className="font-semibold text-gray-900">{exp.job_title}</h4>
+                  <p className="text-sm text-gray-600">{exp.company}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {exp.start_date} - {exp.is_current ? 'Present' : exp.end_date}
+                    {exp.location && ` • ${exp.location}`}
+                  </p>
+                </div>
+                <div className="flex gap-1">
+                  {index > 0 && (
+                    <button
+                      onClick={() => handleMoveUp(index)}
+                      className="p-1 hover:bg-gray-100 rounded"
+                      title="Move up"
+                    >
+                      ↑
+                    </button>
+                  )}
+                  {index < experiences.length - 1 && (
+                    <button
+                      onClick={() => handleMoveDown(index)}
+                      className="p-1 hover:bg-gray-100 rounded"
+                      title="Move down"
+                    >
+                      ↓
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setEditingIndex(index)}
+                    className="p-1 hover:bg-gray-100 rounded"
+                    title="Edit"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => handleDelete(index)}
+                    className="p-1 hover:bg-gray-100 rounded text-red-600"
+                    title="Delete"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+              {exp.responsibilities.length > 0 && (
+                <ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">
+                  {exp.responsibilities.slice(0, 2).map((resp, i) => (
+                    <li key={i} className="line-clamp-1">{resp}</li>
+                  ))}
+                  {exp.responsibilities.length > 2 && (
+                    <li className="text-gray-500">+{exp.responsibilities.length - 2} more...</li>
+                  )}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
+
+      {isAdding && (
+        <ExperienceForm
+          experience={emptyExperience}
+          onSave={handleSaveNew}
+          onCancel={() => setIsAdding(false)}
+        />
+      )}
+    </div>
+  )
+}
+
+interface ExperienceFormProps {
+  experience: ResumeWorkExperience
+  onSave: (experience: ResumeWorkExperience) => void
+  onCancel: () => void
+}
+
+function ExperienceForm({ experience: initialExperience, onSave, onCancel }: ExperienceFormProps) {
+  const [experience, setExperience] = useState(initialExperience)
+
+  const handleChange = (field: keyof ResumeWorkExperience, value: any) => {
+    setExperience({ ...experience, [field]: value })
+  }
+
+  const handleResponsibilityChange = (index: number, value: string) => {
+    const updated = [...experience.responsibilities]
+    updated[index] = value
+    setExperience({ ...experience, responsibilities: updated })
+  }
+
+  const handleAddResponsibility = () => {
+    setExperience({
+      ...experience,
+      responsibilities: [...experience.responsibilities, '']
+    })
+  }
+
+  const handleRemoveResponsibility = (index: number) => {
+    setExperience({
+      ...experience,
+      responsibilities: experience.responsibilities.filter((_, i) => i !== index)
+    })
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Filter out empty responsibilities
+    const cleanedExperience = {
+      ...experience,
+      responsibilities: experience.responsibilities.filter(r => r.trim() !== '')
+    }
+    onSave(cleanedExperience)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="border border-blue-300 rounded-lg p-4 bg-blue-50">
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Job Title *</label>
+          <input
+            type="text"
+            value={experience.job_title}
+            onChange={(e) => handleChange('job_title', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Company *</label>
+          <input
+            type="text"
+            value={experience.company}
+            onChange={(e) => handleChange('company', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+          <input
+            type="text"
+            value={experience.start_date}
+            onChange={(e) => handleChange('start_date', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Jan 2020"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+          <input
+            type="text"
+            value={experience.end_date || ''}
+            onChange={(e) => handleChange('end_date', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Dec 2023"
+            disabled={experience.is_current}
+          />
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <input
+            type="checkbox"
+            checked={experience.is_current}
+            onChange={(e) => {
+              handleChange('is_current', e.target.checked)
+              if (e.target.checked) {
+                handleChange('end_date', '')
+              }
+            }}
+            className="rounded"
+          />
+          I currently work here
+        </label>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+        <input
+          type="text"
+          value={experience.location}
+          onChange={(e) => handleChange('location', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="San Francisco, CA"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Responsibilities</label>
+        {experience.responsibilities.map((resp, index) => (
+          <div key={index} className="flex gap-2 mb-2">
+            <textarea
+              value={resp}
+              onChange={(e) => handleResponsibilityChange(index, e.target.value)}
+              rows={2}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              placeholder="Describe your responsibility or achievement..."
+            />
+            <button
+              type="button"
+              onClick={() => handleRemoveResponsibility(index)}
+              className="px-2 text-red-600 hover:bg-red-50 rounded"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={handleAddResponsibility}
+          className="text-sm text-blue-600 hover:text-blue-700"
+        >
+          + Add Responsibility
+        </button>
+      </div>
+
+      <div className="flex gap-2 justify-end">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  )
+}
