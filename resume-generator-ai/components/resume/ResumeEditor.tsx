@@ -17,17 +17,18 @@ interface ResumeEditorProps {
   onSave: (updates: Partial<Resume>) => Promise<void>
 }
 
-type EditorTab = 'template' | 'personal' | 'summary' | 'experience' | 'education' | 'skills' | 'additional'
+type EditorTab = 'personal' | 'summary' | 'experience' | 'education' | 'skills' | 'additional'
 
 export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
   const [title, setTitle] = useState(resume.title)
   const [templateId, setTemplateId] = useState<TemplateId>(resume.template_id)
   const [customization, setCustomization] = useState<TemplateCustomization>(resume.customization)
   const [content, setContent] = useState<ResumeContent>(resume.content)
-  const [activeTab, setActiveTab] = useState<EditorTab>('template')
+  const [activeTab, setActiveTab] = useState<EditorTab>('personal')
   const [isSaving, setIsSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved')
   const [previewScale, setPreviewScale] = useState(0.7)
+  const [showStyling, setShowStyling] = useState(true)
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -83,7 +84,6 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
   }, [])
 
   const tabs = [
-    { id: 'template' as const, label: 'Template', icon: '🎨' },
     { id: 'personal' as const, label: 'Personal', icon: '👤' },
     { id: 'summary' as const, label: 'Summary', icon: '📝' },
     { id: 'experience' as const, label: 'Experience', icon: '💼' },
@@ -128,9 +128,9 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel - Editor */}
-        <aside className="w-96 bg-white border-r border-gray-200 flex flex-col">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        {/* Left Panel - Content Editors */}
+        <aside className="w-full lg:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col">
           {/* Tabs */}
           <div className="border-b border-gray-200 overflow-x-auto">
             <div className="flex">
@@ -145,22 +145,14 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
                   }`}
                 >
                   <span>{tab.icon}</span>
-                  <span>{tab.label}</span>
+                  <span className="hidden sm:inline">{tab.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Tab Content */}
-          <div className="flex-1 overflow-y-auto p-6">
-            {activeTab === 'template' && (
-              <TemplateSelector
-                selectedTemplateId={templateId}
-                customization={customization}
-                onTemplateChange={handleTemplateChange}
-                onCustomizationChange={handleCustomizationChange}
-              />
-            )}
+          {/* Tab Content - Content Editors Only */}
+          <div className="flex-1 overflow-y-auto p-4 lg:p-6">
             {activeTab === 'personal' && (
               <PersonalInfoEditor
                 personalInfo={content.personal_info}
@@ -200,10 +192,33 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
           </div>
         </aside>
 
-        {/* Right Panel - Preview */}
+        {/* Right Panel - Styling + Preview */}
         <main className="flex-1 bg-gray-100 overflow-hidden flex flex-col">
+          {/* Styling Controls Section */}
+          <div className="bg-white border-b border-gray-200">
+            <div className="flex items-center justify-between px-4 lg:px-6 py-3 border-b border-gray-200">
+              <span className="text-sm font-semibold text-gray-700">🎨 Styling</span>
+              <button
+                onClick={() => setShowStyling(!showStyling)}
+                className="text-sm text-gray-600 hover:text-gray-900 lg:hidden"
+              >
+                {showStyling ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            <div className={`overflow-y-auto ${showStyling ? 'max-h-96' : 'max-h-0'} transition-all duration-300`}>
+              <div className="p-4 lg:p-6">
+                <TemplateSelector
+                  selectedTemplateId={templateId}
+                  customization={customization}
+                  onTemplateChange={handleTemplateChange}
+                  onCustomizationChange={handleCustomizationChange}
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Preview Controls */}
-          <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+          <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">Preview</span>
             <div className="flex items-center gap-2">
               <button
@@ -215,7 +230,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
                   <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path>
                 </svg>
               </button>
-              <span className="text-sm text-gray-600 min-w-[4rem] text-center">
+              <span className="text-xs lg:text-sm text-gray-600 min-w-[3rem] lg:min-w-[4rem] text-center">
                 {Math.round(previewScale * 100)}%
               </span>
               <button
@@ -229,7 +244,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
               </button>
               <button
                 onClick={() => setPreviewScale(1)}
-                className="px-3 py-1 text-sm hover:bg-gray-100 rounded"
+                className="px-2 lg:px-3 py-1 text-xs lg:text-sm hover:bg-gray-100 rounded"
               >
                 Reset
               </button>
@@ -237,7 +252,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
           </div>
 
           {/* Preview Area */}
-          <div className="flex-1 overflow-auto p-8">
+          <div className="flex-1 overflow-auto p-4 lg:p-8">
             <div className="max-w-[8.5in] mx-auto shadow-2xl">
               <TemplateRenderer
                 templateId={templateId}
