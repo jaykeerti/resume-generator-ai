@@ -11,9 +11,18 @@ export async function generateResumePDF({ resume, addWatermark }: PDFGenerationO
   let browser = null
 
   try {
+    console.log('Starting PDF generation for resume:', resume.id)
+
     // Launch headless Chrome
+    console.log('Launching browser...')
     browser = await puppeteer.launch({
-      args: chromium.args,
+      args: [
+        ...chromium.args,
+        '--disable-gpu',
+        '--disable-dev-shm-usage',
+        '--disable-setuid-sandbox',
+        '--no-sandbox',
+      ],
       defaultViewport: {
         width: 1280,
         height: 720,
@@ -22,17 +31,21 @@ export async function generateResumePDF({ resume, addWatermark }: PDFGenerationO
       headless: true,
     })
 
+    console.log('Browser launched, creating new page...')
     const page = await browser.newPage()
 
     // Generate HTML content for the resume
+    console.log('Generating HTML...')
     const html = generateResumeHTML(resume, addWatermark)
 
     // Set content and wait for fonts/styles to load
+    console.log('Setting HTML content...')
     await page.setContent(html, {
       waitUntil: 'networkidle0',
     })
 
     // Generate PDF with optimized settings
+    console.log('Generating PDF...')
     const pdf = await page.pdf({
       format: 'A4',
       printBackground: true,
@@ -44,12 +57,15 @@ export async function generateResumePDF({ resume, addWatermark }: PDFGenerationO
       },
     })
 
+    console.log('PDF generated successfully, size:', pdf.length, 'bytes')
     return Buffer.from(pdf)
   } catch (error) {
     console.error('PDF generation error:', error)
-    throw new Error('Failed to generate PDF')
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    throw error
   } finally {
     if (browser) {
+      console.log('Closing browser...')
       await browser.close()
     }
   }
