@@ -130,7 +130,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* Left Panel - Content Editors */}
-        <aside className="w-full lg:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col">
+        <aside className="w-full lg:w-80 xl:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col">
           {/* Tabs */}
           <div className="border-b border-gray-200 overflow-x-auto">
             <div className="flex">
@@ -138,14 +138,14 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  className={`flex items-center gap-2 px-3 lg:px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                   }`}
                 >
                   <span>{tab.icon}</span>
-                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="hidden sm:inline text-xs lg:text-sm">{tab.label}</span>
                 </button>
               ))}
             </div>
@@ -192,33 +192,10 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
           </div>
         </aside>
 
-        {/* Right Panel - Styling + Preview */}
-        <main className="flex-1 bg-gray-100 overflow-hidden flex flex-col">
-          {/* Styling Controls Section */}
-          <div className="bg-white border-b border-gray-200">
-            <div className="flex items-center justify-between px-4 lg:px-6 py-3 border-b border-gray-200">
-              <span className="text-sm font-semibold text-gray-700">🎨 Styling</span>
-              <button
-                onClick={() => setShowStyling(!showStyling)}
-                className="text-sm text-gray-600 hover:text-gray-900 lg:hidden"
-              >
-                {showStyling ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            <div className={`overflow-y-auto ${showStyling ? 'max-h-96' : 'max-h-0'} transition-all duration-300`}>
-              <div className="p-4 lg:p-6">
-                <TemplateSelector
-                  selectedTemplateId={templateId}
-                  customization={customization}
-                  onTemplateChange={handleTemplateChange}
-                  onCustomizationChange={handleCustomizationChange}
-                />
-              </div>
-            </div>
-          </div>
-
+        {/* Center Panel - Preview (Desktop only) */}
+        <main className="hidden lg:flex flex-1 bg-gray-100 overflow-hidden flex-col border-r border-gray-200">
           {/* Preview Controls */}
-          <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 flex items-center justify-between">
+          <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">Preview</span>
             <div className="flex items-center gap-2">
               <button
@@ -230,7 +207,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
                   <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path>
                 </svg>
               </button>
-              <span className="text-xs lg:text-sm text-gray-600 min-w-[3rem] lg:min-w-[4rem] text-center">
+              <span className="text-sm text-gray-600 min-w-[4rem] text-center">
                 {Math.round(previewScale * 100)}%
               </span>
               <button
@@ -244,7 +221,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
               </button>
               <button
                 onClick={() => setPreviewScale(1)}
-                className="px-2 lg:px-3 py-1 text-xs lg:text-sm hover:bg-gray-100 rounded"
+                className="px-3 py-1 text-sm hover:bg-gray-100 rounded"
               >
                 Reset
               </button>
@@ -252,7 +229,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
           </div>
 
           {/* Preview Area */}
-          <div className="flex-1 overflow-auto p-4 lg:p-8">
+          <div className="flex-1 overflow-auto p-8">
             <div className="max-w-[8.5in] mx-auto shadow-2xl">
               <TemplateRenderer
                 templateId={templateId}
@@ -263,6 +240,70 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
             </div>
           </div>
         </main>
+
+        {/* Right Panel - Styling Controls */}
+        <aside className="w-full lg:w-80 xl:w-96 bg-white border-t lg:border-t-0 border-gray-200 flex flex-col">
+          <div className="border-b border-gray-200 px-4 lg:px-6 py-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-gray-700">🎨 Styling</span>
+              <button
+                onClick={() => setShowStyling(!showStyling)}
+                className="text-sm text-gray-600 hover:text-gray-900 lg:hidden"
+              >
+                {showStyling ? 'Hide' : 'Show'}
+              </button>
+            </div>
+          </div>
+
+          <div className={`flex-1 overflow-y-auto ${showStyling ? 'block' : 'hidden'} lg:block`}>
+            <div className="p-4 lg:p-6">
+              <TemplateSelector
+                selectedTemplateId={templateId}
+                customization={customization}
+                onTemplateChange={handleTemplateChange}
+                onCustomizationChange={handleCustomizationChange}
+              />
+            </div>
+          </div>
+
+          {/* Mobile Preview */}
+          <div className="lg:hidden bg-gray-100 border-t border-gray-200 overflow-hidden flex flex-col">
+            <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">Preview</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPreviewScale(Math.max(0.3, previewScale - 0.1))}
+                  className="p-2 hover:bg-gray-100 rounded"
+                >
+                  <svg className="w-4 h-4" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path>
+                  </svg>
+                </button>
+                <span className="text-xs text-gray-600 min-w-[3rem] text-center">
+                  {Math.round(previewScale * 100)}%
+                </span>
+                <button
+                  onClick={() => setPreviewScale(Math.min(1.5, previewScale + 0.1))}
+                  className="p-2 hover:bg-gray-100 rounded"
+                >
+                  <svg className="w-4 h-4" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="overflow-auto p-4 max-h-96">
+              <div className="max-w-[8.5in] mx-auto shadow-2xl">
+                <TemplateRenderer
+                  templateId={templateId}
+                  content={content}
+                  customization={customization}
+                  scale={previewScale}
+                />
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   )
