@@ -14,11 +14,19 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
   const [languageInput, setLanguageInput] = useState({ name: '', proficiency: '' })
   const [certInput, setCertInput] = useState({ name: '', org: '', date: '' })
 
+  // Safe defaults for all skill arrays
+  const safeSkills = {
+    technical: skills?.technical || [],
+    soft: skills?.soft || [],
+    languages: skills?.languages || [],
+    certifications: skills?.certifications || []
+  }
+
   const handleAddTechnical = () => {
     if (technicalInput.trim()) {
       onChange({
-        ...skills,
-        technical: [...skills.technical, technicalInput.trim()]
+        ...safeSkills,
+        technical: [...safeSkills.technical, technicalInput.trim()]
       })
       setTechnicalInput('')
     }
@@ -26,16 +34,16 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
 
   const handleRemoveTechnical = (index: number) => {
     onChange({
-      ...skills,
-      technical: skills.technical.filter((_, i) => i !== index)
+      ...safeSkills,
+      technical: safeSkills.technical.filter((_, i) => i !== index)
     })
   }
 
   const handleAddSoft = () => {
     if (softInput.trim()) {
       onChange({
-        ...skills,
-        soft: [...skills.soft, softInput.trim()]
+        ...safeSkills,
+        soft: [...safeSkills.soft, softInput.trim()]
       })
       setSoftInput('')
     }
@@ -43,16 +51,16 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
 
   const handleRemoveSoft = (index: number) => {
     onChange({
-      ...skills,
-      soft: skills.soft.filter((_, i) => i !== index)
+      ...safeSkills,
+      soft: safeSkills.soft.filter((_, i) => i !== index)
     })
   }
 
   const handleAddLanguage = () => {
     if (languageInput.name.trim() && languageInput.proficiency.trim()) {
       onChange({
-        ...skills,
-        languages: [...skills.languages, { ...languageInput }]
+        ...safeSkills,
+        languages: [...safeSkills.languages, { ...languageInput }]
       })
       setLanguageInput({ name: '', proficiency: '' })
     }
@@ -60,16 +68,16 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
 
   const handleRemoveLanguage = (index: number) => {
     onChange({
-      ...skills,
-      languages: skills.languages.filter((_, i) => i !== index)
+      ...safeSkills,
+      languages: safeSkills.languages.filter((_, i) => i !== index)
     })
   }
 
   const handleAddCertification = () => {
     if (certInput.name.trim() && certInput.org.trim() && certInput.date.trim()) {
       onChange({
-        ...skills,
-        certifications: [...skills.certifications, { ...certInput }]
+        ...safeSkills,
+        certifications: [...safeSkills.certifications, { ...certInput }]
       })
       setCertInput({ name: '', org: '', date: '' })
     }
@@ -77,8 +85,8 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
 
   const handleRemoveCertification = (index: number) => {
     onChange({
-      ...skills,
-      certifications: skills.certifications.filter((_, i) => i !== index)
+      ...safeSkills,
+      certifications: safeSkills.certifications.filter((_, i) => i !== index)
     })
   }
 
@@ -105,7 +113,7 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
           </button>
         </div>
         <div className="flex flex-wrap gap-2">
-          {skills.technical.map((skill, index) => (
+          {safeSkills.technical.map((skill, index) => (
             <span
               key={index}
               className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
@@ -144,7 +152,7 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
           </button>
         </div>
         <div className="flex flex-wrap gap-2">
-          {skills.soft.map((skill, index) => (
+          {safeSkills.soft.map((skill, index) => (
             <span
               key={index}
               className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
@@ -194,7 +202,7 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
           </button>
         </div>
         <div className="space-y-2">
-          {skills.languages.map((lang, index) => (
+          {safeSkills.languages.map((lang, index) => (
             <div
               key={index}
               className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
@@ -250,7 +258,7 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
           </button>
         </div>
         <div className="space-y-2">
-          {skills.certifications.map((cert, index) => (
+          {safeSkills.certifications.map((cert, index) => (
             <div
               key={index}
               className="flex items-start justify-between p-3 bg-gray-50 rounded-lg"

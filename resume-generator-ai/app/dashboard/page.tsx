@@ -10,24 +10,27 @@ export default async function DashboardPage() {
     redirect('/auth/signin')
   }
 
-  // Get user profile
-  const { data: profile } = await supabase
-    .from('users_profile')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  // Fetch profile and resumes in parallel for better performance
+  const [profileResult, resumesResult] = await Promise.all([
+    supabase
+      .from('users_profile')
+      .select('*')
+      .eq('id', user.id)
+      .single(),
+    supabase
+      .from('resumes')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+  ])
+
+  const profile = profileResult.data
+  const resumes = resumesResult.data
 
   // Redirect to onboarding if not completed
   if (!profile?.onboarding_completed) {
     redirect('/onboarding')
   }
-
-  // Get user's resumes
-  const { data: resumes } = await supabase
-    .from('resumes')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
 
   return <DashboardContent user={user} profile={profile} resumes={resumes || []} />
 }

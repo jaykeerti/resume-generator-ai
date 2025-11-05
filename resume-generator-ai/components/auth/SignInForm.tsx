@@ -1,30 +1,30 @@
 'use client'
 
 import { signIn, signInWithGoogle } from '@/lib/auth/actions'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 
 export function SignInForm() {
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   async function handleSubmit(formData: FormData) {
-    setLoading(true)
     setError(null)
-    const result = await signIn(formData)
-    if (result?.error) {
-      setError(result.error)
-      setLoading(false)
-    }
+    startTransition(async () => {
+      const result = await signIn(formData)
+      if (result?.error) {
+        setError(result.error)
+      }
+    })
   }
 
   async function handleGoogleSignIn() {
-    setLoading(true)
     setError(null)
-    const result = await signInWithGoogle()
-    if (result?.error) {
-      setError(result.error)
-      setLoading(false)
-    }
+    startTransition(async () => {
+      const result = await signInWithGoogle()
+      if (result?.error) {
+        setError(result.error)
+      }
+    })
   }
 
   return (
@@ -73,10 +73,16 @@ export function SignInForm() {
 
         <button
           type="submit"
-          disabled={loading}
-          className="w-full rounded-lg bg-zinc-900 px-4 py-2 font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          disabled={isPending}
+          className="w-full rounded-lg bg-zinc-900 px-4 py-2 font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 flex items-center justify-center gap-2"
         >
-          {loading ? 'Signing in...' : 'Sign in'}
+          {isPending && (
+            <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          )}
+          {isPending ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
 
@@ -93,7 +99,7 @@ export function SignInForm() {
 
       <button
         onClick={handleGoogleSignIn}
-        disabled={loading}
+        disabled={isPending}
         className="flex w-full items-center justify-center gap-3 rounded-lg border border-zinc-300 px-4 py-2 font-medium transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24">
