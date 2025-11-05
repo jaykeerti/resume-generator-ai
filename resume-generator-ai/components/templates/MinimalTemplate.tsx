@@ -12,6 +12,22 @@ interface MinimalTemplateProps {
 export function MinimalTemplate({ content, customization }: MinimalTemplateProps) {
   const { personal_info, professional_summary, work_experience, education, skills, additional_sections } = content
 
+  // Ensure all arrays exist with safe defaults
+  const safeWorkExperience = work_experience || []
+  const safeEducation = education || []
+  const safeSkills = {
+    technical: skills?.technical || [],
+    soft: skills?.soft || [],
+    languages: skills?.languages || [],
+    certifications: skills?.certifications || []
+  }
+  const safeAdditional = {
+    projects: additional_sections?.projects || [],
+    volunteer: additional_sections?.volunteer || [],
+    awards: additional_sections?.awards || [],
+    publications: additional_sections?.publications || []
+  }
+
   return (
     <TemplateWrapper customization={customization} className="max-w-[8.5in] mx-auto p-16">
       {/* Header - Minimal and Clean */}
@@ -50,13 +66,13 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
       )}
 
       {/* Work Experience */}
-      {work_experience.length > 0 && (
+      {safeWorkExperience.length > 0 && (
         <section className="mb-12">
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-6 text-gray-500">
             Experience
           </h2>
           <div className="space-y-8">
-            {work_experience.map((exp, index) => (
+            {safeWorkExperience.map((exp, index) => (
               <div key={index}>
                 <div className="mb-2">
                   <h3 className="font-semibold text-base mb-1" style={{ color: 'var(--accent-color)' }}>
@@ -86,13 +102,13 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
       )}
 
       {/* Education */}
-      {education.length > 0 && (
+      {safeEducation.length > 0 && (
         <section className="mb-12">
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-6 text-gray-500">
             Education
           </h2>
           <div className="space-y-6">
-            {education.map((edu, index) => (
+            {safeEducation.map((edu, index) => (
               <div key={index}>
                 <div className="flex justify-between items-baseline mb-1">
                   <h3 className="font-semibold text-base" style={{ color: 'var(--accent-color)' }}>
@@ -114,29 +130,29 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
       )}
 
       {/* Skills */}
-      {(skills.technical.length > 0 || skills.soft.length > 0 || skills.languages.length > 0) && (
+      {(safeSkills.technical.length > 0 || safeSkills.soft.length > 0 || safeSkills.languages.length > 0) && (
         <section className="mb-12">
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-6 text-gray-500">
             Skills
           </h2>
           <div className="space-y-4">
-            {skills.technical.length > 0 && (
+            {safeSkills.technical.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Technical</p>
-                <p className="text-sm text-gray-800 leading-relaxed">{skills.technical.join(' • ')}</p>
+                <p className="text-sm text-gray-800 leading-relaxed">{safeSkills.technical.join(' • ')}</p>
               </div>
             )}
-            {skills.soft.length > 0 && (
+            {safeSkills.soft.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Soft Skills</p>
-                <p className="text-sm text-gray-800 leading-relaxed">{skills.soft.join(' • ')}</p>
+                <p className="text-sm text-gray-800 leading-relaxed">{safeSkills.soft.join(' • ')}</p>
               </div>
             )}
-            {skills.languages.length > 0 && (
+            {safeSkills.languages.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Languages</p>
                 <p className="text-sm text-gray-800 leading-relaxed">
-                  {skills.languages.map(lang => `${lang.name} (${lang.proficiency})`).join(' • ')}
+                  {safeSkills.languages.map(lang => `${lang.name} (${lang.proficiency})`).join(' • ')}
                 </p>
               </div>
             )}
@@ -145,13 +161,13 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
       )}
 
       {/* Certifications */}
-      {skills.certifications.length > 0 && (
+      {safeSkills.certifications.length > 0 && (
         <section className="mb-12">
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-6 text-gray-500">
             Certifications
           </h2>
           <div className="space-y-3">
-            {skills.certifications.map((cert, i) => (
+            {safeSkills.certifications.map((cert, i) => (
               <div key={i}>
                 <p className="text-sm font-semibold text-gray-800">{cert.name}</p>
                 <p className="text-xs text-gray-600">{cert.org} • {cert.date}</p>
@@ -162,13 +178,13 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
       )}
 
       {/* Projects */}
-      {additional_sections.projects.length > 0 && (
+      {safeAdditional.projects.length > 0 && (
         <section className="mb-12">
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-6 text-gray-500">
             Projects
           </h2>
           <div className="space-y-6">
-            {additional_sections.projects.map((project, index) => (
+            {safeAdditional.projects.map((project, index) => (
               <div key={index}>
                 <div className="flex items-baseline gap-3 mb-2">
                   <h3 className="font-semibold text-sm" style={{ color: 'var(--accent-color)' }}>
@@ -193,13 +209,13 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
       )}
 
       {/* Awards */}
-      {additional_sections.awards.length > 0 && (
+      {safeAdditional.awards.length > 0 && (
         <section className="mb-12">
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-6 text-gray-500">
             Awards & Achievements
           </h2>
           <ul className="space-y-2">
-            {additional_sections.awards.map((award, i) => (
+            {safeAdditional.awards.map((award, i) => (
               <li key={i} className="text-sm text-gray-700 pl-4 border-l-2 border-gray-200">
                 {award}
               </li>
@@ -209,13 +225,13 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
       )}
 
       {/* Volunteer Work */}
-      {additional_sections.volunteer.length > 0 && (
+      {safeAdditional.volunteer.length > 0 && (
         <section className="mb-12">
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-6 text-gray-500">
             Volunteer Work
           </h2>
           <ul className="space-y-2">
-            {additional_sections.volunteer.map((vol, i) => (
+            {safeAdditional.volunteer.map((vol, i) => (
               <li key={i} className="text-sm text-gray-700 pl-4 border-l-2 border-gray-200">
                 {vol}
               </li>
@@ -225,13 +241,13 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
       )}
 
       {/* Publications */}
-      {additional_sections.publications.length > 0 && (
+      {safeAdditional.publications.length > 0 && (
         <section>
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-6 text-gray-500">
             Publications
           </h2>
           <ul className="space-y-2">
-            {additional_sections.publications.map((pub, i) => (
+            {safeAdditional.publications.map((pub, i) => (
               <li key={i} className="text-sm text-gray-700 pl-4 border-l-2 border-gray-200">
                 {pub}
               </li>

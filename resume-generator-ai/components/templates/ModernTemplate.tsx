@@ -12,6 +12,22 @@ interface ModernTemplateProps {
 export function ModernTemplate({ content, customization }: ModernTemplateProps) {
   const { personal_info, professional_summary, work_experience, education, skills, additional_sections } = content
 
+  // Ensure all arrays exist with safe defaults
+  const safeWorkExperience = work_experience || []
+  const safeEducation = education || []
+  const safeSkills = {
+    technical: skills?.technical || [],
+    soft: skills?.soft || [],
+    languages: skills?.languages || [],
+    certifications: skills?.certifications || []
+  }
+  const safeAdditional = {
+    projects: additional_sections?.projects || [],
+    volunteer: additional_sections?.volunteer || [],
+    awards: additional_sections?.awards || [],
+    publications: additional_sections?.publications || []
+  }
+
   return (
     <TemplateWrapper customization={customization} className="max-w-[8.5in] mx-auto">
       <div className="grid grid-cols-[35%_65%] min-h-screen">
@@ -58,16 +74,16 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
           </section>
 
           {/* Skills */}
-          {(skills.technical.length > 0 || skills.soft.length > 0) && (
+          {(safeSkills.technical.length > 0 || safeSkills.soft.length > 0) && (
             <section className="mb-8">
               <h2 className="text-base font-bold uppercase mb-3 pb-1 border-b border-white/30">
                 Skills
               </h2>
-              {skills.technical.length > 0 && (
+              {safeSkills.technical.length > 0 && (
                 <div className="mb-4">
                   <p className="font-semibold text-sm mb-2">Technical</p>
                   <div className="flex flex-wrap gap-1">
-                    {skills.technical.map((skill, i) => (
+                    {safeSkills.technical.map((skill, i) => (
                       <span key={i} className="text-xs px-2 py-1 bg-white/20 rounded">
                         {skill}
                       </span>
@@ -75,11 +91,11 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
                   </div>
                 </div>
               )}
-              {skills.soft.length > 0 && (
+              {safeSkills.soft.length > 0 && (
                 <div>
                   <p className="font-semibold text-sm mb-2">Soft Skills</p>
                   <div className="flex flex-wrap gap-1">
-                    {skills.soft.map((skill, i) => (
+                    {safeSkills.soft.map((skill, i) => (
                       <span key={i} className="text-xs px-2 py-1 bg-white/20 rounded">
                         {skill}
                       </span>
@@ -91,13 +107,13 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
           )}
 
           {/* Languages */}
-          {skills.languages.length > 0 && (
+          {safeSkills.languages.length > 0 && (
             <section className="mb-8">
               <h2 className="text-base font-bold uppercase mb-3 pb-1 border-b border-white/30">
                 Languages
               </h2>
               <ul className="space-y-2 text-sm">
-                {skills.languages.map((lang, i) => (
+                {safeSkills.languages.map((lang, i) => (
                   <li key={i}>
                     {lang.name} <span className="text-xs opacity-80">({lang.proficiency})</span>
                   </li>
@@ -107,13 +123,13 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
           )}
 
           {/* Certifications */}
-          {skills.certifications.length > 0 && (
+          {safeSkills.certifications.length > 0 && (
             <section>
               <h2 className="text-base font-bold uppercase mb-3 pb-1 border-b border-white/30">
                 Certifications
               </h2>
               <ul className="space-y-2 text-xs">
-                {skills.certifications.map((cert, i) => (
+                {safeSkills.certifications.map((cert, i) => (
                   <li key={i}>
                     <p className="font-semibold">{cert.name}</p>
                     <p className="opacity-80">{cert.org} • {cert.date}</p>
@@ -137,13 +153,13 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
           )}
 
           {/* Work Experience */}
-          {work_experience.length > 0 && (
+          {safeWorkExperience.length > 0 && (
             <section className="mb-8">
               <h2 className="text-lg font-bold uppercase mb-3 pb-1 border-b-2 border-gray-300">
                 Work Experience
               </h2>
               <div className="space-y-5">
-                {work_experience.map((exp, index) => (
+                {safeWorkExperience.map((exp, index) => (
                   <div key={index}>
                     <div className="flex justify-between items-baseline mb-1">
                       <h3 className="font-bold text-base text-gray-900">{exp.job_title}</h3>
@@ -171,13 +187,13 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
           )}
 
           {/* Education */}
-          {education.length > 0 && (
+          {safeEducation.length > 0 && (
             <section className="mb-8">
               <h2 className="text-lg font-bold uppercase mb-3 pb-1 border-b-2 border-gray-300">
                 Education
               </h2>
               <div className="space-y-4">
-                {education.map((edu, index) => (
+                {safeEducation.map((edu, index) => (
                   <div key={index}>
                     <div className="flex justify-between items-baseline mb-1">
                       <h3 className="font-bold text-base text-gray-900">{edu.institution}</h3>
@@ -197,13 +213,13 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
           )}
 
           {/* Projects */}
-          {additional_sections.projects.length > 0 && (
+          {safeAdditional.projects.length > 0 && (
             <section className="mb-8">
               <h2 className="text-lg font-bold uppercase mb-3 pb-1 border-b-2 border-gray-300">
                 Projects
               </h2>
               <div className="space-y-4">
-                {additional_sections.projects.map((project, index) => (
+                {safeAdditional.projects.map((project, index) => (
                   <div key={index}>
                     <div className="flex items-baseline gap-2 mb-1">
                       <h3 className="font-bold text-sm text-gray-900">{project.title}</h3>
@@ -227,26 +243,26 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
           )}
 
           {/* Additional Sections */}
-          {additional_sections.awards.length > 0 && (
+          {safeAdditional.awards.length > 0 && (
             <section className="mb-8">
               <h2 className="text-lg font-bold uppercase mb-3 pb-1 border-b-2 border-gray-300">
                 Awards
               </h2>
               <ul className="list-disc list-outside ml-5 space-y-1">
-                {additional_sections.awards.map((award, i) => (
+                {safeAdditional.awards.map((award, i) => (
                   <li key={i} className="text-sm text-gray-700">{award}</li>
                 ))}
               </ul>
             </section>
           )}
 
-          {additional_sections.volunteer.length > 0 && (
+          {safeAdditional.volunteer.length > 0 && (
             <section>
               <h2 className="text-lg font-bold uppercase mb-3 pb-1 border-b-2 border-gray-300">
                 Volunteer Work
               </h2>
               <ul className="list-disc list-outside ml-5 space-y-1">
-                {additional_sections.volunteer.map((vol, i) => (
+                {safeAdditional.volunteer.map((vol, i) => (
                   <li key={i} className="text-sm text-gray-700">{vol}</li>
                 ))}
               </ul>

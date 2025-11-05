@@ -13,6 +13,22 @@ interface ClassicTemplateProps {
 export function ClassicTemplate({ content, customization }: ClassicTemplateProps) {
   const { personal_info, professional_summary, work_experience, education, skills, additional_sections } = content
 
+  // Ensure all arrays exist with safe defaults
+  const safeWorkExperience = work_experience || []
+  const safeEducation = education || []
+  const safeSkills = {
+    technical: skills?.technical || [],
+    soft: skills?.soft || [],
+    languages: skills?.languages || [],
+    certifications: skills?.certifications || []
+  }
+  const safeAdditional = {
+    projects: additional_sections?.projects || [],
+    volunteer: additional_sections?.volunteer || [],
+    awards: additional_sections?.awards || [],
+    publications: additional_sections?.publications || []
+  }
+
   return (
     <TemplateWrapper customization={customization} className="max-w-[8.5in] mx-auto p-12">
       {/* Header */}
@@ -53,9 +69,9 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
       )}
 
       {/* Work Experience */}
-      {work_experience.length > 0 && (
+      {safeWorkExperience.length > 0 && (
         <TemplateSection title="Work Experience">
-          {work_experience.map((exp, index) => (
+          {safeWorkExperience.map((exp, index) => (
             <div key={index} className="mb-4 last:mb-0">
               <div className="flex justify-between items-baseline mb-1">
                 <h3 className="font-bold text-base">{exp.job_title}</h3>
@@ -80,9 +96,9 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
       )}
 
       {/* Education */}
-      {education.length > 0 && (
+      {safeEducation.length > 0 && (
         <TemplateSection title="Education">
-          {education.map((edu, index) => (
+          {safeEducation.map((edu, index) => (
             <div key={index} className="mb-3 last:mb-0">
               <div className="flex justify-between items-baseline mb-1">
                 <h3 className="font-bold text-base">{edu.institution}</h3>
@@ -101,33 +117,33 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
       )}
 
       {/* Skills */}
-      {(skills.technical.length > 0 || skills.soft.length > 0 || skills.languages.length > 0) && (
+      {(safeSkills.technical.length > 0 || safeSkills.soft.length > 0 || safeSkills.languages.length > 0) && (
         <TemplateSection title="Skills">
-          {skills.technical.length > 0 && (
+          {safeSkills.technical.length > 0 && (
             <div className="mb-2">
               <span className="font-semibold text-sm">Technical: </span>
-              <span className="text-sm">{skills.technical.join(', ')}</span>
+              <span className="text-sm">{safeSkills.technical.join(', ')}</span>
             </div>
           )}
-          {skills.soft.length > 0 && (
+          {safeSkills.soft.length > 0 && (
             <div className="mb-2">
               <span className="font-semibold text-sm">Soft Skills: </span>
-              <span className="text-sm">{skills.soft.join(', ')}</span>
+              <span className="text-sm">{safeSkills.soft.join(', ')}</span>
             </div>
           )}
-          {skills.languages.length > 0 && (
+          {safeSkills.languages.length > 0 && (
             <div className="mb-2">
               <span className="font-semibold text-sm">Languages: </span>
               <span className="text-sm">
-                {skills.languages.map(lang => `${lang.name} (${lang.proficiency})`).join(', ')}
+                {safeSkills.languages.map(lang => `${lang.name} (${lang.proficiency})`).join(', ')}
               </span>
             </div>
           )}
-          {skills.certifications.length > 0 && (
+          {safeSkills.certifications.length > 0 && (
             <div>
               <p className="font-semibold text-sm mb-1">Certifications:</p>
               <ul className="list-disc list-outside ml-5 space-y-1">
-                {skills.certifications.map((cert, i) => (
+                {safeSkills.certifications.map((cert, i) => (
                   <li key={i} className="text-sm">
                     {cert.name} - {cert.org} ({cert.date})
                   </li>
@@ -139,9 +155,9 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
       )}
 
       {/* Projects */}
-      {additional_sections.projects.length > 0 && (
+      {safeAdditional.projects.length > 0 && (
         <TemplateSection title="Projects">
-          {additional_sections.projects.map((project, index) => (
+          {safeAdditional.projects.map((project, index) => (
             <div key={index} className="mb-3 last:mb-0">
               <div className="flex items-baseline gap-2 mb-1">
                 <h3 className="font-bold text-sm">{project.title}</h3>
@@ -164,30 +180,30 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
       )}
 
       {/* Additional Sections */}
-      {additional_sections.awards.length > 0 && (
+      {safeAdditional.awards.length > 0 && (
         <TemplateSection title="Awards & Achievements">
           <ul className="list-disc list-outside ml-5 space-y-1">
-            {additional_sections.awards.map((award, i) => (
+            {safeAdditional.awards.map((award, i) => (
               <li key={i} className="text-sm">{award}</li>
             ))}
           </ul>
         </TemplateSection>
       )}
 
-      {additional_sections.volunteer.length > 0 && (
+      {safeAdditional.volunteer.length > 0 && (
         <TemplateSection title="Volunteer Work">
           <ul className="list-disc list-outside ml-5 space-y-1">
-            {additional_sections.volunteer.map((vol, i) => (
+            {safeAdditional.volunteer.map((vol, i) => (
               <li key={i} className="text-sm">{vol}</li>
             ))}
           </ul>
         </TemplateSection>
       )}
 
-      {additional_sections.publications.length > 0 && (
+      {safeAdditional.publications.length > 0 && (
         <TemplateSection title="Publications">
           <ul className="list-disc list-outside ml-5 space-y-1">
-            {additional_sections.publications.map((pub, i) => (
+            {safeAdditional.publications.map((pub, i) => (
               <li key={i} className="text-sm">{pub}</li>
             ))}
           </ul>
