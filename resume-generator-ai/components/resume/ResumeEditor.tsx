@@ -23,7 +23,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved')
   const [previewScale, setPreviewScale] = useState(0.7)
 
-  const saveTimeoutRef = useRef<NodeJS.Timeout>()
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Auto-save debounced
   useEffect(() => {
