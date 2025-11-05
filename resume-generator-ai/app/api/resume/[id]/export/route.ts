@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateResumePDF } from '@/lib/pdf/generator'
 
+// Disable caching and set max duration
+export const dynamic = 'force-dynamic'
+export const maxDuration = 60
+
 type RouteParams = {
   params: Promise<{ id: string }>
 }
@@ -70,12 +74,15 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // Return PDF
-    return new NextResponse(pdfBuffer as unknown as BodyInit, {
+    const uint8Array = new Uint8Array(pdfBuffer)
+
+    return new NextResponse(uint8Array, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${resume.title.replace(/[^a-z0-9]/gi, '_')}.pdf"`,
         'Content-Length': pdfBuffer.length.toString(),
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     })
   } catch (error) {
