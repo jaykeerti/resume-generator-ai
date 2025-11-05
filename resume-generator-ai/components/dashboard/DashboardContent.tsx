@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { UserProfileDropdown } from '@/components/ui/UserProfileDropdown'
 
@@ -22,9 +23,79 @@ interface Props {
   resumes: Resume[]
 }
 
-export function DashboardContent({ user, profile, resumes }: Props) {
+export function DashboardContent({ user, profile, resumes: initialResumes }: Props) {
+  const [resumes, setResumes] = useState(initialResumes)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
+
   const remainingGenerations =
     profile.subscription_tier === 'pro' ? null : Math.max(0, 5 - profile.generation_count)
+
+  const handleDownload = async (resumeId: string, title: string) => {
+    setDownloadingId(resumeId)
+
+    try {
+      const response = await fetch(`/api/resume/${resumeId}/export`, {
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+
+        if (error.limit_reached) {
+          alert('You have reached your limit of 5 resume exports. Upgrade to Pro for unlimited exports.')
+        } else {
+          throw new Error(error.message || 'Failed to generate PDF')
+        }
+        return
+      }
+
+      // Download the PDF
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${title.replace(/[^a-z0-9]/gi, '_')}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+
+      // Refresh page to update generation count
+      window.location.reload()
+    } catch (error) {
+      console.error('Error downloading resume:', error)
+      alert('Failed to generate PDF. Please try again.')
+    } finally {
+      setDownloadingId(null)
+    }
+  }
+
+  const handleDelete = async (resumeId: string, title: string) => {
+    if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
+      return
+    }
+
+    setDeletingId(resumeId)
+
+    try {
+      const response = await fetch(`/api/resume/${resumeId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete resume')
+      }
+
+      // Remove from local state
+      setResumes(resumes.filter(r => r.id !== resumeId))
+    } catch (error) {
+      console.error('Error deleting resume:', error)
+      alert('Failed to delete resume. Please try again.')
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -129,22 +200,48 @@ export function DashboardContent({ user, profile, resumes }: Props) {
                   <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                     Created {new Date(resume.created_at).toLocaleDateString()}
                   </p>
-                  <div className="mt-4 flex gap-2">
-                    <a
-                      href={`/resume/editor/${resume.id}`}
-                      className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-center text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-                    >
-                      Edit
-                    </a>
+                  <div className="mt-4 flex flex-col gap-2">
+                    <div className="flex gap-2">
+                      <a
+                        href={`/resume/editor/${resume.id}`}
+                        className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-center text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                      >
+                        Edit
+                      </a>
+                      <button
+                        onClick={() => handleDownload(resume.id, resume.title)}
+                        disabled={downloadingId === resume.id}
+                        className="flex-1 rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
+                      >
+                        {downloadingId === resume.id ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Generating...
+                          </span>
+                        ) : (
+                          'Download PDF'
+                        )}
+                      </button>
+                    </div>
                     <button
-                      onClick={() => {
-                        if (confirm('Export to PDF functionality coming soon!')) {
-                          // PDF export will be implemented in Phase 6
-                        }
-                      }}
-                      className="flex-1 rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900"
+                      onClick={() => handleDelete(resume.id, resume.title)}
+                      disabled={deletingId === resume.id}
+                      className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
                     >
-                      Download
+                      {deletingId === resume.id ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Deleting...
+                        </span>
+                      ) : (
+                        '🗑️ Delete'
+                      )}
                     </button>
                   </div>
                 </div>

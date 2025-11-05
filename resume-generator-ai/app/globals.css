@@ -27,6 +27,34 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Fix input text color - ensure text is always dark and visible */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="number"],
+textarea,
+select {
+  color: #111827; /* gray-900 */
+}
+
+/* Dark mode input text */
+@media (prefers-color-scheme: dark) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="date"],
+  input[type="number"],
+  textarea,
+  select {
+    color: #f9fafb; /* gray-50 */
+  }
+}
+
 /* Resume Template Fonts */
 .font-roboto {
   font-family: 'Roboto', system-ui, -apple-system, sans-serif;
