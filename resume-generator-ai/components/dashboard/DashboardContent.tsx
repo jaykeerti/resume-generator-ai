@@ -147,12 +147,19 @@ export function DashboardContent({ user, profile, resumes }: Props) {
                   </p>
                   <div className="mt-4 flex gap-2">
                     <a
-                      href={`/resume/${resume.id}`}
+                      href={`/resume/editor/${resume.id}`}
                       className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-center text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
                     >
                       Edit
                     </a>
-                    <button className="flex-1 rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900">
+                    <button
+                      onClick={() => {
+                        if (confirm('Export to PDF functionality coming soon!')) {
+                          // PDF export will be implemented in Phase 6
+                        }
+                      }}
+                      className="flex-1 rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900"
+                    >
                       Download
                     </button>
                   </div>
