@@ -28,9 +28,10 @@ export function DashboardContent({ user, profile, resumes: initialResumes }: Pro
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [showSuccessToast, setShowSuccessToast] = useState(false)
+  const [generationCount, setGenerationCount] = useState(profile.generation_count)
 
   const remainingGenerations =
-    profile.subscription_tier === 'pro' ? null : Math.max(0, 5 - profile.generation_count)
+    profile.subscription_tier === 'pro' ? null : Math.max(0, 5 - generationCount)
 
   const handleDownload = async (resumeId: string, title: string) => {
     setDownloadingId(resumeId)
@@ -62,13 +63,18 @@ export function DashboardContent({ user, profile, resumes: initialResumes }: Pro
       document.body.removeChild(a)
       window.URL.revokeObjectURL(url)
 
+      // Update generation count locally (only for free tier)
+      if (profile.subscription_tier === 'free') {
+        setGenerationCount(prev => prev + 1)
+      }
+
       // Show success notification
       setShowSuccessToast(true)
 
-      // Wait 2 seconds then refresh to update generation count
+      // Auto-hide toast after 3 seconds
       setTimeout(() => {
-        window.location.reload()
-      }, 2000)
+        setShowSuccessToast(false)
+      }, 3000)
     } catch (error) {
       console.error('Error downloading resume:', error)
       alert('Failed to generate PDF. Please try again.')
