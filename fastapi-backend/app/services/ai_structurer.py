@@ -1,12 +1,12 @@
 """
 AI Structurer Service
-Uses Claude API to structure parsed resume text into structured data
+Uses OpenAI API to structure parsed resume text into structured data
 """
 
 import json
 import logging
 from typing import Optional, Dict, Any
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 
 from app.models.schemas import StructuredResumeData
 
@@ -14,24 +14,24 @@ logger = logging.getLogger(__name__)
 
 
 class AIStructurer:
-    """Service for structuring resume text using Claude AI"""
+    """Service for structuring resume text using OpenAI (GPT-4o mini)"""
 
     def __init__(self, api_key: str):
         """
-        Initialize AI structurer with Anthropic API key
+        Initialize AI structurer with OpenAI API key
 
         Args:
-            api_key: Anthropic API key
+            api_key: OpenAI API key
         """
         if not api_key:
-            logger.warning("Anthropic API key not provided. AI structuring will not be available.")
+            logger.warning("OpenAI API key not provided. AI structuring will not be available.")
             self.client = None
         else:
-            self.client = AsyncAnthropic(api_key=api_key)
+            self.client = AsyncOpenAI(api_key=api_key)
 
     async def structure_resume(self, raw_text: str) -> Optional[StructuredResumeData]:
         """
-        Structure raw resume text into organized sections using Claude AI
+        Structure raw resume text into organized sections using OpenAI GPT-4o mini
 
         Args:
             raw_text: Raw extracted text from resume
@@ -46,40 +46,46 @@ class AIStructurer:
         try:
             prompt = self._build_structuring_prompt(raw_text)
 
-            response = await self.client.messages.create(
-                model="claude-3-5-sonnet-20241022",
-                max_tokens=4096,
+            response = await self.client.chat.completions.create(
+                model="gpt-4o-mini",
                 messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a resume parsing expert. Extract and structure resume text into JSON format. Return ONLY valid JSON, no markdown, no explanations."
+                    },
                     {
                         "role": "user",
                         "content": prompt
                     }
-                ]
+                ],
+                temperature=0.1,
+                max_tokens=4096,
+                response_format={"type": "json_object"}
             )
 
             # Extract JSON from response
-            response_text = response.content[0].text
+            response_text = response.choices[0].message.content
 
             # Parse JSON response
             structured_json = self._extract_json(response_text)
 
             if not structured_json:
-                logger.error("Failed to extract valid JSON from Claude response")
+                logger.error("Failed to extract valid JSON from OpenAI response")
                 return None
 
             # Convert to Pydantic model
             structured_data = StructuredResumeData(**structured_json)
 
-            logger.info("Successfully structured resume with AI")
+            logger.info("Successfully structured resume with OpenAI")
             return structured_data
 
         except Exception as e:
-            logger.error(f"Error structuring resume with AI: {str(e)}", exc_info=True)
+            logger.error(f"Error structuring resume with OpenAI: {str(e)}", exc_info=True)
             return None
 
     def _build_structuring_prompt(self, raw_text: str) -> str:
         """
-        Build the prompt for Claude to structure the resume
+        Build the prompt for OpenAI to structure the resume
 
         Args:
             raw_text: Raw resume text
@@ -160,7 +166,7 @@ Rules:
 
     def _extract_json(self, text: str) -> Optional[Dict[str, Any]]:
         """
-        Extract and parse JSON from Claude's response
+        Extract and parse JSON from OpenAI's response
 
         Args:
             text: Response text that may contain JSON

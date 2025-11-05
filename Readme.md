@@ -234,7 +234,7 @@ Each saved resume shows:
 - **Backend:** Next.js API routes + FastAPI (Python) for document parsing
 - **Database:** Supabase (PostgreSQL)
 - **Auth:** Supabase Auth
-- **AI:** Claude API (Anthropic) - used in both Next.js and FastAPI
+- **AI:** ✅ OpenAI API (GPT-4o mini) - 20x cheaper than Claude, used for resume parsing and job tailoring
 - **Document Parsing:** PyPDF (PDF), python-docx (DOCX), TXT support
 - **Payments:** Stripe
 - **Hosting:** Vercel (Next.js) + FastAPI deployment (Railway/Render/etc)

@@ -1,6 +1,6 @@
 """
 FastAPI Backend for Resume Document Parsing
-Handles PDF, DOCX, and TXT resume parsing with Claude AI structuring
+Handles PDF, DOCX, and TXT resume parsing with OpenAI (GPT-4o mini) structuring
 """
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
@@ -36,7 +36,7 @@ app.add_middleware(
 
 # Initialize services
 document_parser = DocumentParser()
-ai_structurer = AIStructurer(api_key=os.getenv("ANTHROPIC_API_KEY"))
+ai_structurer = AIStructurer(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 @app.get("/", response_model=HealthResponse)
@@ -59,7 +59,7 @@ async def parse_resume(
 
     Args:
         file: Uploaded resume file
-        structure_with_ai: Whether to use Claude AI to structure the parsed content
+        structure_with_ai: Whether to use OpenAI to structure the parsed content
 
     Returns:
         ParsedResumeResponse with structured resume data
@@ -101,7 +101,7 @@ async def parse_resume(
         # Structure with AI if requested
         structured_data = None
         if structure_with_ai:
-            logger.info("Structuring content with Claude AI")
+            logger.info("Structuring content with OpenAI (GPT-4o mini)")
             structured_data = await ai_structurer.structure_resume(raw_text)
 
         return {
@@ -125,13 +125,13 @@ async def parse_resume(
 @app.get("/health")
 async def health_check():
     """Detailed health check with service status"""
-    anthropic_configured = bool(os.getenv("ANTHROPIC_API_KEY"))
+    openai_configured = bool(os.getenv("OPENAI_API_KEY"))
 
     return {
         "status": "healthy",
         "services": {
             "document_parser": "ready",
-            "ai_structurer": "ready" if anthropic_configured else "not_configured"
+            "ai_structurer": "ready" if openai_configured else "not_configured"
         }
     }
 

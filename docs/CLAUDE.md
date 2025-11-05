@@ -15,7 +15,7 @@ AI-powered resume generator that tailors resumes based on job descriptions using
 - **Integrations:**
   - Database: Supabase (PostgreSQL)
   - Auth: Supabase Auth (email/password + Google OAuth)
-  - AI: Claude API (Anthropic) - used in both Next.js and FastAPI
+  - AI: OpenAI API (GPT-4o mini) - used for resume parsing and job tailoring ✅ Migrated
   - Document Parsing: PyPDF (PDF), python-docx (DOCX)
   - PDF Generation: Puppeteer + @sparticuz/chromium (serverless) ✅ Implemented
   - Payments: Stripe (planned)
@@ -103,7 +103,7 @@ vercel env rm VARIABLE_NAME production
 
 **FastAPI Backend Deployment:**
 
-The FastAPI backend needs to be deployed separately. It returns dummy data when `ANTHROPIC_API_KEY` is not configured, allowing frontend testing without AI setup.
+The FastAPI backend needs to be deployed separately. It returns dummy data when `OPENAI_API_KEY` is not configured, allowing frontend testing without AI setup.
 
 **Option 1: Railway**
 ```bash
@@ -113,7 +113,7 @@ railway init
 railway up
 
 # Add environment variables in Railway dashboard:
-# - ANTHROPIC_API_KEY (optional - uses dummy data if not set)
+# - OPENAI_API_KEY (optional - uses dummy data if not set)
 # - PORT (Railway sets automatically)
 ```
 
@@ -123,7 +123,7 @@ railway up
 # Set build command: pip install -r requirements.txt
 # Set start command: uvicorn main:app --host 0.0.0.0 --port $PORT
 # Add environment variables:
-# - ANTHROPIC_API_KEY (optional - uses dummy data if not set)
+# - OPENAI_API_KEY (optional - uses dummy data if not set)
 ```
 
 **Option 3: DigitalOcean App Platform**
@@ -145,9 +145,9 @@ railway up
 3. Redeploy Next.js app: `vercel --prod`
 
 **FastAPI Dummy Data Mode:**
-- Backend returns sample resume data when `ANTHROPIC_API_KEY` is not set
+- Backend returns sample resume data when `OPENAI_API_KEY` is not set
 - This allows full frontend testing without AI API costs
-- To enable real AI parsing, add `ANTHROPIC_API_KEY` to your backend deployment
+- To enable real AI parsing, add `OPENAI_API_KEY` to your backend deployment
 
 ### Deployment Troubleshooting
 
@@ -171,6 +171,7 @@ railway up
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   - `SUPABASE_SERVICE_ROLE_KEY`
+  - `OPENAI_API_KEY` (for Phase 3 - AI job tailoring)
 
 **Vercel Auto-Deploy Not Working**
 - Check that GitHub integration is connected
@@ -431,6 +432,9 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
+# OpenAI (for Phase 3 - job description parsing & resume tailoring)
+OPENAI_API_KEY=your_openai_api_key
+
 # FastAPI Backend URL
 FASTAPI_URL=http://localhost:8000  # Development
 # FASTAPI_URL=https://your-fastapi-deployment.com  # Production
@@ -447,8 +451,8 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 PORT=8000
 NEXTJS_URL=http://localhost:3000
 
-# Anthropic AI
-ANTHROPIC_API_KEY=your_anthropic_api_key
+# OpenAI (GPT-4o mini for resume parsing)
+OPENAI_API_KEY=your_openai_api_key
 
 # Logging
 LOG_LEVEL=INFO
