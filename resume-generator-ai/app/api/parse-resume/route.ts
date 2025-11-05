@@ -9,10 +9,15 @@ const FASTAPI_URL = process.env.FASTAPI_URL || 'http://localhost:8000';
 
 export async function POST(request: NextRequest) {
   try {
+    // Log FASTAPI_URL for debugging
+    console.log('[parse-resume] FASTAPI_URL:', FASTAPI_URL);
+
     // Get the form data from the request
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const structureWithAI = formData.get('structure_with_ai') !== 'false'; // Default true
+
+    console.log('[parse-resume] Received file:', file?.name, 'size:', file?.size, 'type:', file?.type);
 
     if (!file) {
       return NextResponse.json(
@@ -48,32 +53,41 @@ export async function POST(request: NextRequest) {
     fastapiFormData.append('file', file);
     fastapiFormData.append('structure_with_ai', structureWithAI.toString());
 
+    const backendUrl = `${FASTAPI_URL}/api/parse-resume`;
+    console.log('[parse-resume] Forwarding to FastAPI:', backendUrl);
+
     // Forward request to FastAPI backend
-    const fastapiResponse = await fetch(`${FASTAPI_URL}/api/parse-resume`, {
+    const fastapiResponse = await fetch(backendUrl, {
       method: 'POST',
       body: fastapiFormData,
     });
 
+    console.log('[parse-resume] FastAPI response status:', fastapiResponse.status);
+
     if (!fastapiResponse.ok) {
       const errorData = await fastapiResponse.json().catch(() => ({}));
+      console.error('[parse-resume] FastAPI error:', errorData);
       return NextResponse.json(
         {
           error: errorData.detail || 'Failed to parse resume',
-          status: fastapiResponse.status
+          status: fastapiResponse.status,
+          backendUrl: FASTAPI_URL // Include for debugging
         },
         { status: fastapiResponse.status }
       );
     }
 
     const data = await fastapiResponse.json();
+    console.log('[parse-resume] Successfully parsed resume');
     return NextResponse.json(data);
 
   } catch (error) {
-    console.error('Error in parse-resume API route:', error);
+    console.error('[parse-resume] Error in API route:', error);
     return NextResponse.json(
       {
         error: 'Internal server error while processing resume',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
+        fastapi_url: FASTAPI_URL // Include for debugging
       },
       { status: 500 }
     );
