@@ -77,51 +77,67 @@ export default function ImportPage() {
 
       // Save work experience
       if (parsedData.work_experience && parsedData.work_experience.length > 0) {
-        for (const exp of parsedData.work_experience) {
-          await fetch('/api/profile/experience', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+        const workExpResponse = await fetch('/api/profile/experience', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(
+            parsedData.work_experience.map(exp => ({
               company: exp.company,
-              position: exp.position,
-              location: exp.location,
+              job_title: exp.position,
+              location: exp.location || '',
               start_date: exp.start_date,
               end_date: exp.end_date,
-              description: exp.responsibilities.join('\n'),
-            }),
-          })
+              is_current: exp.end_date?.toLowerCase() === 'present',
+              responsibilities: exp.responsibilities || [],
+            }))
+          ),
+        })
+
+        if (!workExpResponse.ok) {
+          throw new Error('Failed to save work experience')
         }
       }
 
       // Save education
       if (parsedData.education && parsedData.education.length > 0) {
-        for (const edu of parsedData.education) {
-          await fetch('/api/profile/education', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+        const educationResponse = await fetch('/api/profile/education', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(
+            parsedData.education.map(edu => ({
               institution: edu.institution,
-              degree: edu.degree,
-              field_of_study: edu.field_of_study,
-              location: edu.location,
+              degree_type: edu.degree,
+              field_of_study: edu.field_of_study || '',
+              location: edu.location || '',
               start_date: edu.start_date,
               end_date: edu.end_date,
-              gpa: edu.gpa,
-              achievements: edu.achievements.join('\n'),
-            }),
-          })
+              gpa: edu.gpa || '',
+              coursework: edu.achievements?.join(', ') || '',
+            }))
+          ),
+        })
+
+        if (!educationResponse.ok) {
+          throw new Error('Failed to save education')
         }
       }
 
       // Save skills
       if (parsedData.skills && parsedData.skills.length > 0) {
-        await fetch('/api/profile/skills', {
+        const skillsResponse = await fetch('/api/profile/skills', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            skills: parsedData.skills,
+            technical: parsedData.skills,
+            soft: [],
+            languages: parsedData.languages || [],
+            certifications: parsedData.certifications?.map(cert => ({ name: cert, org: '', date: '' })) || [],
           }),
         })
+
+        if (!skillsResponse.ok) {
+          throw new Error('Failed to save skills')
+        }
       }
 
       // Redirect to profile page after successful save
