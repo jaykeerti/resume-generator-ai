@@ -11,27 +11,41 @@ export function PersonalInfoEditor({ data }: Props) {
   const [formData, setFormData] = useState<PersonalInfo>(data)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const updateField = (field: keyof PersonalInfo, value: string) => {
     setFormData({ ...formData, [field]: value })
     setSaved(false)
+    setError(null)
   }
 
   const handleSave = async () => {
     setSaving(true)
+    setError(null)
+
     try {
+      console.log('[PersonalInfoEditor] Saving:', formData)
+
       const response = await fetch('/api/profile/personal', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       })
 
-      if (!response.ok) throw new Error('Failed to save')
+      const result = await response.json()
+      console.log('[PersonalInfoEditor] Response:', result)
+
+      if (!response.ok) {
+        throw new Error(result.details || result.error || 'Failed to save')
+      }
 
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
-    } catch {
-      alert('Failed to save changes')
+    } catch (err) {
+      console.error('[PersonalInfoEditor] Error:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save changes'
+      setError(errorMessage)
+      alert(`Error: ${errorMessage}\n\nCheck browser console for details.`)
     } finally {
       setSaving(false)
     }
@@ -49,6 +63,12 @@ export function PersonalInfoEditor({ data }: Props) {
           {saving ? 'Saving...' : saved ? 'Saved ✓' : 'Save Changes'}
         </button>
       </div>
+
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 dark:bg-red-950">
+          <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
