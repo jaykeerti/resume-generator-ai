@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { UserProfileDropdown } from '@/components/ui/UserProfileDropdown'
 import { ProfileSummaryCard } from './ProfileSummaryCard'
+import { JobDescriptionInput } from './JobDescriptionInput'
 
 interface Resume {
   id: string
@@ -41,6 +42,15 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
 
   const remainingGenerations =
     profile.subscription_tier === 'pro' ? null : Math.max(0, 5 - generationCount)
+
+  // Check if profile is complete
+  const isProfileComplete = !!(
+    baseInfo?.personal_info?.full_name &&
+    baseInfo?.work_experience &&
+    baseInfo.work_experience.length > 0 &&
+    baseInfo?.education &&
+    baseInfo.education.length > 0
+  )
 
   const handleDownload = async (resumeId: string, title: string) => {
     setDownloadingId(resumeId)
@@ -166,30 +176,16 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
           </div>
         )}
 
-        {/* Create Resume CTA */}
-        <div className="mb-8 grid gap-4 sm:grid-cols-2">
-          <a
-            href="/resume/new"
-            className="flex items-center justify-center gap-2 rounded-lg bg-zinc-900 px-6 py-4 text-lg font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            Create New Resume
-          </a>
+        {/* Job Description Input */}
+        <div className="mb-8">
+          <JobDescriptionInput profileComplete={isProfileComplete} />
+        </div>
+
+        {/* Import Resume Button */}
+        <div className="mb-8">
           <a
             href="/import"
-            className="flex items-center justify-center gap-2 rounded-lg border-2 border-zinc-900 px-6 py-4 text-lg font-medium text-zinc-900 transition-colors hover:bg-zinc-50 dark:border-zinc-50 dark:text-zinc-50 dark:hover:bg-zinc-900"
+            className="flex items-center justify-center gap-2 rounded-lg border-2 border-zinc-300 px-6 py-4 text-base font-medium text-zinc-700 transition-colors hover:border-zinc-900 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-50 dark:hover:bg-zinc-900"
           >
             <svg
               className="h-5 w-5"
@@ -204,7 +200,7 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
               />
             </svg>
-            Import Existing Resume
+            Or import your existing resume
           </a>
         </div>
 
