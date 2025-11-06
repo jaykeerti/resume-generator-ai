@@ -12,28 +12,16 @@ export async function PATCH(request: NextRequest) {
 
     const personalInfo = await request.json()
 
-    console.log('[personal/route] Updating personal info for user:', user.id)
-    console.log('[personal/route] Data:', personalInfo)
-
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('base_information')
       .update({ personal_info: personalInfo })
       .eq('user_id', user.id)
-      .select()
 
-    if (error) {
-      console.error('[personal/route] Database error:', error)
-      throw error
-    }
+    if (error) throw error
 
-    console.log('[personal/route] Update successful:', data)
-
-    return NextResponse.json({ success: true, data })
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('[personal/route] Error updating personal info:', error)
-    return NextResponse.json({
-      error: 'Failed to update',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 })
+    console.error('Error updating personal info:', error)
+    return NextResponse.json({ error: 'Failed to update' }, { status: 500 })
   }
 }

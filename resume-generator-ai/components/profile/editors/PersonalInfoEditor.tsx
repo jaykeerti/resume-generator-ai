@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import type { PersonalInfo } from '@/lib/types/onboarding'
 
 interface Props {
@@ -8,44 +9,40 @@ interface Props {
 }
 
 export function PersonalInfoEditor({ data }: Props) {
+  const router = useRouter()
   const [formData, setFormData] = useState<PersonalInfo>(data)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+
+  // Sync formData with incoming data prop (important for tab switching)
+  useEffect(() => {
+    setFormData(data)
+  }, [data])
 
   const updateField = (field: keyof PersonalInfo, value: string) => {
     setFormData({ ...formData, [field]: value })
     setSaved(false)
-    setError(null)
   }
 
   const handleSave = async () => {
     setSaving(true)
-    setError(null)
 
     try {
-      console.log('[PersonalInfoEditor] Saving:', formData)
-
       const response = await fetch('/api/profile/personal', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       })
 
-      const result = await response.json()
-      console.log('[PersonalInfoEditor] Response:', result)
-
-      if (!response.ok) {
-        throw new Error(result.details || result.error || 'Failed to save')
-      }
+      if (!response.ok) throw new Error('Failed to save')
 
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
-    } catch (err) {
-      console.error('[PersonalInfoEditor] Error:', err)
-      const errorMessage = err instanceof Error ? err.message : 'Failed to save changes'
-      setError(errorMessage)
-      alert(`Error: ${errorMessage}\n\nCheck browser console for details.`)
+
+      // Refresh to get updated data
+      router.refresh()
+    } catch {
+      alert('Failed to save changes')
     } finally {
       setSaving(false)
     }
@@ -63,12 +60,6 @@ export function PersonalInfoEditor({ data }: Props) {
           {saving ? 'Saving...' : saved ? 'Saved ✓' : 'Save Changes'}
         </button>
       </div>
-
-      {error && (
-        <div className="rounded-lg bg-red-50 p-4 dark:bg-red-950">
-          <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
-        </div>
-      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
