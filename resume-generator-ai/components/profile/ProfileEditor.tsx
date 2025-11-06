@@ -1,10 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { PersonalInfoEditor } from './editors/PersonalInfoEditor'
 import { ExperienceEditor } from './editors/ExperienceEditor'
 import { EducationEditor } from './editors/EducationEditor'
 import { SkillsEditor } from './editors/SkillsEditor'
+import { ProfileProgressBanner } from './ProfileProgressBanner'
+import { SectionProgress } from './SectionProgress'
+import { calculateProfileCompletion } from '@/lib/utils/profileCompletion'
 import type { OnboardingData } from '@/lib/types/onboarding'
 
 interface Props {
@@ -23,12 +26,29 @@ type Tab = 'personal' | 'experience' | 'education' | 'skills'
 export function ProfileEditor({ baseInfo }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('personal')
 
+  // Calculate completion percentages
+  const completion = useMemo(() => calculateProfileCompletion(baseInfo), [baseInfo])
+
   const tabs = [
     { id: 'personal' as Tab, label: 'Personal Info', icon: '👤' },
     { id: 'experience' as Tab, label: 'Experience', icon: '💼' },
     { id: 'education' as Tab, label: 'Education', icon: '🎓' },
     { id: 'skills' as Tab, label: 'Skills', icon: '⚡' },
   ]
+
+  const getSectionName = (tab: Tab): string => {
+    const names = {
+      personal: 'Personal Info',
+      experience: 'Experience',
+      education: 'Education',
+      skills: 'Skills',
+    }
+    return names[tab]
+  }
+
+  const getSectionPercentage = (tab: Tab): number => {
+    return completion[tab]
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -47,6 +67,11 @@ export function ProfileEditor({ baseInfo }: Props) {
       </header>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Overall Progress Banner */}
+        <div className="mb-8">
+          <ProfileProgressBanner percentage={completion.overall} />
+        </div>
+
         <div className="grid gap-8 lg:grid-cols-4">
           {/* Sidebar Navigation */}
           <div className="lg:col-span-1">
@@ -70,6 +95,13 @@ export function ProfileEditor({ baseInfo }: Props) {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
+            {/* Section Progress Indicator */}
+            <SectionProgress
+              percentage={getSectionPercentage(activeTab)}
+              sectionName={getSectionName(activeTab)}
+            />
+
+            {/* Editor Content */}
             <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
               {activeTab === 'personal' && <PersonalInfoEditor data={baseInfo.personal_info} />}
               {activeTab === 'experience' && <ExperienceEditor data={baseInfo.work_experience} />}
