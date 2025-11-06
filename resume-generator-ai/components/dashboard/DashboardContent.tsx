@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { UserProfileDropdown } from '@/components/ui/UserProfileDropdown'
+import { ProfileSummaryCard } from './ProfileSummaryCard'
 
 interface Resume {
   id: string
@@ -17,13 +18,21 @@ interface UserProfile {
   onboarding_completed: boolean
 }
 
+interface BaseInformation {
+  personal_info?: any
+  work_experience?: any[]
+  education?: any[]
+  skills?: any
+}
+
 interface Props {
   user: User
   profile: UserProfile
+  baseInfo: BaseInformation | null
   resumes: Resume[]
 }
 
-export function DashboardContent({ user, profile, resumes: initialResumes }: Props) {
+export function DashboardContent({ user, profile, baseInfo, resumes: initialResumes }: Props) {
   const [resumes, setResumes] = useState(initialResumes)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
@@ -149,6 +158,13 @@ export function DashboardContent({ user, profile, resumes: initialResumes }: Pro
             )}
           </div>
         </div>
+
+        {/* Profile Summary Card */}
+        {baseInfo && (
+          <div className="mb-8">
+            <ProfileSummaryCard profile={baseInfo} />
+          </div>
+        )}
 
         {/* Create Resume CTA */}
         <div className="mb-8 grid gap-4 sm:grid-cols-2">

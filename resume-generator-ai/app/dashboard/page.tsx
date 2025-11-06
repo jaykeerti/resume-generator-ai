@@ -10,12 +10,17 @@ export default async function DashboardPage() {
     redirect('/auth/signin')
   }
 
-  // Fetch profile and resumes in parallel for better performance
-  const [profileResult, resumesResult] = await Promise.all([
+  // Fetch profile, base information, and resumes in parallel for better performance
+  const [profileResult, baseInfoResult, resumesResult] = await Promise.all([
     supabase
       .from('users_profile')
       .select('*')
       .eq('id', user.id)
+      .single(),
+    supabase
+      .from('base_information')
+      .select('*')
+      .eq('user_id', user.id)
       .single(),
     supabase
       .from('resumes')
@@ -25,6 +30,7 @@ export default async function DashboardPage() {
   ])
 
   const profile = profileResult.data
+  const baseInfo = baseInfoResult.data
   const resumes = resumesResult.data
 
   // Redirect to onboarding if not completed
@@ -32,5 +38,5 @@ export default async function DashboardPage() {
     redirect('/onboarding')
   }
 
-  return <DashboardContent user={user} profile={profile} resumes={resumes || []} />
+  return <DashboardContent user={user} profile={profile} baseInfo={baseInfo} resumes={resumes || []} />
 }
