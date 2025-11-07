@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { parseJobDescription } from '@/lib/services/jobDescriptionParser'
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,13 +21,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Auto-save job description
+    // Parse job description with OpenAI (handles both text and URL)
+    console.log('Parsing job description with OpenAI...')
+    const parsedJD = await parseJobDescription(job_description.trim())
+    console.log('Job description parsed successfully:', parsedJD.job_title)
+
+    // Auto-save job description with parsed data
     const { data: savedJobDesc, error: jobDescError } = await supabase
       .from('job_descriptions')
       .insert({
         user_id: user.id,
-        description_text: job_description.trim(),
-        parsed_keywords: {}, // TODO: Parse with OpenAI in future iteration
+        description_text: parsedJD.raw_text,
+        parsed_keywords: {
+          job_title: parsedJD.job_title,
+          company: parsedJD.company,
+          location: parsedJD.location,
+          experience_required: parsedJD.experience_required,
+          technical_skills: parsedJD.technical_skills,
+          soft_skills: parsedJD.soft_skills,
+          qualifications: parsedJD.qualifications,
+          responsibilities: parsedJD.responsibilities,
+          technologies: parsedJD.technologies,
+          keywords: parsedJD.keywords,
+        },
       })
       .select()
       .single()
@@ -44,10 +61,10 @@ export async function POST(request: NextRequest) {
       .single()
 
     // Create a new resume with basic content
-    // Extract job title from description (simple approach)
-    const jobTitleMatch = job_description.match(/(?:position|role|job title):\s*([^\n]+)/i)
-    const extractedTitle = jobTitleMatch ? jobTitleMatch[1].trim() : 'Untitled Resume'
-    const resumeTitle = `Resume for ${extractedTitle}`.substring(0, 100)
+    // Use parsed job title for resume title
+    const resumeTitle = parsedJD.job_title !== 'Unknown Position'
+      ? `Resume for ${parsedJD.job_title}`.substring(0, 100)
+      : 'New Resume'
 
     // Create resume content from base information
     const resumeContent = {
@@ -80,13 +97,18 @@ export async function POST(request: NextRequest) {
       throw new Error('Failed to create resume')
     }
 
-    // TODO: In future iteration, use OpenAI to tailor resume sections
-    // based on job description keywords
+    // Note: Resume tailoring based on JD will be implemented in next iteration
+    // For now, we create base resume with user's profile data
 
     return NextResponse.json({
       success: true,
       resume_id: newResume.id,
       job_description_id: savedJobDesc.id,
+      parsed_job_description: {
+        title: parsedJD.job_title,
+        company: parsedJD.company,
+        skills_extracted: parsedJD.technical_skills.length + parsedJD.soft_skills.length,
+      },
       message: 'Resume created successfully',
     })
   } catch (error) {

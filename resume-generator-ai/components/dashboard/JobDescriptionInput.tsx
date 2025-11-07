@@ -39,8 +39,19 @@ export function JobDescriptionInput({ profileComplete }: JobDescriptionInputProp
 
       const data = await response.json()
 
-      // Redirect to editor
-      router.push(`/resume/editor/${data.resume_id}`)
+      // Show success message with parsed info
+      if (data.parsed_job_description) {
+        const { title, company, skills_extracted } = data.parsed_job_description
+        const message = company
+          ? `${title} at ${company} • ${skills_extracted} skills identified`
+          : `${title} • ${skills_extracted} skills identified`
+        showToast('success', 'Job Description Analyzed!', message)
+      }
+
+      // Redirect to editor after short delay to show toast
+      setTimeout(() => {
+        router.push(`/resume/editor/${data.resume_id}`)
+      }, 1500)
     } catch (err) {
       console.error('Generation error:', err)
       showToast('error', 'Failed to generate resume', err instanceof Error ? err.message : 'Please try again')
@@ -95,7 +106,7 @@ export function JobDescriptionInput({ profileComplete }: JobDescriptionInputProp
               Create AI-Tailored Resume
             </h3>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              Paste a job description and we'll tailor your resume to match it
+              Paste a job description or job posting URL - AI will analyze it
             </p>
           </div>
         </div>
@@ -110,7 +121,7 @@ export function JobDescriptionInput({ profileComplete }: JobDescriptionInputProp
               rows={8}
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
-              placeholder="Paste the job description here... (job title, requirements, responsibilities, etc.)"
+              placeholder="Paste job description text or URL from job boards (LinkedIn, Indeed, company careers page, etc.)"
               className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-50 dark:focus:ring-zinc-50"
               disabled={isGenerating}
             />
@@ -161,7 +172,7 @@ export function JobDescriptionInput({ profileComplete }: JobDescriptionInputProp
           </button>
 
           <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
-            Our AI will analyze the job requirements and tailor your resume accordingly
+            AI extracts skills, requirements, and keywords to match your resume to the role
           </p>
         </div>
       </div>
