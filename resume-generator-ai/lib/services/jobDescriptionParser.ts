@@ -135,9 +135,9 @@ Return ONLY valid JSON without any markdown formatting or code blocks.`
   } catch (error) {
     console.error('Error parsing job description:', error)
 
-    // Return minimal fallback structure
+    // Return minimal fallback structure with a valid job title
     return {
-      job_title: 'Unknown Position',
+      job_title: 'Position from Job Description',
       company: '',
       location: '',
       experience_required: '',

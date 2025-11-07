@@ -31,6 +31,8 @@ export async function POST(request: NextRequest) {
       .from('job_descriptions')
       .insert({
         user_id: user.id,
+        job_title: parsedJD.job_title, // Required column
+        company_name: parsedJD.company || null, // Optional column
         description_text: parsedJD.raw_text,
         parsed_keywords: {
           job_title: parsedJD.job_title,
@@ -62,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     // Create a new resume with basic content
     // Use parsed job title for resume title
-    const resumeTitle = parsedJD.job_title !== 'Unknown Position'
+    const resumeTitle = parsedJD.job_title && parsedJD.job_title !== 'Position from Job Description'
       ? `Resume for ${parsedJD.job_title}`.substring(0, 100)
       : 'New Resume'
 
