@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
         title: resumeTitle,
         content: resumeContent,
         template_id: 'classic', // Default template
-        styling: {}, // Default styling
+        customization: {}, // Default customization (accent_color, font, font_size)
       })
       .select()
       .single()
