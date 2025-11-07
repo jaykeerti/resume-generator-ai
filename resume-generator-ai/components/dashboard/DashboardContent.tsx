@@ -5,6 +5,7 @@ import type { User } from '@supabase/supabase-js'
 import { UserProfileDropdown } from '@/components/ui/UserProfileDropdown'
 import { ProfileSummaryCard } from './ProfileSummaryCard'
 import { JobDescriptionInput } from './JobDescriptionInput'
+import { useNotifications } from '@/lib/contexts/NotificationContext'
 
 interface Resume {
   id: string
@@ -34,10 +35,10 @@ interface Props {
 }
 
 export function DashboardContent({ user, profile, baseInfo, resumes: initialResumes }: Props) {
+  const { showToast, showModal } = useNotifications()
   const [resumes, setResumes] = useState(initialResumes)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
-  const [showSuccessToast, setShowSuccessToast] = useState(false)
   const [generationCount, setGenerationCount] = useState(profile.generation_count)
 
   const remainingGenerations =
@@ -64,7 +65,12 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
         const error = await response.json()
 
         if (error.limit_reached) {
-          alert('You have reached your limit of 5 resume exports. Upgrade to Pro for unlimited exports.')
+          await showModal({
+            title: 'Generation Limit Reached',
+            message: 'You have reached your limit of 5 resume exports. Upgrade to Pro for unlimited exports.',
+            confirmText: 'Got it',
+            variant: 'default'
+          })
         } else {
           throw new Error(error.message || 'Failed to generate PDF')
         }
@@ -88,22 +94,25 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
       }
 
       // Show success notification
-      setShowSuccessToast(true)
-
-      // Auto-hide toast after 3 seconds
-      setTimeout(() => {
-        setShowSuccessToast(false)
-      }, 3000)
+      showToast('success', 'PDF Downloaded Successfully!', 'Check your Downloads folder')
     } catch (error) {
       console.error('Error downloading resume:', error)
-      alert('Failed to generate PDF. Please try again.')
+      showToast('error', 'Failed to generate PDF', 'Please try again')
     } finally {
       setDownloadingId(null)
     }
   }
 
   const handleDelete = async (resumeId: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
+    const confirmed = await showModal({
+      title: 'Delete Resume?',
+      message: `Are you sure you want to delete "${title}"? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'destructive'
+    })
+
+    if (!confirmed) {
       return
     }
 
@@ -120,9 +129,10 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
 
       // Remove from local state
       setResumes(resumes.filter(r => r.id !== resumeId))
+      showToast('success', 'Resume deleted', `"${title}" has been removed`)
     } catch (error) {
       console.error('Error deleting resume:', error)
-      alert('Failed to delete resume. Please try again.')
+      showToast('error', 'Failed to delete resume', 'Please try again')
     } finally {
       setDeletingId(null)
     }
@@ -274,21 +284,6 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
           )}
         </div>
       </main>
-
-      {/* Success Toast Notification */}
-      {showSuccessToast && (
-        <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-5 fade-in">
-          <div className="bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
-            <svg className="w-6 h-6 flex-shrink-0" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <div>
-              <p className="font-semibold">PDF Downloaded Successfully!</p>
-              <p className="text-sm text-green-100">Check your Downloads folder</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

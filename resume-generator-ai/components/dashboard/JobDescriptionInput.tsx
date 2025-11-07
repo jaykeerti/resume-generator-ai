@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useNotifications } from '@/lib/contexts/NotificationContext'
 
 interface JobDescriptionInputProps {
   profileComplete: boolean
@@ -9,18 +10,17 @@ interface JobDescriptionInputProps {
 
 export function JobDescriptionInput({ profileComplete }: JobDescriptionInputProps) {
   const router = useRouter()
+  const { showToast } = useNotifications()
   const [jobDescription, setJobDescription] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const handleGenerate = async () => {
     if (!jobDescription.trim()) {
-      setError('Please paste a job description')
+      showToast('warning', 'Job description required', 'Please paste a job description to continue')
       return
     }
 
     setIsGenerating(true)
-    setError(null)
 
     try {
       // Save job description and generate resume
@@ -43,7 +43,7 @@ export function JobDescriptionInput({ profileComplete }: JobDescriptionInputProp
       router.push(`/resume/editor/${data.resume_id}`)
     } catch (err) {
       console.error('Generation error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to generate resume')
+      showToast('error', 'Failed to generate resume', err instanceof Error ? err.message : 'Please try again')
       setIsGenerating(false)
     }
   }
@@ -125,12 +125,6 @@ export function JobDescriptionInput({ profileComplete }: JobDescriptionInputProp
               )}
             </div>
           </div>
-
-          {error && (
-            <div className="rounded-lg bg-red-50 p-3 dark:bg-red-950">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
-            </div>
-          )}
 
           <button
             onClick={handleGenerate}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { PersonalInfo } from '@/lib/types/onboarding'
+import { useNotifications } from '@/lib/contexts/NotificationContext'
 
 interface Props {
   data: PersonalInfo
@@ -10,9 +11,9 @@ interface Props {
 
 export function PersonalInfoEditor({ data }: Props) {
   const router = useRouter()
+  const { showToast } = useNotifications()
   const [formData, setFormData] = useState<PersonalInfo>(data)
   const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
 
   // Sync formData with incoming data prop (important for tab switching)
   useEffect(() => {
@@ -21,7 +22,6 @@ export function PersonalInfoEditor({ data }: Props) {
 
   const updateField = (field: keyof PersonalInfo, value: string) => {
     setFormData({ ...formData, [field]: value })
-    setSaved(false)
   }
 
   const handleSave = async () => {
@@ -36,13 +36,12 @@ export function PersonalInfoEditor({ data }: Props) {
 
       if (!response.ok) throw new Error('Failed to save')
 
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
+      showToast('success', 'Changes saved', 'Personal information updated successfully')
 
       // Refresh to get updated data
       router.refresh()
     } catch {
-      alert('Failed to save changes')
+      showToast('error', 'Failed to save changes', 'Please try again')
     } finally {
       setSaving(false)
     }
@@ -57,7 +56,7 @@ export function PersonalInfoEditor({ data }: Props) {
           disabled={saving}
           className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
         >
-          {saving ? 'Saving...' : saved ? 'Saved ✓' : 'Save Changes'}
+          {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
 

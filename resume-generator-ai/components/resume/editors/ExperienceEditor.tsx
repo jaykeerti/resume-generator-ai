@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import type { ResumeWorkExperience } from '@/lib/types/resume'
+import { useNotifications } from '@/lib/contexts/NotificationContext'
 
 interface ExperienceEditorProps {
   experiences: ResumeWorkExperience[]
@@ -9,6 +10,7 @@ interface ExperienceEditorProps {
 }
 
 export function ExperienceEditor({ experiences, onChange }: ExperienceEditorProps) {
+  const { showModal } = useNotifications()
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [isAdding, setIsAdding] = useState(false)
 
@@ -39,8 +41,16 @@ export function ExperienceEditor({ experiences, onChange }: ExperienceEditorProp
     setEditingIndex(null)
   }
 
-  const handleDelete = (index: number) => {
-    if (confirm('Are you sure you want to delete this work experience?')) {
+  const handleDelete = async (index: number) => {
+    const confirmed = await showModal({
+      title: 'Delete Work Experience?',
+      message: 'Are you sure you want to delete this work experience? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'destructive'
+    })
+
+    if (confirmed) {
       onChange(experiences.filter((_, i) => i !== index))
     }
   }

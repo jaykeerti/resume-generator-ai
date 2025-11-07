@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import type { ResumeAdditionalSections, ResumeProject } from '@/lib/types/resume'
+import { useNotifications } from '@/lib/contexts/NotificationContext'
 
 interface AdditionalSectionsEditorProps {
   sections: ResumeAdditionalSections
@@ -43,6 +44,7 @@ interface ProjectsSectionProps {
 }
 
 function ProjectsSection({ projects, onChange }: ProjectsSectionProps) {
+  const { showModal } = useNotifications()
   const [isAdding, setIsAdding] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
 
@@ -70,8 +72,16 @@ function ProjectsSection({ projects, onChange }: ProjectsSectionProps) {
     setEditingIndex(null)
   }
 
-  const handleDelete = (index: number) => {
-    if (confirm('Are you sure you want to delete this project?')) {
+  const handleDelete = async (index: number) => {
+    const confirmed = await showModal({
+      title: 'Delete Project?',
+      message: 'Are you sure you want to delete this project? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'destructive'
+    })
+
+    if (confirmed) {
       onChange(projects.filter((_, i) => i !== index))
     }
   }

@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import type { WorkExperience } from '@/lib/types/onboarding'
+import { useNotifications } from '@/lib/contexts/NotificationContext'
 
 interface Props {
   data: WorkExperience[]
 }
 
 export function ExperienceEditor({ data }: Props) {
+  const { showToast, showModal } = useNotifications()
   const [experiences, setExperiences] = useState<WorkExperience[]>(data)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
@@ -22,16 +24,24 @@ export function ExperienceEditor({ data }: Props) {
       })
 
       if (!response.ok) throw new Error('Failed to save')
-      alert('Changes saved successfully!')
+      showToast('success', 'Changes saved', 'Work experience updated successfully')
     } catch {
-      alert('Failed to save changes')
+      showToast('error', 'Failed to save changes', 'Please try again')
     } finally {
       setSaving(false)
     }
   }
 
-  const handleDelete = (index: number) => {
-    if (confirm('Are you sure you want to delete this experience?')) {
+  const handleDelete = async (index: number) => {
+    const confirmed = await showModal({
+      title: 'Delete Experience?',
+      message: 'Are you sure you want to delete this work experience? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'destructive'
+    })
+
+    if (confirmed) {
       setExperiences(experiences.filter((_, i) => i !== index))
     }
   }

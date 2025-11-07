@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import type { ResumeEducation } from '@/lib/types/resume'
+import { useNotifications } from '@/lib/contexts/NotificationContext'
 
 interface EducationEditorProps {
   education: ResumeEducation[]
@@ -9,6 +10,7 @@ interface EducationEditorProps {
 }
 
 export function EducationEditor({ education, onChange }: EducationEditorProps) {
+  const { showModal } = useNotifications()
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [isAdding, setIsAdding] = useState(false)
 
@@ -38,8 +40,16 @@ export function EducationEditor({ education, onChange }: EducationEditorProps) {
     setEditingIndex(null)
   }
 
-  const handleDelete = (index: number) => {
-    if (confirm('Are you sure you want to delete this education entry?')) {
+  const handleDelete = async (index: number) => {
+    const confirmed = await showModal({
+      title: 'Delete Education?',
+      message: 'Are you sure you want to delete this education entry? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'destructive'
+    })
+
+    if (confirmed) {
       onChange(education.filter((_, i) => i !== index))
     }
   }

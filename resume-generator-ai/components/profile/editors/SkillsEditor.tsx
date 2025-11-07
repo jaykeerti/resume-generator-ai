@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import type { Skills } from '@/lib/types/onboarding'
+import { useNotifications } from '@/lib/contexts/NotificationContext'
 
 interface Props {
   data: Skills
 }
 
 export function SkillsEditor({ data }: Props) {
+  const { showToast } = useNotifications()
   const [skills, setSkills] = useState<Skills>(data || { technical: [], soft: [] })
   const [techInput, setTechInput] = useState('')
   const [softInput, setSoftInput] = useState('')
@@ -23,9 +25,9 @@ export function SkillsEditor({ data }: Props) {
       })
 
       if (!response.ok) throw new Error('Failed to save')
-      alert('Changes saved successfully!')
+      showToast('success', 'Changes saved', 'Skills updated successfully')
     } catch {
-      alert('Failed to save changes')
+      showToast('error', 'Failed to save changes', 'Please try again')
     } finally {
       setSaving(false)
     }
