@@ -107,6 +107,10 @@ export async function POST(request: NextRequest) {
     const hasPersonalInfo = baseInfo?.personal_info &&
       Object.keys(baseInfo.personal_info).length > 0
 
+    // Debug logging to help diagnose empty profile issues
+    console.log('Base info personal_info:', JSON.stringify(baseInfo?.personal_info || null))
+    console.log('Has personal info:', hasPersonalInfo)
+
     const resumeContent = {
       personal_info: hasPersonalInfo ? baseInfo.personal_info : {
         full_name: '',
