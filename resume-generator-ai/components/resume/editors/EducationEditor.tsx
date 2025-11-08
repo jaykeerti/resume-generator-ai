@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import type { ResumeEducation } from '@/lib/types/resume'
 import { useNotifications } from '@/lib/contexts/NotificationContext'
+import { FormInput, FormTextarea, Button } from '@/components/ui'
 
 interface EducationEditorProps {
   education: ResumeEducation[]
@@ -72,12 +73,13 @@ export function EducationEditor({ education, onChange }: EducationEditorProps) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-sm font-semibold text-gray-700">Education</h3>
-        <button
+        <Button
           onClick={handleAdd}
-          className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+          variant="primary"
+          size="sm"
         >
           + Add Education
-        </button>
+        </Button>
       </div>
 
       {education.length === 0 && !isAdding && (
@@ -184,91 +186,77 @@ function EducationForm({ education: initialEducation, onSave, onCancel }: Educat
   return (
     <form onSubmit={handleSubmit} className="border border-blue-300 rounded-lg p-4 bg-blue-50">
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Institution *</label>
-        <input
+        <FormInput
+          label="Institution"
           type="text"
           value={education.institution}
           onChange={(e) => handleChange('institution', e.target.value)}
-          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="University of California, Berkeley"
           required
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Degree Type *</label>
-          <input
-            type="text"
-            value={education.degree_type}
-            onChange={(e) => handleChange('degree_type', e.target.value)}
-            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Bachelor of Science"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Field of Study *</label>
-          <input
-            type="text"
-            value={education.field_of_study}
-            onChange={(e) => handleChange('field_of_study', e.target.value)}
-            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Computer Science"
-            required
-          />
-        </div>
+        <FormInput
+          label="Degree Type"
+          type="text"
+          value={education.degree_type}
+          onChange={(e) => handleChange('degree_type', e.target.value)}
+          placeholder="Bachelor of Science"
+          required
+        />
+        <FormInput
+          label="Field of Study"
+          type="text"
+          value={education.field_of_study}
+          onChange={(e) => handleChange('field_of_study', e.target.value)}
+          placeholder="Computer Science"
+          required
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Graduation Date *</label>
-          <input
-            type="text"
-            value={education.graduation_date}
-            onChange={(e) => handleChange('graduation_date', e.target.value)}
-            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="May 2020"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">GPA (optional)</label>
-          <input
-            type="text"
-            value={education.gpa || ''}
-            onChange={(e) => handleChange('gpa', e.target.value)}
-            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="3.8"
-          />
-        </div>
+        <FormInput
+          label="Graduation Date"
+          type="text"
+          value={education.graduation_date}
+          onChange={(e) => handleChange('graduation_date', e.target.value)}
+          placeholder="May 2020"
+          required
+        />
+        <FormInput
+          label="GPA (optional)"
+          type="text"
+          value={education.gpa || ''}
+          onChange={(e) => handleChange('gpa', e.target.value)}
+          placeholder="3.8"
+        />
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Relevant Coursework (optional)</label>
-        <textarea
+        <FormTextarea
+          label="Relevant Coursework (optional)"
           value={education.coursework || ''}
           onChange={(e) => handleChange('coursework', e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           placeholder="Data Structures, Algorithms, Machine Learning, Database Systems"
         />
       </div>
 
       <div className="flex gap-2 justify-end">
-        <button
+        <Button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          variant="secondary"
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          variant="primary"
         >
           Save
-        </button>
+        </Button>
       </div>
     </form>
   )

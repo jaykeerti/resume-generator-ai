@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import type { ResumeAdditionalSections, ResumeProject } from '@/lib/types/resume'
 import { useNotifications } from '@/lib/contexts/NotificationContext'
+import { FormInput, FormTextarea, Button, Badge } from '@/components/ui'
 
 interface AdditionalSectionsEditorProps {
   sections: ResumeAdditionalSections
@@ -90,12 +91,13 @@ function ProjectsSection({ projects, onChange }: ProjectsSectionProps) {
     <div>
       <div className="flex justify-between items-center mb-3">
         <h4 className="text-sm font-semibold text-gray-700">Projects</h4>
-        <button
+        <Button
           onClick={handleAdd}
-          className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
+          variant="primary"
+          size="sm"
         >
           + Add Project
-        </button>
+        </Button>
       </div>
 
       {projects.map((project, index) => (
@@ -184,79 +186,76 @@ function ProjectForm({ project: initialProject, onSave, onCancel }: ProjectFormP
   return (
     <form onSubmit={handleSubmit} className="border border-blue-300 rounded-lg p-3 bg-blue-50">
       <div className="space-y-3">
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Project Title *</label>
-          <input
-            type="text"
-            value={project.title}
-            onChange={(e) => setProject({ ...project, title: e.target.value })}
-            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Description *</label>
-          <textarea
-            value={project.description}
-            onChange={(e) => setProject({ ...project, description: e.target.value })}
-            rows={3}
-            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Project Link (optional)</label>
-          <input
-            type="url"
-            value={project.link || ''}
-            onChange={(e) => setProject({ ...project, link: e.target.value })}
-            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="https://github.com/..."
-          />
-        </div>
+        <FormInput
+          label="Project Title"
+          type="text"
+          value={project.title}
+          onChange={(e) => setProject({ ...project, title: e.target.value })}
+          required
+        />
+        <FormTextarea
+          label="Description"
+          value={project.description}
+          onChange={(e) => setProject({ ...project, description: e.target.value })}
+          rows={3}
+          required
+        />
+        <FormInput
+          label="Project Link (optional)"
+          type="url"
+          value={project.link || ''}
+          onChange={(e) => setProject({ ...project, link: e.target.value })}
+          placeholder="https://github.com/..."
+        />
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Technologies</label>
           <div className="flex gap-2 mb-2">
-            <input
+            <FormInput
               type="text"
               value={techInput}
               onChange={(e) => setTechInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTechnology())}
-              className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="e.g., React, Node.js"
+              className="flex-1"
             />
-            <button
+            <Button
               type="button"
               onClick={handleAddTechnology}
-              className="px-3 py-1.5 bg-gray-600 text-white text-xs rounded hover:bg-gray-700"
+              variant="secondary"
+              size="sm"
             >
               Add
-            </button>
+            </Button>
           </div>
           <div className="flex flex-wrap gap-1">
             {project.technologies.map((tech, index) => (
-              <span key={index} className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-200 rounded text-xs">
+              <Badge
+                key={index}
+                variant="gray"
+                onRemove={() => handleRemoveTechnology(index)}
+              >
                 {tech}
-                <button type="button" onClick={() => handleRemoveTechnology(index)}>✕</button>
-              </span>
+              </Badge>
             ))}
           </div>
         </div>
       </div>
       <div className="flex gap-2 justify-end mt-3">
-        <button
+        <Button
           type="button"
           onClick={onCancel}
-          className="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+          variant="secondary"
+          size="sm"
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
-          className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+          variant="primary"
+          size="sm"
         >
           Save
-        </button>
+        </Button>
       </div>
     </form>
   )
@@ -287,21 +286,22 @@ function SimpleListSection({ title, items, onChange, placeholder }: SimpleListSe
     <div>
       <h4 className="text-sm font-semibold text-gray-700 mb-2">{title}</h4>
       <div className="flex gap-2 mb-2">
-        <input
+        <FormInput
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAdd())}
-          className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder={placeholder}
+          className="flex-1"
         />
-        <button
+        <Button
           type="button"
           onClick={handleAdd}
-          className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+          variant="primary"
+          size="sm"
         >
           Add
-        </button>
+        </Button>
       </div>
       <div className="space-y-2">
         {items.map((item, index) => (
@@ -310,13 +310,15 @@ function SimpleListSection({ title, items, onChange, placeholder }: SimpleListSe
             className="flex items-start justify-between p-2 bg-gray-50 rounded-lg group"
           >
             <p className="text-sm flex-1 mr-2">{item}</p>
-            <button
+            <Button
               type="button"
               onClick={() => handleRemove(index)}
-              className="text-red-600 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+              variant="ghost"
+              size="sm"
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
             >
               🗑️
-            </button>
+            </Button>
           </div>
         ))}
       </div>

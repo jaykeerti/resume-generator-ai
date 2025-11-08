@@ -332,12 +332,10 @@ To migrate existing components:
 5. Remove inline className styling (already in components)
 6. Test and verify
 
-Example components already migrated:
-- ✅ `PersonalInfoEditor.tsx`
-- ✅ `SummaryEditor.tsx`
-
-Components to migrate:
-- ⏳ `SkillsEditor.tsx`
-- ⏳ `ExperienceEditor.tsx`
-- ⏳ `EducationEditor.tsx`
-- ⏳ `AdditionalSectionsEditor.tsx`
+All editor components migrated:
+- ✅ `PersonalInfoEditor.tsx` - Uses FormInput
+- ✅ `SummaryEditor.tsx` - Uses FormTextarea
+- ✅ `SkillsEditor.tsx` - Uses FormInput, Button, Badge
+- ✅ `ExperienceEditor.tsx` - Uses FormInput, FormTextarea, Button
+- ✅ `EducationEditor.tsx` - Uses FormInput, FormTextarea, Button
+- ✅ `AdditionalSectionsEditor.tsx` - Uses FormInput, FormTextarea, Button, Badge

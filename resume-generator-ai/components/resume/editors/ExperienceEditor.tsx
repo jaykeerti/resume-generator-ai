@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import type { ResumeWorkExperience } from '@/lib/types/resume'
 import { useNotifications } from '@/lib/contexts/NotificationContext'
+import { FormInput, FormTextarea, Button } from '@/components/ui'
 
 interface ExperienceEditorProps {
   experiences: ResumeWorkExperience[]
@@ -73,12 +74,13 @@ export function ExperienceEditor({ experiences, onChange }: ExperienceEditorProp
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-sm font-semibold text-gray-700">Work Experience</h3>
-        <button
+        <Button
           onClick={handleAdd}
-          className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+          variant="primary"
+          size="sm"
         >
           + Add Experience
-        </button>
+        </Button>
       </div>
 
       {experiences.length === 0 && !isAdding && (
@@ -213,51 +215,39 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
   return (
     <form onSubmit={handleSubmit} className="border border-blue-300 rounded-lg p-4 bg-blue-50">
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Job Title *</label>
-          <input
-            type="text"
-            value={experience.job_title}
-            onChange={(e) => handleChange('job_title', e.target.value)}
-            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Company *</label>
-          <input
-            type="text"
-            value={experience.company}
-            onChange={(e) => handleChange('company', e.target.value)}
-            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
+        <FormInput
+          label="Job Title"
+          type="text"
+          value={experience.job_title}
+          onChange={(e) => handleChange('job_title', e.target.value)}
+          required
+        />
+        <FormInput
+          label="Company"
+          type="text"
+          value={experience.company}
+          onChange={(e) => handleChange('company', e.target.value)}
+          required
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
-          <input
-            type="text"
-            value={experience.start_date}
-            onChange={(e) => handleChange('start_date', e.target.value)}
-            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Jan 2020"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-          <input
-            type="text"
-            value={experience.end_date || ''}
-            onChange={(e) => handleChange('end_date', e.target.value)}
-            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Dec 2023"
-            disabled={experience.is_current}
-          />
-        </div>
+        <FormInput
+          label="Start Date"
+          type="text"
+          value={experience.start_date}
+          onChange={(e) => handleChange('start_date', e.target.value)}
+          placeholder="Jan 2020"
+          required
+        />
+        <FormInput
+          label="End Date"
+          type="text"
+          value={experience.end_date || ''}
+          onChange={(e) => handleChange('end_date', e.target.value)}
+          placeholder="Dec 2023"
+          disabled={experience.is_current}
+        />
       </div>
 
       <div className="mb-4">
@@ -278,12 +268,11 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-        <input
+        <FormInput
+          label="Location"
           type="text"
           value={experience.location}
           onChange={(e) => handleChange('location', e.target.value)}
-          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="San Francisco, CA"
         />
       </div>
@@ -292,20 +281,21 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
         <label className="block text-sm font-medium text-gray-700 mb-2">Responsibilities</label>
         {experience.responsibilities.map((resp, index) => (
           <div key={index} className="flex gap-2 mb-2">
-            <textarea
+            <FormTextarea
               value={resp}
               onChange={(e) => handleResponsibilityChange(index, e.target.value)}
               rows={2}
-              className="flex-1 px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               placeholder="Describe your responsibility or achievement..."
+              className="flex-1"
             />
-            <button
+            <Button
               type="button"
               onClick={() => handleRemoveResponsibility(index)}
-              className="px-2 text-red-600 hover:bg-red-50 rounded"
+              variant="ghost"
+              size="sm"
             >
               ✕
-            </button>
+            </Button>
           </div>
         ))}
         <button
@@ -318,19 +308,19 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
       </div>
 
       <div className="flex gap-2 justify-end">
-        <button
+        <Button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          variant="secondary"
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          variant="primary"
         >
           Save
-        </button>
+        </Button>
       </div>
     </form>
   )

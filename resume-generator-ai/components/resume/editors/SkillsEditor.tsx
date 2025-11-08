@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import type { ResumeSkills } from '@/lib/types/resume'
+import { FormInput, Button, Badge } from '@/components/ui'
 
 interface SkillsEditorProps {
   skills: ResumeSkills
@@ -96,37 +97,31 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Technical Skills</label>
         <div className="flex gap-2 mb-2">
-          <input
+          <FormInput
             type="text"
             value={technicalInput}
             onChange={(e) => setTechnicalInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTechnical())}
-            className="flex-1 px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="e.g., JavaScript, Python, React"
+            className="flex-1"
           />
-          <button
+          <Button
             type="button"
             onClick={handleAddTechnical}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            variant="primary"
           >
             Add
-          </button>
+          </Button>
         </div>
         <div className="flex flex-wrap gap-2">
           {safeSkills.technical.map((skill, index) => (
-            <span
+            <Badge
               key={index}
-              className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+              variant="blue"
+              onRemove={() => handleRemoveTechnical(index)}
             >
               {skill}
-              <button
-                type="button"
-                onClick={() => handleRemoveTechnical(index)}
-                className="hover:text-blue-600"
-              >
-                ✕
-              </button>
-            </span>
+            </Badge>
           ))}
         </div>
       </div>
@@ -135,37 +130,31 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Soft Skills</label>
         <div className="flex gap-2 mb-2">
-          <input
+          <FormInput
             type="text"
             value={softInput}
             onChange={(e) => setSoftInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSoft())}
-            className="flex-1 px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="e.g., Leadership, Communication, Problem Solving"
+            className="flex-1"
           />
-          <button
+          <Button
             type="button"
             onClick={handleAddSoft}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            variant="primary"
           >
             Add
-          </button>
+          </Button>
         </div>
         <div className="flex flex-wrap gap-2">
           {safeSkills.soft.map((skill, index) => (
-            <span
+            <Badge
               key={index}
-              className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
+              variant="green"
+              onRemove={() => handleRemoveSoft(index)}
             >
               {skill}
-              <button
-                type="button"
-                onClick={() => handleRemoveSoft(index)}
-                className="hover:text-green-600"
-              >
-                ✕
-              </button>
-            </span>
+            </Badge>
           ))}
         </div>
       </div>
@@ -174,12 +163,12 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Languages</label>
         <div className="flex gap-2 mb-2">
-          <input
+          <FormInput
             type="text"
             value={languageInput.name}
             onChange={(e) => setLanguageInput({ ...languageInput, name: e.target.value })}
-            className="flex-1 px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Language name"
+            className="flex-1"
           />
           <select
             value={languageInput.proficiency}
@@ -193,13 +182,13 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
             <option value="Intermediate">Intermediate</option>
             <option value="Basic">Basic</option>
           </select>
-          <button
+          <Button
             type="button"
             onClick={handleAddLanguage}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            variant="primary"
           >
             Add
-          </button>
+          </Button>
         </div>
         <div className="space-y-2">
           {safeSkills.languages.map((lang, index) => (
@@ -210,13 +199,14 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
               <span className="text-sm">
                 <span className="font-medium">{lang.name}</span> - {lang.proficiency}
               </span>
-              <button
+              <Button
                 type="button"
                 onClick={() => handleRemoveLanguage(index)}
-                className="text-red-600 hover:text-red-700"
+                variant="ghost"
+                size="sm"
               >
                 🗑️
-              </button>
+              </Button>
             </div>
           ))}
         </div>
@@ -226,36 +216,34 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Certifications</label>
         <div className="space-y-2 mb-2">
-          <input
+          <FormInput
             type="text"
             value={certInput.name}
             onChange={(e) => setCertInput({ ...certInput, name: e.target.value })}
-            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Certification name"
           />
           <div className="grid grid-cols-2 gap-2">
-            <input
+            <FormInput
               type="text"
               value={certInput.org}
               onChange={(e) => setCertInput({ ...certInput, org: e.target.value })}
-              className="px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Issuing organization"
             />
-            <input
+            <FormInput
               type="text"
               value={certInput.date}
               onChange={(e) => setCertInput({ ...certInput, date: e.target.value })}
-              className="px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Date (e.g., 2023)"
             />
           </div>
-          <button
+          <Button
             type="button"
             onClick={handleAddCertification}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            variant="primary"
+            className="w-full"
           >
             Add Certification
-          </button>
+          </Button>
         </div>
         <div className="space-y-2">
           {safeSkills.certifications.map((cert, index) => (
@@ -269,13 +257,14 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
                   {cert.org} • {cert.date}
                 </p>
               </div>
-              <button
+              <Button
                 type="button"
                 onClick={() => handleRemoveCertification(index)}
-                className="text-red-600 hover:text-red-700"
+                variant="ghost"
+                size="sm"
               >
                 🗑️
-              </button>
+              </Button>
             </div>
           ))}
         </div>
