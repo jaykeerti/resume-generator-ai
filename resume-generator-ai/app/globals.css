@@ -27,7 +27,7 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Fix input text color - ensure text is always dark and visible */
+/* Fix input text color - ensure text is always dark and visible on light backgrounds */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -37,10 +37,11 @@ input[type="date"],
 input[type="number"],
 textarea,
 select {
-  color: #111827; /* gray-900 */
+  color: #111827 !important; /* gray-900 - dark text */
+  background-color: #ffffff; /* white background */
 }
 
-/* Dark mode input text */
+/* Ensure inputs remain visible in dark mode by forcing light backgrounds with dark text */
 @media (prefers-color-scheme: dark) {
   input[type="text"],
   input[type="email"],
@@ -51,7 +52,17 @@ select {
   input[type="number"],
   textarea,
   select {
-    color: #f9fafb; /* gray-50 */
+    color: #111827 !important; /* Keep dark text even in dark mode */
+    background-color: #ffffff !important; /* Keep white background */
+  }
+
+  /* Exception: inputs with dark backgrounds should have light text */
+  input[type="text"].bg-gray-800,
+  input[type="text"].bg-gray-900,
+  textarea.bg-gray-800,
+  textarea.bg-gray-900 {
+    color: #f9fafb !important;
+    background-color: inherit !important;
   }
 }
 
