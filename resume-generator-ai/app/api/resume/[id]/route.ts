@@ -31,6 +31,75 @@ export async function GET(
       return NextResponse.json({ error: 'Resume not found' }, { status: 404 })
     }
 
+    // Fix old resumes with empty personal_info object
+    // Check if personal_info is empty {} (created before fix)
+    const hasPersonalInfo = resume.content?.personal_info &&
+      Object.keys(resume.content.personal_info).length > 0
+
+    if (!hasPersonalInfo) {
+      console.log('Old resume detected with empty personal_info, attempting to populate from profile')
+
+      // Try to fetch user's base_information to populate the resume
+      const { data: baseInfo } = await supabase
+        .from('base_information')
+        .select('personal_info, work_experience, education, skills, additional_sections')
+        .eq('user_id', user.id)
+        .single()
+
+      // Populate from profile if available, otherwise use empty fields
+      const hasProfileData = baseInfo?.personal_info &&
+        Object.keys(baseInfo.personal_info).length > 0
+
+      resume.content.personal_info = hasProfileData
+        ? baseInfo.personal_info
+        : {
+            full_name: '',
+            email: '',
+            phone: '',
+            location: '',
+            professional_title: '',
+            linkedin_url: '',
+            portfolio_url: '',
+          }
+
+      // Also populate other sections if they're empty
+      if (baseInfo) {
+        if (!resume.content.work_experience || resume.content.work_experience.length === 0) {
+          resume.content.work_experience = baseInfo.work_experience || []
+        }
+        if (!resume.content.education || resume.content.education.length === 0) {
+          resume.content.education = baseInfo.education || []
+        }
+        if (!resume.content.skills || Object.keys(resume.content.skills || {}).length === 0) {
+          resume.content.skills = baseInfo.skills || {
+            technical: [],
+            soft: [],
+            languages: [],
+            certifications: [],
+          }
+        }
+      }
+    }
+
+    // Ensure all required fields exist in content
+    if (!resume.content.skills) {
+      resume.content.skills = {
+        technical: [],
+        soft: [],
+        languages: [],
+        certifications: [],
+      }
+    }
+
+    if (!resume.content.additional_sections) {
+      resume.content.additional_sections = {
+        projects: [],
+        volunteer: [],
+        awards: [],
+        publications: [],
+      }
+    }
+
     return NextResponse.json({ success: true, resume })
   } catch (error) {
     console.error('Error fetching resume:', error)
