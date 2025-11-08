@@ -71,13 +71,10 @@ export async function POST(request: NextRequest) {
         .insert({
           user_id: user.id,
           personal_info: {},
-          professional_summary: '',
           work_experience: [],
           education: [],
-          skills: { technical: [], soft: [] },
-          projects: [],
-          certifications: [],
-          volunteer_work: [],
+          skills: { technical: [], soft: [], languages: [], certifications: [] },
+          additional_sections: { projects: [], volunteer: [], awards: [], publications: [] },
         })
         .select()
         .single()
@@ -97,15 +94,30 @@ export async function POST(request: NextRequest) {
       : 'New Resume'
 
     // Create resume content from base information
+    // Map base_information structure to ResumeContent structure
     const resumeContent = {
-      personal_info: baseInfo?.personal_info || {},
+      personal_info: baseInfo?.personal_info || {
+        full_name: '',
+        email: '',
+        phone: '',
+        location: '',
+        professional_title: '',
+      },
       professional_summary: baseInfo?.professional_summary || '',
       work_experience: baseInfo?.work_experience || [],
       education: baseInfo?.education || [],
-      skills: baseInfo?.skills || {},
-      projects: baseInfo?.projects || [],
-      certifications: baseInfo?.certifications || [],
-      volunteer_work: baseInfo?.volunteer_work || [],
+      skills: baseInfo?.skills || {
+        technical: [],
+        soft: [],
+        languages: [],
+        certifications: [],
+      },
+      additional_sections: baseInfo?.additional_sections || {
+        projects: [],
+        volunteer: [],
+        awards: [],
+        publications: [],
+      },
     }
 
     // Create resume record
