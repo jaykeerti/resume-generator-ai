@@ -70,7 +70,15 @@ export async function POST(request: NextRequest) {
         .from('base_information')
         .insert({
           user_id: user.id,
-          personal_info: {},
+          personal_info: {
+            full_name: '',
+            email: '',
+            phone: '',
+            location: '',
+            professional_title: '',
+            linkedin_url: '',
+            portfolio_url: '',
+          },
           work_experience: [],
           education: [],
           skills: { technical: [], soft: [], languages: [], certifications: [] },
@@ -95,8 +103,12 @@ export async function POST(request: NextRequest) {
 
     // Create resume content from base information
     // Map base_information structure to ResumeContent structure
+    // Note: Check if personal_info has actual data (not just empty {})
+    const hasPersonalInfo = baseInfo?.personal_info &&
+      Object.keys(baseInfo.personal_info).length > 0
+
     const resumeContent = {
-      personal_info: baseInfo?.personal_info || {
+      personal_info: hasPersonalInfo ? baseInfo.personal_info : {
         full_name: '',
         email: '',
         phone: '',
