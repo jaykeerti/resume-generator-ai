@@ -39,19 +39,26 @@ export function JobDescriptionInput({ profileComplete }: JobDescriptionInputProp
 
       const data = await response.json()
 
-      // Show success message with parsed info
-      if (data.parsed_job_description) {
+      // Show appropriate message based on profile status
+      if (data.profile_empty) {
+        // Profile is empty - show warning toast with instructions
+        showToast('warning', 'Resume Created (Empty)', 'Fill your profile to populate the resume. Click Edit Profile on the dashboard.')
+        // Longer delay to read the message
+        setTimeout(() => {
+          router.push(`/resume/editor/${data.resume_id}`)
+        }, 3000)
+      } else if (data.parsed_job_description) {
+        // Profile has data - show success with parsed info
         const { title, company, skills_extracted } = data.parsed_job_description
         const message = company
           ? `${title} at ${company} • ${skills_extracted} skills identified`
           : `${title} • ${skills_extracted} skills identified`
         showToast('success', 'Job Description Analyzed!', message)
+        // Redirect to editor after short delay to show toast
+        setTimeout(() => {
+          router.push(`/resume/editor/${data.resume_id}`)
+        }, 1500)
       }
-
-      // Redirect to editor after short delay to show toast
-      setTimeout(() => {
-        router.push(`/resume/editor/${data.resume_id}`)
-      }, 1500)
     } catch (err) {
       console.error('Generation error:', err)
       showToast('error', 'Failed to generate resume', err instanceof Error ? err.message : 'Please try again')

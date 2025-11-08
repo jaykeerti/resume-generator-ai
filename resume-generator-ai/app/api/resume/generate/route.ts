@@ -56,11 +56,39 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user's base information for resume generation
-    const { data: baseInfo } = await supabase
+    let { data: baseInfo, error: baseInfoError } = await supabase
       .from('base_information')
       .select('*')
       .eq('user_id', user.id)
       .single()
+
+    // If base_information doesn't exist, create it with empty structure
+    if (baseInfoError && baseInfoError.code === 'PGRST116') {
+      console.log('base_information not found, creating empty record for user')
+
+      const { data: newBaseInfo, error: createError } = await supabase
+        .from('base_information')
+        .insert({
+          user_id: user.id,
+          personal_info: {},
+          professional_summary: '',
+          work_experience: [],
+          education: [],
+          skills: { technical: [], soft: [] },
+          projects: [],
+          certifications: [],
+          volunteer_work: [],
+        })
+        .select()
+        .single()
+
+      if (createError) {
+        console.error('Error creating base_information:', createError)
+        // Continue with null baseInfo - will use fallback values
+      } else {
+        baseInfo = newBaseInfo
+      }
+    }
 
     // Create a new resume with basic content
     // Use parsed job title for resume title
@@ -102,6 +130,13 @@ export async function POST(request: NextRequest) {
     // Note: Resume tailoring based on JD will be implemented in next iteration
     // For now, we create base resume with user's profile data
 
+    // Check if profile is empty
+    const hasProfileData = baseInfo && (
+      Object.keys(baseInfo.personal_info || {}).length > 0 ||
+      (baseInfo.work_experience || []).length > 0 ||
+      (baseInfo.education || []).length > 0
+    )
+
     return NextResponse.json({
       success: true,
       resume_id: newResume.id,
@@ -111,7 +146,10 @@ export async function POST(request: NextRequest) {
         company: parsedJD.company,
         skills_extracted: parsedJD.technical_skills.length + parsedJD.soft_skills.length,
       },
-      message: 'Resume created successfully',
+      profile_empty: !hasProfileData,
+      message: hasProfileData
+        ? 'Resume created successfully'
+        : 'Resume created - Add your profile info to populate it',
     })
   } catch (error) {
     console.error('Error generating resume:', error)
