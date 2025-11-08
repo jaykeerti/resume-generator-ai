@@ -172,7 +172,7 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
               </p>
             </div>
             {profile.subscription_tier === 'free' && (
-              <button className="rounded-lg bg-zinc-900 px-6 py-2 font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
+              <button className="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                 Upgrade to Pro
               </button>
             )}
@@ -245,7 +245,7 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
                       <button
                         onClick={() => handleDownload(resume.id, resume.title)}
                         disabled={downloadingId === resume.id}
-                        className="flex-1 rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
+                        className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                       >
                         {downloadingId === resume.id ? (
                           <span className="flex items-center justify-center gap-2">
