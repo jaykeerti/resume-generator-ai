@@ -2,6 +2,7 @@
 
 import React from 'react'
 import type { ResumePersonalInfo } from '@/lib/types/resume'
+import { FormInput } from '@/components/ui'
 
 interface PersonalInfoEditorProps {
   personalInfo: ResumePersonalInfo
@@ -15,110 +16,73 @@ export function PersonalInfoEditor({ personalInfo, onChange }: PersonalInfoEdito
 
   return (
     <div className="space-y-4">
-      <div>
-        <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
-          Full Name *
-        </label>
-        <input
-          type="text"
-          id="full_name"
-          value={personalInfo.full_name}
-          onChange={(e) => handleChange('full_name', e.target.value)}
-          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="John Doe"
-          required
-        />
-      </div>
+      <FormInput
+        id="full_name"
+        label="Full Name"
+        type="text"
+        value={personalInfo.full_name}
+        onChange={(e) => handleChange('full_name', e.target.value)}
+        placeholder="John Doe"
+        required
+      />
 
-      <div>
-        <label htmlFor="professional_title" className="block text-sm font-medium text-gray-700 mb-1">
-          Professional Title *
-        </label>
-        <input
-          type="text"
-          id="professional_title"
-          value={personalInfo.professional_title}
-          onChange={(e) => handleChange('professional_title', e.target.value)}
-          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Senior Software Engineer"
-          required
-        />
-      </div>
+      <FormInput
+        id="professional_title"
+        label="Professional Title"
+        type="text"
+        value={personalInfo.professional_title}
+        onChange={(e) => handleChange('professional_title', e.target.value)}
+        placeholder="Senior Software Engineer"
+        required
+      />
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-          Email *
-        </label>
-        <input
-          type="email"
-          id="email"
-          value={personalInfo.email}
-          onChange={(e) => handleChange('email', e.target.value)}
-          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="john@example.com"
-          required
-        />
-      </div>
+      <FormInput
+        id="email"
+        label="Email"
+        type="email"
+        value={personalInfo.email}
+        onChange={(e) => handleChange('email', e.target.value)}
+        placeholder="john@example.com"
+        required
+      />
 
-      <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-          Phone *
-        </label>
-        <input
-          type="tel"
-          id="phone"
-          value={personalInfo.phone}
-          onChange={(e) => handleChange('phone', e.target.value)}
-          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="(123) 456-7890"
-          required
-        />
-      </div>
+      <FormInput
+        id="phone"
+        label="Phone"
+        type="tel"
+        value={personalInfo.phone}
+        onChange={(e) => handleChange('phone', e.target.value)}
+        placeholder="(123) 456-7890"
+        required
+      />
 
-      <div>
-        <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
-          Location *
-        </label>
-        <input
-          type="text"
-          id="location"
-          value={personalInfo.location}
-          onChange={(e) => handleChange('location', e.target.value)}
-          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="San Francisco, CA"
-          required
-        />
-      </div>
+      <FormInput
+        id="location"
+        label="Location"
+        type="text"
+        value={personalInfo.location}
+        onChange={(e) => handleChange('location', e.target.value)}
+        placeholder="San Francisco, CA"
+        required
+      />
 
-      <div>
-        <label htmlFor="linkedin_url" className="block text-sm font-medium text-gray-700 mb-1">
-          LinkedIn URL
-        </label>
-        <input
-          type="url"
-          id="linkedin_url"
-          value={personalInfo.linkedin_url || ''}
-          onChange={(e) => handleChange('linkedin_url', e.target.value)}
-          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="https://linkedin.com/in/johndoe"
-        />
-      </div>
+      <FormInput
+        id="linkedin_url"
+        label="LinkedIn URL"
+        type="url"
+        value={personalInfo.linkedin_url || ''}
+        onChange={(e) => handleChange('linkedin_url', e.target.value)}
+        placeholder="https://linkedin.com/in/johndoe"
+      />
 
-      <div>
-        <label htmlFor="portfolio_url" className="block text-sm font-medium text-gray-700 mb-1">
-          Portfolio / Website URL
-        </label>
-        <input
-          type="url"
-          id="portfolio_url"
-          value={personalInfo.portfolio_url || ''}
-          onChange={(e) => handleChange('portfolio_url', e.target.value)}
-          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="https://johndoe.com"
-        />
-      </div>
-
-      <p className="text-xs text-gray-500 mt-4">* Required fields</p>
+      <FormInput
+        id="portfolio_url"
+        label="Portfolio / Website URL"
+        type="url"
+        value={personalInfo.portfolio_url || ''}
+        onChange={(e) => handleChange('portfolio_url', e.target.value)}
+        placeholder="https://johndoe.com"
+      />
     </div>
   )
 }
