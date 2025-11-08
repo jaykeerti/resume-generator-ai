@@ -24,7 +24,7 @@ export function PersonalInfoEditor({ personalInfo, onChange }: PersonalInfoEdito
           id="full_name"
           value={personalInfo.full_name}
           onChange={(e) => handleChange('full_name', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="John Doe"
           required
         />
@@ -39,7 +39,7 @@ export function PersonalInfoEditor({ personalInfo, onChange }: PersonalInfoEdito
           id="professional_title"
           value={personalInfo.professional_title}
           onChange={(e) => handleChange('professional_title', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Senior Software Engineer"
           required
         />
@@ -54,7 +54,7 @@ export function PersonalInfoEditor({ personalInfo, onChange }: PersonalInfoEdito
           id="email"
           value={personalInfo.email}
           onChange={(e) => handleChange('email', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="john@example.com"
           required
         />
@@ -69,7 +69,7 @@ export function PersonalInfoEditor({ personalInfo, onChange }: PersonalInfoEdito
           id="phone"
           value={personalInfo.phone}
           onChange={(e) => handleChange('phone', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="(123) 456-7890"
           required
         />
@@ -84,7 +84,7 @@ export function PersonalInfoEditor({ personalInfo, onChange }: PersonalInfoEdito
           id="location"
           value={personalInfo.location}
           onChange={(e) => handleChange('location', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="San Francisco, CA"
           required
         />
@@ -99,7 +99,7 @@ export function PersonalInfoEditor({ personalInfo, onChange }: PersonalInfoEdito
           id="linkedin_url"
           value={personalInfo.linkedin_url || ''}
           onChange={(e) => handleChange('linkedin_url', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="https://linkedin.com/in/johndoe"
         />
       </div>
@@ -113,7 +113,7 @@ export function PersonalInfoEditor({ personalInfo, onChange }: PersonalInfoEdito
           id="portfolio_url"
           value={personalInfo.portfolio_url || ''}
           onChange={(e) => handleChange('portfolio_url', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="https://johndoe.com"
         />
       </div>
