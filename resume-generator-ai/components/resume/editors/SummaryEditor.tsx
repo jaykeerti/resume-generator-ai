@@ -27,7 +27,7 @@ export function SummaryEditor({ summary, onChange }: SummaryEditorProps) {
           value={summary}
           onChange={(e) => onChange(e.target.value)}
           rows={8}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
           placeholder="Write a brief professional summary highlighting your key skills, experience, and career objectives. Keep it concise and impactful - aim for 2-4 sentences."
         />
       </div>

@@ -189,7 +189,7 @@ function EducationForm({ education: initialEducation, onSave, onCancel }: Educat
           type="text"
           value={education.institution}
           onChange={(e) => handleChange('institution', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="University of California, Berkeley"
           required
         />
@@ -202,7 +202,7 @@ function EducationForm({ education: initialEducation, onSave, onCancel }: Educat
             type="text"
             value={education.degree_type}
             onChange={(e) => handleChange('degree_type', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Bachelor of Science"
             required
           />
@@ -213,7 +213,7 @@ function EducationForm({ education: initialEducation, onSave, onCancel }: Educat
             type="text"
             value={education.field_of_study}
             onChange={(e) => handleChange('field_of_study', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Computer Science"
             required
           />
@@ -227,7 +227,7 @@ function EducationForm({ education: initialEducation, onSave, onCancel }: Educat
             type="text"
             value={education.graduation_date}
             onChange={(e) => handleChange('graduation_date', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="May 2020"
             required
           />
@@ -238,7 +238,7 @@ function EducationForm({ education: initialEducation, onSave, onCancel }: Educat
             type="text"
             value={education.gpa || ''}
             onChange={(e) => handleChange('gpa', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="3.8"
           />
         </div>
@@ -250,7 +250,7 @@ function EducationForm({ education: initialEducation, onSave, onCancel }: Educat
           value={education.coursework || ''}
           onChange={(e) => handleChange('coursework', e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           placeholder="Data Structures, Algorithms, Machine Learning, Database Systems"
         />
       </div>

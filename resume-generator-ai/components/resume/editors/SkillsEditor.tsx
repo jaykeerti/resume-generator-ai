@@ -101,7 +101,7 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
             value={technicalInput}
             onChange={(e) => setTechnicalInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTechnical())}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="e.g., JavaScript, Python, React"
           />
           <button
@@ -140,7 +140,7 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
             value={softInput}
             onChange={(e) => setSoftInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSoft())}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="e.g., Leadership, Communication, Problem Solving"
           />
           <button
@@ -178,13 +178,13 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
             type="text"
             value={languageInput.name}
             onChange={(e) => setLanguageInput({ ...languageInput, name: e.target.value })}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Language name"
           />
           <select
             value={languageInput.proficiency}
             onChange={(e) => setLanguageInput({ ...languageInput, proficiency: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Proficiency</option>
             <option value="Native">Native</option>
@@ -230,7 +230,7 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
             type="text"
             value={certInput.name}
             onChange={(e) => setCertInput({ ...certInput, name: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Certification name"
           />
           <div className="grid grid-cols-2 gap-2">
@@ -238,14 +238,14 @@ export function SkillsEditor({ skills, onChange }: SkillsEditorProps) {
               type="text"
               value={certInput.org}
               onChange={(e) => setCertInput({ ...certInput, org: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Issuing organization"
             />
             <input
               type="text"
               value={certInput.date}
               onChange={(e) => setCertInput({ ...certInput, date: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Date (e.g., 2023)"
             />
           </div>

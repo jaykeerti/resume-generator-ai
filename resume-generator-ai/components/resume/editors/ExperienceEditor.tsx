@@ -219,7 +219,7 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
             type="text"
             value={experience.job_title}
             onChange={(e) => handleChange('job_title', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -229,7 +229,7 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
             type="text"
             value={experience.company}
             onChange={(e) => handleChange('company', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -242,7 +242,7 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
             type="text"
             value={experience.start_date}
             onChange={(e) => handleChange('start_date', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Jan 2020"
             required
           />
@@ -253,7 +253,7 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
             type="text"
             value={experience.end_date || ''}
             onChange={(e) => handleChange('end_date', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Dec 2023"
             disabled={experience.is_current}
           />
@@ -283,7 +283,7 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
           type="text"
           value={experience.location}
           onChange={(e) => handleChange('location', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="San Francisco, CA"
         />
       </div>
@@ -296,7 +296,7 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
               value={resp}
               onChange={(e) => handleResponsibilityChange(index, e.target.value)}
               rows={2}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="flex-1 px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               placeholder="Describe your responsibility or achievement..."
             />
             <button
