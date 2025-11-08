@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useNotifications } from '@/lib/contexts/NotificationContext'
+import { Button, FormTextarea } from '@/components/ui'
 
 interface JobDescriptionInputProps {
   profileComplete: boolean
@@ -120,63 +121,30 @@ export function JobDescriptionInput({ profileComplete }: JobDescriptionInputProp
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="job-description" className="sr-only">
-              Job Description
-            </label>
-            <textarea
+            <FormTextarea
               id="job-description"
+              label="Job Description"
               rows={8}
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               placeholder="Paste job description text or URL from job boards (LinkedIn, Indeed, company careers page, etc.)"
-              className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-zinc-50 dark:focus:ring-zinc-50"
               disabled={isGenerating}
+              maxLength={10000}
+              showCount={true}
+              helperText={charCount > 5000 ? "Very long description - consider shortening for better results" : undefined}
             />
-            <div className="mt-2 flex items-center justify-between">
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                {charCount > 0 && `${charCount} characters`}
-              </p>
-              {charCount > 5000 && (
-                <p className="text-xs text-amber-600 dark:text-amber-400">
-                  Very long description - consider shortening for better results
-                </p>
-              )}
-            </div>
           </div>
 
-          <button
+          <Button
             onClick={handleGenerate}
             disabled={isGenerating || !jobDescription.trim()}
-            className="w-full rounded-lg bg-zinc-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            variant="primary"
+            size="lg"
+            isLoading={isGenerating}
+            className="w-full font-semibold"
           >
-            {isGenerating ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg
-                  className="h-5 w-5 animate-spin"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Generating AI-Tailored Resume...
-              </span>
-            ) : (
-              '✨ Generate Tailored Resume'
-            )}
-          </button>
+            {isGenerating ? 'Generating AI-Tailored Resume...' : '✨ Generate Tailored Resume'}
+          </Button>
 
           <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
             AI extracts skills, requirements, and keywords to match your resume to the role
