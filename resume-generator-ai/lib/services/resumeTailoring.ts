@@ -155,10 +155,19 @@ Keywords for ATS: ${jobDescription.keywords.slice(0, 10).join(', ') || 'None spe
   } catch (error) {
     console.error('Error tailoring resume:', error)
     // Return original content if tailoring fails
+    // Ensure responsibilities is always an array (not optional)
     return {
       professional_summary: '',
-      work_experience: baseInfo.work_experience || [],
-      skills: baseInfo.skills || { technical: [], soft: [] },
+      work_experience: (baseInfo.work_experience || []).map(exp => ({
+        ...exp,
+        responsibilities: exp.responsibilities || [],
+      })),
+      skills: {
+        technical: baseInfo.skills?.technical || [],
+        soft: baseInfo.skills?.soft || [],
+        languages: baseInfo.skills?.languages,
+        certifications: baseInfo.skills?.certifications,
+      },
       additional_sections: baseInfo.additional_sections,
     }
   }

@@ -78,6 +78,9 @@ export interface TemplateCustomization {
   accent_color: string // hex color, e.g., "#3B82F6"
   font: FontFamily
   font_size: FontSize
+  // AI Tailoring fields (optional for backward compatibility)
+  tailoring_applied?: boolean
+  original_content?: ResumeContent
 }
 
 export interface ResumePersonalInfo {
