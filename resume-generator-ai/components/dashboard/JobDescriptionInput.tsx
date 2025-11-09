@@ -51,10 +51,24 @@ export function JobDescriptionInput({ profileComplete }: JobDescriptionInputProp
       } else if (data.parsed_job_description) {
         // Profile has data - show success with parsed info
         const { title, company, skills_extracted } = data.parsed_job_description
-        const message = company
-          ? `${title} at ${company} • ${skills_extracted} skills identified`
-          : `${title} • ${skills_extracted} skills identified`
-        showToast('success', 'Job Description Analyzed!', message)
+
+        // Enhanced message to show tailoring status
+        let message: string
+        if (data.tailoring_applied) {
+          message = company
+            ? `AI-tailored for ${title} at ${company} • ${skills_extracted} skills matched`
+            : `AI-tailored for ${title} • ${skills_extracted} skills matched`
+        } else {
+          message = company
+            ? `${title} at ${company} • ${skills_extracted} skills identified`
+            : `${title} • ${skills_extracted} skills identified`
+        }
+
+        const toastTitle = data.tailoring_applied
+          ? '✨ Resume Tailored!'
+          : 'Job Description Analyzed!'
+
+        showToast('success', toastTitle, message)
         // Redirect to editor after short delay to show toast
         setTimeout(() => {
           router.push(`/resume/editor/${data.resume_id}`)

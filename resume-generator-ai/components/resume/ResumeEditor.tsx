@@ -85,6 +85,23 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
     setContent(newContent)
   }, [])
 
+  // Check if tailoring was applied and original content exists
+  const hasTailoredContent = resume.customization?.tailoring_applied === true &&
+    resume.customization?.original_content !== undefined
+
+  const handleRevertToOriginal = useCallback(() => {
+    if (resume.customization?.original_content) {
+      if (confirm('This will replace the AI-tailored content with your original profile data. Continue?')) {
+        setContent(resume.customization.original_content as ResumeContent)
+        // Update customization to mark tailoring as no longer applied
+        setCustomization({
+          ...customization,
+          tailoring_applied: false,
+        })
+      }
+    }
+  }, [resume.customization, customization])
+
   const tabs = [
     { id: 'personal' as const, label: 'Personal', icon: '👤' },
     { id: 'summary' as const, label: 'Summary', icon: '📝' },
@@ -130,6 +147,15 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
                 <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
             </button>
+            {hasTailoredContent && (
+              <button
+                onClick={handleRevertToOriginal}
+                className="hidden lg:block px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                title="Revert to original untailored content"
+              >
+                ↺ Revert to Original
+              </button>
+            )}
             <button
               className="hidden lg:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
               disabled={isSaving}

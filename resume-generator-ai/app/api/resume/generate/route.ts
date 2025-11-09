@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { parseJobDescription } from '@/lib/services/jobDescriptionParser'
+import { tailorResume } from '@/lib/services/resumeTailoring'
 
 export async function POST(request: NextRequest) {
   try {
@@ -111,7 +112,15 @@ export async function POST(request: NextRequest) {
     console.log('Base info personal_info:', JSON.stringify(baseInfo?.personal_info || null))
     console.log('Has personal info:', hasPersonalInfo)
 
-    const resumeContent = {
+    // Check if profile has meaningful data to tailor
+    const hasProfileData = baseInfo && (
+      Object.keys(baseInfo.personal_info || {}).length > 0 ||
+      (baseInfo.work_experience || []).length > 0 ||
+      (baseInfo.education || []).length > 0
+    )
+
+    // Create original content (untailored)
+    const originalContent = {
       personal_info: hasPersonalInfo ? baseInfo.personal_info : {
         full_name: '',
         email: '',
@@ -136,7 +145,43 @@ export async function POST(request: NextRequest) {
       },
     }
 
-    // Create resume record
+    // AI Tailoring: If profile has data, tailor it to the job description
+    let resumeContent = originalContent
+    let tailoringApplied = false
+
+    if (hasProfileData) {
+      try {
+        console.log('Tailoring resume to job description...')
+        const tailored = await tailorResume(baseInfo, parsedJD, 'moderate')
+
+        // Merge tailored content with original personal_info and education
+        // (we don't tailor personal info or education, only experience, skills, summary, projects)
+        resumeContent = {
+          personal_info: originalContent.personal_info,
+          professional_summary: tailored.professional_summary || originalContent.professional_summary,
+          work_experience: tailored.work_experience.length > 0
+            ? tailored.work_experience
+            : originalContent.work_experience,
+          education: originalContent.education, // Education is not tailored
+          skills: tailored.skills,
+          additional_sections: {
+            ...originalContent.additional_sections,
+            projects: tailored.additional_sections?.projects || originalContent.additional_sections?.projects,
+          },
+        }
+
+        tailoringApplied = true
+        console.log('Resume tailored successfully')
+      } catch (error) {
+        console.error('Error tailoring resume:', error)
+        console.log('Falling back to original content')
+        // Fallback to original content if tailoring fails
+        resumeContent = originalContent
+      }
+    }
+
+    // Create resume record with tailored content
+    // Store original content in customization for revert capability
     const { data: newResume, error: resumeError } = await supabase
       .from('resumes')
       .insert({
@@ -145,7 +190,10 @@ export async function POST(request: NextRequest) {
         title: resumeTitle,
         content: resumeContent,
         template_id: 'classic', // Default template
-        customization: {}, // Default customization (accent_color, font, font_size)
+        customization: {
+          original_content: originalContent, // Store for revert capability
+          tailoring_applied: tailoringApplied,
+        },
       })
       .select()
       .single()
@@ -154,16 +202,6 @@ export async function POST(request: NextRequest) {
       console.error('Error creating resume:', resumeError)
       throw new Error('Failed to create resume')
     }
-
-    // Note: Resume tailoring based on JD will be implemented in next iteration
-    // For now, we create base resume with user's profile data
-
-    // Check if profile is empty
-    const hasProfileData = baseInfo && (
-      Object.keys(baseInfo.personal_info || {}).length > 0 ||
-      (baseInfo.work_experience || []).length > 0 ||
-      (baseInfo.education || []).length > 0
-    )
 
     return NextResponse.json({
       success: true,
@@ -175,8 +213,11 @@ export async function POST(request: NextRequest) {
         skills_extracted: parsedJD.technical_skills.length + parsedJD.soft_skills.length,
       },
       profile_empty: !hasProfileData,
+      tailoring_applied: tailoringApplied,
       message: hasProfileData
-        ? 'Resume created successfully'
+        ? tailoringApplied
+          ? 'Resume created and tailored to job description'
+          : 'Resume created successfully'
         : 'Resume created - Add your profile info to populate it',
     })
   } catch (error) {
