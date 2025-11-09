@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { FormTextarea } from '@/components/ui'
+import { RichTextEditor } from '@/components/ui'
 
 interface SummaryEditorProps {
   summary: string
@@ -11,15 +11,16 @@ interface SummaryEditorProps {
 export function SummaryEditor({ summary, onChange }: SummaryEditorProps) {
   return (
     <div className="space-y-4">
-      <FormTextarea
-        id="professional_summary"
+      <RichTextEditor
         label="Professional Summary"
         value={summary}
-        onChange={(e) => onChange(e.target.value)}
-        rows={8}
+        onChange={onChange}
         maxLength={500}
         showCount
+        minHeight="200px"
         placeholder="Write a brief professional summary highlighting your key skills, experience, and career objectives. Keep it concise and impactful - aim for 2-4 sentences."
+        showToolbar={true}
+        enableLists={true}
       />
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -29,6 +30,7 @@ export function SummaryEditor({ summary, onChange }: SummaryEditorProps) {
           <li>• Highlight 2-3 key skills or achievements</li>
           <li>• Mention what you're looking for in your next role</li>
           <li>• Keep it concise - aim for 2-4 sentences</li>
+          <li>• Use formatting (bold, italic) to emphasize key points</li>
         </ul>
       </div>
     </div>

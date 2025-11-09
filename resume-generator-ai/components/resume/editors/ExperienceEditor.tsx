@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import type { ResumeWorkExperience } from '@/lib/types/resume'
 import { useNotifications } from '@/lib/contexts/NotificationContext'
-import { FormInput, FormTextarea, Button } from '@/components/ui'
+import { FormInput, RichTextEditor, Button } from '@/components/ui'
 
 interface ExperienceEditorProps {
   experiences: ResumeWorkExperience[]
@@ -280,19 +280,23 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">Responsibilities</label>
         {experience.responsibilities.map((resp, index) => (
-          <div key={index} className="flex gap-2 mb-2">
-            <FormTextarea
-              value={resp}
-              onChange={(e) => handleResponsibilityChange(index, e.target.value)}
-              rows={2}
-              placeholder="Describe your responsibility or achievement..."
-              className="flex-1"
-            />
+          <div key={index} className="flex gap-2 mb-3">
+            <div className="flex-1">
+              <RichTextEditor
+                value={resp}
+                onChange={(value) => handleResponsibilityChange(index, value)}
+                placeholder="Describe your responsibility or achievement..."
+                minHeight="80px"
+                showToolbar={true}
+                enableLists={false}
+              />
+            </div>
             <Button
               type="button"
               onClick={() => handleRemoveResponsibility(index)}
               variant="ghost"
               size="sm"
+              className="self-start mt-1"
             >
               ✕
             </Button>
