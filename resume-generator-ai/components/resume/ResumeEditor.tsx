@@ -195,7 +195,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
         </div>
 
         {/* Left Panel - Content Editors (Desktop always, Mobile only when mobileView='edit') */}
-        <aside className={`w-full lg:w-80 xl:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col ${
+        <aside className={`w-full lg:w-80 xl:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col flex-1 min-h-0 ${
           mobileView === 'edit' ? 'flex' : 'hidden'
         } lg:flex`}>
           {/* Tabs */}
@@ -260,7 +260,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
         </aside>
 
         {/* Mobile Preview (only when mobileView='preview') */}
-        <div className={`flex-1 lg:hidden bg-gray-100 overflow-hidden flex-col ${
+        <div className={`flex-1 min-h-0 lg:hidden bg-gray-100 overflow-hidden flex-col ${
           mobileView === 'preview' ? 'flex' : 'hidden'
         }`}>
           <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
