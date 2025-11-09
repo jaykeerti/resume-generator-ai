@@ -153,7 +153,7 @@ export function RichTextEditor({
         )}
 
         {/* Editor Content */}
-        <div style={{ minHeight }} className="overflow-y-auto">
+        <div style={{ minHeight }}>
           <EditorContent editor={editor} />
         </div>
       </div>
