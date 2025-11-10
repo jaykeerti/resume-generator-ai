@@ -64,7 +64,7 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
       {/* Professional Summary */}
       {professional_summary && professional_summary.trim() && (
         <TemplateSection title="Professional Summary">
-          <div className="text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: professional_summary }} />
+          <div className="text-sm leading-relaxed prose prose-sm max-w-none prose-p:m-0 prose-ul:my-1 prose-li:my-0" dangerouslySetInnerHTML={{ __html: professional_summary }} />
         </TemplateSection>
       )}
 
@@ -86,7 +86,7 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
               {exp.responsibilities.length > 0 && (
                 <ul className="list-disc list-outside ml-5 space-y-1">
                   {exp.responsibilities.map((resp, i) => (
-                    <li key={i} className="text-sm text-gray-800" dangerouslySetInnerHTML={{ __html: resp }} />
+                    <li key={i} className="text-sm text-gray-800 prose prose-sm max-w-none prose-p:inline prose-strong:font-bold prose-em:italic" dangerouslySetInnerHTML={{ __html: resp }} />
                   ))}
                 </ul>
               )}
