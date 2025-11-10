@@ -61,7 +61,7 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-4 text-gray-500">
             Profile
           </h2>
-          <p className="text-sm leading-loose text-gray-800">{professional_summary}</p>
+          <div className="text-sm leading-loose text-gray-800" dangerouslySetInnerHTML={{ __html: professional_summary }} />
         </section>
       )}
 
@@ -89,9 +89,7 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
                 {exp.responsibilities.length > 0 && (
                   <ul className="space-y-2 mt-3">
                     {exp.responsibilities.map((resp, i) => (
-                      <li key={i} className="text-sm text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-200">
-                        {resp}
-                      </li>
+                      <li key={i} className="text-sm text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-200" dangerouslySetInnerHTML={{ __html: resp }} />
                     ))}
                   </ul>
                 )}

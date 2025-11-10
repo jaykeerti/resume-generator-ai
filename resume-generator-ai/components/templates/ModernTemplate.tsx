@@ -148,7 +148,7 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
               <h2 className="text-lg font-bold uppercase mb-3 pb-1 border-b-2 border-gray-300">
                 Professional Summary
               </h2>
-              <p className="text-sm leading-relaxed text-gray-800">{professional_summary}</p>
+              <div className="text-sm leading-relaxed text-gray-800" dangerouslySetInnerHTML={{ __html: professional_summary }} />
             </section>
           )}
 
@@ -176,7 +176,7 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
                     {exp.responsibilities.length > 0 && (
                       <ul className="list-disc list-outside ml-5 space-y-1">
                         {exp.responsibilities.map((resp, i) => (
-                          <li key={i} className="text-sm text-gray-700">{resp}</li>
+                          <li key={i} className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: resp }} />
                         ))}
                       </ul>
                     )}
