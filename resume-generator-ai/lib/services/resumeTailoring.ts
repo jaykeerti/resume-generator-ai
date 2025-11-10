@@ -234,7 +234,11 @@ Return ONLY the professional summary text, no JSON, no additional commentary.`
     max_tokens: 300,
   })
 
-  return completion.choices[0].message.content?.trim() || ''
+  const summaryText = completion.choices[0].message.content?.trim() || ''
+
+  // Wrap plain text in <p> tag for proper HTML rendering in RichTextEditor
+  // This prevents text truncation issues when displayed in templates
+  return summaryText ? `<p>${summaryText}</p>` : ''
 }
 
 /**
@@ -326,9 +330,14 @@ Return ONLY the rewritten bullets as a JSON array of strings, like: ["bullet 1",
         const bullets = parsed.bullets || parsed.responsibilities || Object.values(parsed)
 
         if (Array.isArray(bullets) && bullets.length > 0) {
+          // Wrap each bullet in <p> tag for proper HTML rendering in RichTextEditor
+          // This prevents text truncation issues when displayed in templates
+          const htmlBullets = (bullets as string[]).map(bullet =>
+            bullet.trim() ? `<p>${bullet.trim()}</p>` : bullet
+          )
           tailored.push({
             ...exp,
-            responsibilities: bullets as string[],
+            responsibilities: htmlBullets,
           })
         } else {
           // Fallback to original
