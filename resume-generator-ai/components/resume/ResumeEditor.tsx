@@ -31,6 +31,7 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved')
   const [previewScale, setPreviewScale] = useState(0.7)
+  const [showOriginalPreview, setShowOriginalPreview] = useState(false)
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -263,9 +264,30 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
         <div className={`flex-1 min-h-0 lg:hidden bg-gray-100 overflow-hidden flex-col ${
           mobileView === 'preview' ? 'flex' : 'hidden'
         }`}>
-          <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">Preview</span>
-            <div className="flex items-center gap-2">
+          <div className="bg-white border-b border-gray-200 px-4 py-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-700">Preview</span>
+              {hasTailoredContent && (
+                <button
+                  onClick={() => setShowOriginalPreview(!showOriginalPreview)}
+                  className="px-2 py-1 text-xs border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
+                >
+                  {showOriginalPreview ? '✨ AI' : '📄 Original'}
+                </button>
+              )}
+            </div>
+            {hasTailoredContent && (
+              <div className="mb-2">
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  showOriginalPreview
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {showOriginalPreview ? '📄 Viewing Original' : '✨ Viewing AI-Tailored'}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setPreviewScale(Math.max(0.3, previewScale - 0.1))}
                 className="p-2 hover:bg-gray-100 rounded"
@@ -293,7 +315,9 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
             <div className="max-w-[8.5in] mx-auto shadow-2xl">
               <TemplateRenderer
                 templateId={templateId}
-                content={content}
+                content={showOriginalPreview && hasTailoredContent && customization.original_content
+                  ? customization.original_content
+                  : content}
                 customization={customization}
                 scale={previewScale}
               />
@@ -305,8 +329,31 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
         <main className="hidden lg:flex flex-1 bg-gray-100 overflow-hidden flex-col border-r border-gray-200">
           {/* Preview Controls */}
           <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">Preview</span>
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-700">Preview</span>
+              {hasTailoredContent && (
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  showOriginalPreview
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {showOriginalPreview ? '📄 Original' : '✨ AI-Tailored'}
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-2">
+              {hasTailoredContent && (
+                <>
+                  <button
+                    onClick={() => setShowOriginalPreview(!showOriginalPreview)}
+                    className="px-3 py-1 text-sm border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
+                    title={showOriginalPreview ? 'View AI-Tailored Version' : 'View Original Version'}
+                  >
+                    {showOriginalPreview ? '✨ Show AI Version' : '📄 Show Original'}
+                  </button>
+                  <div className="w-px h-6 bg-gray-300" />
+                </>
+              )}
               <button
                 onClick={() => setPreviewScale(Math.max(0.3, previewScale - 0.1))}
                 className="p-2 hover:bg-gray-100 rounded"
@@ -342,7 +389,9 @@ export function ResumeEditor({ resume, onSave }: ResumeEditorProps) {
             <div className="max-w-[8.5in] mx-auto shadow-2xl">
               <TemplateRenderer
                 templateId={templateId}
-                content={content}
+                content={showOriginalPreview && hasTailoredContent && customization.original_content
+                  ? customization.original_content
+                  : content}
                 customization={customization}
                 scale={previewScale}
               />
