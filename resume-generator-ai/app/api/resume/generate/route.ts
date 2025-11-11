@@ -120,13 +120,17 @@ export async function POST(request: NextRequest) {
     )
 
     // Create original content (untailored)
+    // Update professional title to match the job title from job description
     const originalContent = {
-      personal_info: hasPersonalInfo ? baseInfo.personal_info : {
+      personal_info: hasPersonalInfo ? {
+        ...baseInfo.personal_info,
+        professional_title: parsedJD.job_title, // Set professional title from job description
+      } : {
         full_name: '',
         email: '',
         phone: '',
         location: '',
-        professional_title: '',
+        professional_title: parsedJD.job_title, // Set professional title from job description
       },
       professional_summary: baseInfo?.professional_summary || '',
       work_experience: baseInfo?.work_experience || [],
