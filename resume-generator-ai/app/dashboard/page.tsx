@@ -10,7 +10,7 @@ export default async function DashboardPage() {
     redirect('/auth/signin')
   }
 
-  // Fetch profile, base information, and resumes in parallel for better performance
+  // Fetch profile, base information, and resumes with job descriptions in parallel for better performance
   const [profileResult, baseInfoResult, resumesResult] = await Promise.all([
     supabase
       .from('users_profile')
@@ -24,7 +24,16 @@ export default async function DashboardPage() {
       .single(),
     supabase
       .from('resumes')
-      .select('*')
+      .select(`
+        *,
+        job_description:job_descriptions(
+          id,
+          job_title,
+          company_name,
+          description_text,
+          parsed_keywords
+        )
+      `)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
   ])

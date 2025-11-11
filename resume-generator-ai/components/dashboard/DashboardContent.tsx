@@ -5,13 +5,34 @@ import type { User } from '@supabase/supabase-js'
 import { UserProfileDropdown } from '@/components/ui/UserProfileDropdown'
 import { ProfileSummaryCard } from './ProfileSummaryCard'
 import { JobDescriptionInput } from './JobDescriptionInput'
+import { JobDescriptionModal } from './JobDescriptionModal'
 import { useNotifications } from '@/lib/contexts/NotificationContext'
+
+interface JobDescription {
+  id: string
+  job_title: string
+  company_name: string | null
+  description_text: string
+  parsed_keywords: {
+    job_title: string
+    company: string | null
+    location: string | null
+    technical_skills: string[]
+    soft_skills: string[]
+    qualifications: string[]
+    responsibilities: string[]
+    technologies: string[]
+    keywords: string[]
+  }
+}
 
 interface Resume {
   id: string
   title: string
   created_at: string
   updated_at: string
+  job_description_id: string | null
+  job_description?: JobDescription
 }
 
 interface UserProfile {
@@ -40,6 +61,8 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [generationCount, setGenerationCount] = useState(profile.generation_count)
+  const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescription | null>(null)
+  const [isJobDescModalOpen, setIsJobDescModalOpen] = useState(false)
 
   const remainingGenerations =
     profile.subscription_tier === 'pro' ? null : Math.max(0, 5 - generationCount)
@@ -100,6 +123,13 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
       showToast('error', 'Failed to generate PDF', 'Please try again')
     } finally {
       setDownloadingId(null)
+    }
+  }
+
+  const handleShowJobDescription = (resume: Resume) => {
+    if (resume.job_description) {
+      setSelectedJobDescription(resume.job_description)
+      setIsJobDescModalOpen(true)
     }
   }
 
@@ -242,6 +272,15 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
                       >
                         Edit
                       </a>
+                      {resume.job_description && (
+                        <button
+                          onClick={() => handleShowJobDescription(resume)}
+                          className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-center text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                          title="View Job Description"
+                        >
+                          📄 Job Info
+                        </button>
+                      )}
                       <button
                         onClick={() => handleDownload(resume.id, resume.title)}
                         disabled={downloadingId === resume.id}
@@ -284,6 +323,13 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
           )}
         </div>
       </main>
+
+      {/* Job Description Modal */}
+      <JobDescriptionModal
+        jobDescription={selectedJobDescription}
+        isOpen={isJobDescModalOpen}
+        onClose={() => setIsJobDescModalOpen(false)}
+      />
     </div>
   )
 }
