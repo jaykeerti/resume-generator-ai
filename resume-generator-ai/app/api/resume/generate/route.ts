@@ -97,9 +97,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Create a new resume with basic content
-    // Use parsed job title for resume title
+    // Use parsed job title and company name for resume title
     const resumeTitle = parsedJD.job_title && parsedJD.job_title !== 'Position from Job Description'
-      ? `Resume for ${parsedJD.job_title}`.substring(0, 100)
+      ? parsedJD.company
+        ? `${parsedJD.job_title} - ${parsedJD.company}`.substring(0, 100)
+        : parsedJD.job_title.substring(0, 100)
       : 'New Resume'
 
     // Create resume content from base information
