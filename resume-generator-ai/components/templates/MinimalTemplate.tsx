@@ -3,6 +3,7 @@
 import React from 'react'
 import type { ResumeContent, TemplateCustomization } from '@/lib/types/resume'
 import { TemplateWrapper } from './base/TemplateWrapper'
+import { formatTextWithBold } from '@/lib/utils/textFormatting'
 
 interface MinimalTemplateProps {
   content: ResumeContent
@@ -61,7 +62,7 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-4 text-gray-500">
             Profile
           </h2>
-          <p className="text-sm leading-loose text-gray-800">{professional_summary}</p>
+          <p className="text-sm leading-loose text-gray-800">{formatTextWithBold(professional_summary)}</p>
         </section>
       )}
 
@@ -90,7 +91,7 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
                   <ul className="space-y-2 mt-3">
                     {exp.responsibilities.map((resp, i) => (
                       <li key={i} className="text-sm text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-200">
-                        {resp}
+                        {formatTextWithBold(resp)}
                       </li>
                     ))}
                   </ul>

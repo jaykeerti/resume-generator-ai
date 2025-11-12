@@ -248,6 +248,11 @@ function getTemplateStyles(templateId: string, customization: any): string {
       line-height: 1.6;
       color: #374151;
     }
+
+    strong {
+      font-weight: 700;
+      color: #111827;
+    }
   `
 }
 
@@ -283,7 +288,7 @@ function getTemplateHTML(templateId: string, content: any, customization: any): 
   // Summary section
   const summaryHTML = safeContent.professional_summary ? `
     <div class="section">
-      <div class="summary">${escapeHtml(safeContent.professional_summary)}</div>
+      <div class="summary">${formatTextWithBold(safeContent.professional_summary)}</div>
     </div>
   ` : ''
 
@@ -301,7 +306,7 @@ function getTemplateHTML(templateId: string, content: any, customization: any): 
           </div>
           ${exp.responsibilities && exp.responsibilities.length > 0 ? `
             <ul>
-              ${exp.responsibilities.map((resp: string) => `<li>${escapeHtml(resp)}</li>`).join('')}
+              ${exp.responsibilities.map((resp: string) => `<li>${formatTextWithBold(resp)}</li>`).join('')}
             </ul>
           ` : ''}
         </div>
@@ -372,4 +377,13 @@ function escapeHtml(text: string): string {
     "'": '&#039;',
   }
   return text.replace(/[&<>"']/g, (m) => map[m])
+}
+
+function formatTextWithBold(text: string): string {
+  if (!text) return ''
+  // First escape HTML
+  let escaped = escapeHtml(text)
+  // Then convert markdown bold (**text**) to HTML <strong> tags
+  escaped = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  return escaped
 }

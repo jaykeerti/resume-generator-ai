@@ -156,7 +156,14 @@ Rules:
 4. Preserve the exact formatting and content from the resume
 5. For dates, use the format provided in the resume
 6. Return ONLY the JSON object, no other text
-7. Ensure all JSON is valid and properly escaped"""
+7. Ensure all JSON is valid and properly escaped
+8. IMPORTANT: In the "responsibilities" field for work experience, wrap ALL quantifiable metrics (numbers, percentages, dollar amounts, time periods, etc.) with **double asterisks** for bold formatting. Examples:
+   - "Reduced API response time by **40%**"
+   - "Led a team of **5 engineers**"
+   - "Generated **$2M** in revenue"
+   - "Improved performance by **3x**"
+   - "Managed **10,000+ users**"
+9. IMPORTANT: Format the professional_summary to be clear and well-structured. If the summary contains multiple sentences, ensure proper spacing and formatting."""
 
     def _extract_json(self, text: str) -> Optional[Dict[str, Any]]:
         """
@@ -222,9 +229,9 @@ Rules:
                     "end_date": "Present",
                     "description": "Lead development of core platform features",
                     "responsibilities": [
-                        "Led a team of 5 engineers in developing a scalable microservices architecture",
-                        "Reduced API response time by 40% through optimization and caching strategies",
-                        "Implemented CI/CD pipelines that decreased deployment time by 60%"
+                        "Led a team of **5 engineers** in developing a scalable microservices architecture",
+                        "Reduced API response time by **40%** through optimization and caching strategies",
+                        "Implemented CI/CD pipelines that decreased deployment time by **60%**"
                     ]
                 },
                 {
@@ -236,7 +243,7 @@ Rules:
                     "description": "Full-stack development for web applications",
                     "responsibilities": [
                         "Built responsive web applications using React and Node.js",
-                        "Developed RESTful APIs serving 10,000+ daily active users",
+                        "Developed RESTful APIs serving **10,000+** daily active users",
                         "Collaborated with design team to implement pixel-perfect UI components"
                     ]
                 }

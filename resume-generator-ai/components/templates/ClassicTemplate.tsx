@@ -4,6 +4,7 @@ import React from 'react'
 import type { ResumeContent, TemplateCustomization } from '@/lib/types/resume'
 import { TemplateWrapper } from './base/TemplateWrapper'
 import { TemplateSection } from './base/TemplateSection'
+import { formatTextWithBold } from '@/lib/utils/textFormatting'
 
 interface ClassicTemplateProps {
   content: ResumeContent
@@ -64,7 +65,7 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
       {/* Professional Summary */}
       {professional_summary && professional_summary.trim() && (
         <TemplateSection title="Professional Summary">
-          <p className="text-sm leading-relaxed">{professional_summary}</p>
+          <p className="text-sm leading-relaxed">{formatTextWithBold(professional_summary)}</p>
         </TemplateSection>
       )}
 
@@ -86,7 +87,7 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
               {exp.responsibilities.length > 0 && (
                 <ul className="list-disc list-outside ml-5 space-y-1">
                   {exp.responsibilities.map((resp, i) => (
-                    <li key={i} className="text-sm text-gray-800">{resp}</li>
+                    <li key={i} className="text-sm text-gray-800">{formatTextWithBold(resp)}</li>
                   ))}
                 </ul>
               )}
