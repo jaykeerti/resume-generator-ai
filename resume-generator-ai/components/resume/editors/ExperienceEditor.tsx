@@ -169,6 +169,39 @@ export function ExperienceEditor({ experiences, onChange }: ExperienceEditorProp
   )
 }
 
+/**
+ * Convert array of responsibility strings to HTML bullet list
+ */
+function responsibilitiesToHtml(responsibilities: string[]): string {
+  if (!responsibilities || responsibilities.length === 0) {
+    return ''
+  }
+
+  // Create bullet list HTML
+  const items = responsibilities
+    .filter(r => r.trim() !== '')
+    .map(r => `<li>${r}</li>`)
+    .join('')
+
+  return `<ul>${items}</ul>`
+}
+
+/**
+ * Extract bullet points from HTML back to array
+ */
+function htmlToResponsibilities(html: string): string[] {
+  if (!html || html.trim() === '') {
+    return []
+  }
+
+  // Parse HTML and extract list items
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(html, 'text/html')
+  const listItems = doc.querySelectorAll('li')
+
+  return Array.from(listItems).map(li => li.innerHTML.trim()).filter(text => text !== '')
+}
+
 interface ExperienceFormProps {
   experience: ResumeWorkExperience
   onSave: (experience: ResumeWorkExperience) => void
@@ -177,37 +210,26 @@ interface ExperienceFormProps {
 
 function ExperienceForm({ experience: initialExperience, onSave, onCancel }: ExperienceFormProps) {
   const [experience, setExperience] = useState(initialExperience)
+  // Convert responsibilities array to HTML for the editor
+  const [responsibilitiesHtml, setResponsibilitiesHtml] = useState(
+    responsibilitiesToHtml(initialExperience.responsibilities)
+  )
 
   const handleChange = (field: keyof ResumeWorkExperience, value: any) => {
     setExperience({ ...experience, [field]: value })
   }
 
-  const handleResponsibilityChange = (index: number, value: string) => {
-    const updated = [...experience.responsibilities]
-    updated[index] = value
-    setExperience({ ...experience, responsibilities: updated })
-  }
-
-  const handleAddResponsibility = () => {
-    setExperience({
-      ...experience,
-      responsibilities: [...experience.responsibilities, '']
-    })
-  }
-
-  const handleRemoveResponsibility = (index: number) => {
-    setExperience({
-      ...experience,
-      responsibilities: experience.responsibilities.filter((_, i) => i !== index)
-    })
+  const handleResponsibilitiesChange = (html: string) => {
+    setResponsibilitiesHtml(html)
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Filter out empty responsibilities
+    // Convert HTML back to array format
+    const responsibilities = htmlToResponsibilities(responsibilitiesHtml)
     const cleanedExperience = {
       ...experience,
-      responsibilities: experience.responsibilities.filter(r => r.trim() !== '')
+      responsibilities
     }
     onSave(cleanedExperience)
   }
@@ -278,37 +300,18 @@ function ExperienceForm({ experience: initialExperience, onSave, onCancel }: Exp
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Responsibilities</label>
-        {experience.responsibilities.map((resp, index) => (
-          <div key={index} className="flex gap-2 mb-3">
-            <div className="flex-1">
-              <RichTextEditor
-                value={resp}
-                onChange={(value) => handleResponsibilityChange(index, value)}
-                placeholder="Describe your responsibility or achievement..."
-                minHeight="80px"
-                showToolbar={true}
-                enableLists={false}
-              />
-            </div>
-            <Button
-              type="button"
-              onClick={() => handleRemoveResponsibility(index)}
-              variant="ghost"
-              size="sm"
-              className="self-start mt-1"
-            >
-              ✕
-            </Button>
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={handleAddResponsibility}
-          className="text-sm text-blue-600 hover:text-blue-700"
-        >
-          + Add Responsibility
-        </button>
+        <RichTextEditor
+          label="Responsibilities & Achievements"
+          value={responsibilitiesHtml}
+          onChange={handleResponsibilitiesChange}
+          placeholder="Use the bullet list button to add your responsibilities and achievements..."
+          minHeight="200px"
+          showToolbar={true}
+          enableLists={true}
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          💡 Tip: Click the bullet list button (•) in the toolbar to create bullet points. Each bullet will be saved separately.
+        </p>
       </div>
 
       <div className="flex gap-2 justify-end">
