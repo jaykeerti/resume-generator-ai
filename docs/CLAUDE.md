@@ -235,8 +235,10 @@ resume-generator-ai/
 │   │   └── generator.ts       # Puppeteer PDF generation
 │   ├── supabase/              # Supabase client configs
 │   ├── templates/             # Template configurations
-│   └── types/                 # TypeScript type definitions
-│       └── resume.ts          # Resume types (extended)
+│   ├── types/                 # TypeScript type definitions
+│   │   └── resume.ts          # Resume types (extended)
+│   └── utils/                 # Utility functions ✨ NEW
+│       └── textFormatting.ts  # Bold markdown conversion
 ├── hooks/                     # React hooks (useAuth)
 ├── supabase/
 │   └── migrations/            # Database schema migrations
@@ -316,6 +318,29 @@ Key tables to implement:
 - AI processes sections independently: professional summary, work experience bullets, skills reordering, project descriptions
 - Preserve truthfulness - AI enhances/rewords existing content, never fabricates
 - Target: Resume generation completes in <30 seconds
+
+### AI Bold Formatting Feature ✨ NEW
+**Automatically bolds quantifiable metrics in AI-generated resumes:**
+
+The AI is configured to wrap all quantifiable metrics with markdown bold syntax (`**text**`) for visual emphasis:
+- Numbers: "Led a team of **5 engineers**"
+- Percentages: "Reduced API response time by **40%**"
+- Dollar amounts: "Generated **$2M** in revenue"
+- Time periods: "Decreased deployment time by **60%**"
+- User counts: "Serving **10,000+** daily active users"
+
+**Implementation:**
+1. **AI Prompt** (`fastapi-backend/app/services/ai_structurer.py:160-165`): Instructs Claude to wrap metrics in `**double asterisks**`
+2. **PDF Generator** (`resume-generator-ai/lib/pdf/generator.ts:377-384`): Converts markdown bold to HTML `<strong>` tags
+3. **Template Components**: All three templates use `formatTextWithBold()` utility for rendering
+4. **Utility Function** (`resume-generator-ai/lib/utils/textFormatting.ts`): React helper for converting markdown to JSX
+
+**Where it applies:**
+- Professional summary sections
+- Work experience responsibilities/achievements
+- Automatically applies to all AI-parsed and AI-generated content
+
+This enhances resume readability and helps quantifiable achievements stand out to recruiters.
 
 ## Key Considerations
 
