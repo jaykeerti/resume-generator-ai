@@ -33,3 +33,22 @@ export function formatTextWithBold(text: string): (string | React.ReactElement)[
 
   return parts.length > 0 ? parts : [text]
 }
+
+/**
+ * Renders HTML content safely as React elements
+ * Used for content from the rich text editor (TipTap) which outputs HTML
+ * @param html - HTML string from the rich text editor
+ * @returns React element with rendered HTML
+ */
+export function renderHtml(html: string): React.ReactElement {
+  if (!html || html.trim() === '') {
+    return <></>
+  }
+
+  return (
+    <div
+      dangerouslySetInnerHTML={{ __html: html }}
+      className="rich-text-content"
+    />
+  )
+}
