@@ -6,6 +6,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import CharacterCount from '@tiptap/extension-character-count'
 import Underline from '@tiptap/extension-underline'
+import TextAlign from '@tiptap/extension-text-align'
 
 /**
  * Convert markdown bold syntax (**text**) to HTML bold tags
@@ -53,6 +54,10 @@ export function RichTextEditor({
         listItem: enableLists ? {} : false,
       }),
       Underline,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+        alignments: ['left', 'center', 'right', 'justify'],
+      }),
       Placeholder.configure({
         placeholder,
       }),
@@ -157,6 +162,36 @@ export function RichTextEditor({
 
             <div className="w-px h-6 bg-gray-300 mx-1" />
             <ToolbarButton
+              onClick={() => editor.chain().focus().setTextAlign('left').run()}
+              isActive={editor.isActive({ textAlign: 'left' })}
+              title="Align Left"
+            >
+              <AlignLeftIcon />
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().setTextAlign('center').run()}
+              isActive={editor.isActive({ textAlign: 'center' })}
+              title="Align Center"
+            >
+              <AlignCenterIcon />
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().setTextAlign('right').run()}
+              isActive={editor.isActive({ textAlign: 'right' })}
+              title="Align Right"
+            >
+              <AlignRightIcon />
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+              isActive={editor.isActive({ textAlign: 'justify' })}
+              title="Justify"
+            >
+              <AlignJustifyIcon />
+            </ToolbarButton>
+
+            <div className="w-px h-6 bg-gray-300 mx-1" />
+            <ToolbarButton
               onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
               title="Clear Formatting"
             >
@@ -252,6 +287,78 @@ function ClearFormatIcon() {
         strokeLinejoin="round"
         strokeWidth={2}
         d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+  )
+}
+
+function AlignLeftIcon() {
+  return (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 6h16M4 12h10M4 18h14"
+      />
+    </svg>
+  )
+}
+
+function AlignCenterIcon() {
+  return (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 6h16M7 12h10M5 18h14"
+      />
+    </svg>
+  )
+}
+
+function AlignRightIcon() {
+  return (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 6h16M10 12h10M6 18h14"
+      />
+    </svg>
+  )
+}
+
+function AlignJustifyIcon() {
+  return (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 6h16M4 12h16M4 18h16"
       />
     </svg>
   )
