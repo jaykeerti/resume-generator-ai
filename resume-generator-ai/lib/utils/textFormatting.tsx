@@ -52,3 +52,33 @@ export function renderHtml(html: string): React.ReactElement {
     />
   )
 }
+
+/**
+ * Smart rendering function that handles both HTML and markdown
+ * Detects the format and renders appropriately:
+ * - If content contains HTML tags → renders as HTML
+ * - If content contains markdown **bold** → converts to React elements
+ * - Otherwise → renders as plain text
+ *
+ * @param content - Text content that may be HTML, markdown, or plain text
+ * @returns React element(s) with properly formatted content
+ */
+export function renderContent(content: string): React.ReactElement | (string | React.ReactElement)[] {
+  if (!content || content.trim() === '') {
+    return <></>
+  }
+
+  // Check if content contains HTML tags (from rich text editor)
+  const hasHtmlTags = /<[^>]+>/.test(content)
+
+  if (hasHtmlTags) {
+    // Content is HTML from rich text editor
+    return renderHtml(content)
+  } else if (content.includes('**')) {
+    // Content has markdown bold syntax (from AI)
+    return formatTextWithBold(content)
+  } else {
+    // Plain text
+    return <>{content}</>
+  }
+}

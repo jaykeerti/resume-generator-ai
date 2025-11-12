@@ -201,6 +201,8 @@ Recent Roles: ${experience.slice(0, 3).map(exp => `${exp.job_title} at ${exp.com
 - Uses some keywords from the job description naturally
 - Stays truthful to the candidate's actual background
 - Is professional and concise
+- IMPORTANT: Wrap ALL quantifiable metrics (numbers, years of experience, percentages, etc.) with **double asterisks** for bold formatting
+  Examples: "**5+ years**", "**40%**", "**$2M**", "**10,000+ users**"
 
 Candidate Background:
 ${userBackground}
@@ -208,13 +210,15 @@ ${userBackground}
 Target Job:
 ${jobContext}
 
-Return ONLY the professional summary text, no JSON, no additional commentary.`
+Return ONLY the professional summary text with markdown bold formatting, no JSON, no additional commentary.`
     : `Generate a 2-3 sentence professional summary that:
 - Strongly emphasizes experience and skills relevant to this specific role
 - Incorporates important keywords from the job description naturally
 - Highlights achievements and strengths that match job requirements
 - Stays completely truthful to the candidate's actual background
 - Uses compelling, professional language
+- IMPORTANT: Wrap ALL quantifiable metrics (numbers, years of experience, percentages, dollar amounts, etc.) with **double asterisks** for bold formatting
+  Examples: "**5+ years**", "**40%**", "**$2M**", "**10,000+ users**", "**3x faster**"
 
 Candidate Background:
 ${userBackground}
@@ -222,7 +226,7 @@ ${userBackground}
 Target Job:
 ${jobContext}
 
-Return ONLY the professional summary text, no JSON, no additional commentary.`
+Return ONLY the professional summary text with markdown bold formatting, no JSON, no additional commentary.`
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o',
@@ -282,6 +286,8 @@ async function tailorWorkExperience(
 - Keep original meaning and facts
 - Keep same number of bullets
 - Stay truthful - don't add accomplishments that aren't there
+- IMPORTANT: Wrap ALL quantifiable metrics (numbers, percentages, dollar amounts, time periods, etc.) with **double asterisks** for bold formatting
+  Examples: "Reduced costs by **30%**", "Led team of **8 developers**", "Served **50K+ users**", "Improved speed by **3x**"
 
 Original Role: ${exp.job_title} at ${exp.company}
 Original Bullets:
@@ -290,14 +296,16 @@ ${exp.responsibilities.map((r, i) => `${i + 1}. ${r}`).join('\n')}
 Target Job:
 ${jobContext}
 
-Return ONLY the rewritten bullets as a JSON array of strings, like: ["bullet 1", "bullet 2", ...]`
+Return ONLY the rewritten bullets as a JSON array of strings with markdown bold formatting, like: ["bullet 1", "bullet 2", ...]`
       : `Rewrite these bullet points to EMPHASIZE relevance to the target job:
 - Highlight aspects most relevant to the target role
 - Incorporate important keywords naturally
 - Reframe responsibilities to show relevant skills
-- Quantify where the original allows
+- Quantify achievements where possible and the original allows
 - Keep same number of bullets
 - Stay completely truthful - only reframe existing facts
+- IMPORTANT: Wrap ALL quantifiable metrics (numbers, percentages, dollar amounts, time periods, multipliers, etc.) with **double asterisks** for bold formatting
+  Examples: "Reduced API response time by **40%**", "Led team of **5 engineers**", "Generated **$2M** in revenue", "Improved performance by **3x**", "Managed **10,000+ users**"
 
 Original Role: ${exp.job_title} at ${exp.company}
 Original Bullets:
@@ -306,7 +314,7 @@ ${exp.responsibilities.map((r, i) => `${i + 1}. ${r}`).join('\n')}
 Target Job:
 ${jobContext}
 
-Return ONLY the rewritten bullets as a JSON array of strings, like: ["bullet 1", "bullet 2", ...]`
+Return ONLY the rewritten bullets as a JSON array of strings with markdown bold formatting, like: ["bullet 1", "bullet 2", ...]`
 
     try {
       const completion = await openai.chat.completions.create({
