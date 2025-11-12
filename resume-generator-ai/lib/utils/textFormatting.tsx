@@ -1,12 +1,14 @@
+import React from 'react'
+
 /**
  * Formats text by converting markdown bold syntax (**text**) to React-friendly format
  * @param text - Text that may contain **bold** markdown
  * @returns Array of React elements with bold text wrapped in <strong> tags
  */
-export function formatTextWithBold(text: string): (string | JSX.Element)[] {
+export function formatTextWithBold(text: string): (string | React.ReactElement)[] {
   if (!text) return [text]
 
-  const parts: (string | JSX.Element)[] = []
+  const parts: (string | React.ReactElement)[] = []
   const regex = /\*\*(.+?)\*\*/g
   let lastIndex = 0
   let match
