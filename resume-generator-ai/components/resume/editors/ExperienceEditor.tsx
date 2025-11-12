@@ -177,20 +177,20 @@ function responsibilitiesToHtml(responsibilities: string[]): string {
     return ''
   }
 
-  // Create bullet list HTML
+  // Create bullet list HTML with type safety
   const items = responsibilities
-    .filter(r => r.trim() !== '')
+    .filter(r => r && typeof r === 'string' && r.trim() !== '') // Ensure r is a valid string
     .map(r => `<li>${r}</li>`)
     .join('')
 
-  return `<ul>${items}</ul>`
+  return items ? `<ul>${items}</ul>` : ''
 }
 
 /**
  * Extract bullet points from HTML back to array
  */
 function htmlToResponsibilities(html: string): string[] {
-  if (!html || html.trim() === '') {
+  if (!html || typeof html !== 'string' || html.trim() === '') {
     return []
   }
 
@@ -199,7 +199,13 @@ function htmlToResponsibilities(html: string): string[] {
   const doc = parser.parseFromString(html, 'text/html')
   const listItems = doc.querySelectorAll('li')
 
-  return Array.from(listItems).map(li => li.innerHTML.trim()).filter(text => text !== '')
+  return Array.from(listItems)
+    .map(li => {
+      // Get the text content, which handles nested HTML properly
+      const content = li.innerHTML.trim()
+      return content
+    })
+    .filter(text => text && text !== '')
 }
 
 interface ExperienceFormProps {
