@@ -7,6 +7,17 @@ import Placeholder from '@tiptap/extension-placeholder'
 import CharacterCount from '@tiptap/extension-character-count'
 import Underline from '@tiptap/extension-underline'
 
+/**
+ * Convert markdown bold syntax (**text**) to HTML bold tags
+ * This is needed when AI generates content with markdown that needs to be edited
+ */
+function markdownToHtml(text: string): string {
+  if (!text) return text
+
+  // Convert **bold** to <strong>bold</strong>
+  return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+}
+
 interface RichTextEditorProps {
   value: string
   onChange: (value: string) => void
@@ -47,7 +58,7 @@ export function RichTextEditor({
       }),
       ...(maxLength ? [CharacterCount.configure({ limit: maxLength })] : []),
     ],
-    content: value || '',
+    content: markdownToHtml(value || ''),
     onUpdate: ({ editor }) => {
       const html = editor.getHTML()
       // Only trigger onChange if content actually changed
@@ -65,7 +76,9 @@ export function RichTextEditor({
   // Update editor content when value changes externally (e.g., from AI tailoring)
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value || '')
+      // Convert markdown to HTML before setting content
+      const htmlContent = markdownToHtml(value || '')
+      editor.commands.setContent(htmlContent)
     }
   }, [value, editor])
 
