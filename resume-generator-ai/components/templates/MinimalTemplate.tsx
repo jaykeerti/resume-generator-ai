@@ -3,7 +3,7 @@
 import React from 'react'
 import type { ResumeContent, TemplateCustomization } from '@/lib/types/resume'
 import { TemplateWrapper } from './base/TemplateWrapper'
-import { renderHtml } from '@/lib/utils/textFormatting'
+import { renderContent } from '@/lib/utils/textFormatting'
 
 interface MinimalTemplateProps {
   content: ResumeContent
@@ -62,7 +62,7 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-4 text-gray-500">
             Profile
           </h2>
-          <div className="text-sm leading-loose text-gray-800">{renderHtml(professional_summary)}</div>
+          <div className="text-sm leading-loose text-gray-800">{renderContent(professional_summary)}</div>
         </section>
       )}
 
@@ -91,7 +91,7 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
                   <ul className="space-y-2 mt-3">
                     {exp.responsibilities.map((resp, i) => (
                       <li key={i} className="text-sm text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-200">
-                        {renderHtml(resp)}
+                        {renderContent(resp)}
                       </li>
                     ))}
                   </ul>

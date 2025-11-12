@@ -3,7 +3,7 @@
 import React from 'react'
 import type { ResumeContent, TemplateCustomization } from '@/lib/types/resume'
 import { TemplateWrapper } from './base/TemplateWrapper'
-import { renderHtml } from '@/lib/utils/textFormatting'
+import { renderContent } from '@/lib/utils/textFormatting'
 
 interface ModernTemplateProps {
   content: ResumeContent
@@ -149,7 +149,7 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
               <h2 className="text-lg font-bold uppercase mb-3 pb-1 border-b-2 border-gray-300">
                 Professional Summary
               </h2>
-              <div className="text-sm leading-relaxed text-gray-800">{renderHtml(professional_summary)}</div>
+              <div className="text-sm leading-relaxed text-gray-800">{renderContent(professional_summary)}</div>
             </section>
           )}
 
@@ -177,7 +177,7 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
                     {exp.responsibilities.length > 0 && (
                       <ul className="list-disc list-outside ml-5 space-y-1">
                         {exp.responsibilities.map((resp, i) => (
-                          <li key={i} className="text-sm text-gray-700">{renderHtml(resp)}</li>
+                          <li key={i} className="text-sm text-gray-700">{renderContent(resp)}</li>
                         ))}
                       </ul>
                     )}
