@@ -83,7 +83,7 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
               {safeSkills.technical.length > 0 && (
                 <div className="mb-4">
                   <p className="font-semibold text-sm mb-2">Technical</p>
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1" style={{ textAlign: 'justify' }}>
                     {safeSkills.technical.map((skill, i) => (
                       <span key={i} className="text-xs px-2 py-1 bg-white/20 rounded">
                         {skill}
@@ -95,7 +95,7 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
               {safeSkills.soft.length > 0 && (
                 <div>
                   <p className="font-semibold text-sm mb-2">Soft Skills</p>
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1" style={{ textAlign: 'justify' }}>
                     {safeSkills.soft.map((skill, i) => (
                       <span key={i} className="text-xs px-2 py-1 bg-white/20 rounded">
                         {skill}

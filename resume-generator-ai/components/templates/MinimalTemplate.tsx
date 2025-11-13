@@ -142,19 +142,19 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
             {safeSkills.technical.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Technical</p>
-                <p className="text-sm text-gray-800 leading-relaxed">{safeSkills.technical.join(' • ')}</p>
+                <p className="text-sm text-gray-800 leading-relaxed" style={{ textAlign: 'justify' }}>{safeSkills.technical.join(' • ')}</p>
               </div>
             )}
             {safeSkills.soft.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Soft Skills</p>
-                <p className="text-sm text-gray-800 leading-relaxed">{safeSkills.soft.join(' • ')}</p>
+                <p className="text-sm text-gray-800 leading-relaxed" style={{ textAlign: 'justify' }}>{safeSkills.soft.join(' • ')}</p>
               </div>
             )}
             {safeSkills.languages.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Languages</p>
-                <p className="text-sm text-gray-800 leading-relaxed">
+                <p className="text-sm text-gray-800 leading-relaxed" style={{ textAlign: 'justify' }}>
                   {safeSkills.languages.map(lang => `${lang.name} (${lang.proficiency})`).join(' • ')}
                 </p>
               </div>

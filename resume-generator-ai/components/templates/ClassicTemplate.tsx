@@ -123,19 +123,19 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
       {(safeSkills.technical.length > 0 || safeSkills.soft.length > 0 || safeSkills.languages.length > 0) && (
         <TemplateSection title="Skills">
           {safeSkills.technical.length > 0 && (
-            <div className="mb-2">
+            <div className="mb-2" style={{ textAlign: 'justify' }}>
               <span className="font-semibold text-sm">Technical: </span>
               <span className="text-sm">{safeSkills.technical.join(', ')}</span>
             </div>
           )}
           {safeSkills.soft.length > 0 && (
-            <div className="mb-2">
+            <div className="mb-2" style={{ textAlign: 'justify' }}>
               <span className="font-semibold text-sm">Soft Skills: </span>
               <span className="text-sm">{safeSkills.soft.join(', ')}</span>
             </div>
           )}
           {safeSkills.languages.length > 0 && (
-            <div className="mb-2">
+            <div className="mb-2" style={{ textAlign: 'justify' }}>
               <span className="font-semibold text-sm">Languages: </span>
               <span className="text-sm">
                 {safeSkills.languages.map(lang => `${lang.name} (${lang.proficiency})`).join(', ')}

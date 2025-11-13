@@ -20,7 +20,7 @@ export function SummaryEditor({ summary, onChange }: SummaryEditorProps) {
         minHeight="200px"
         placeholder="Write a brief professional summary highlighting your key skills, experience, and career objectives. Keep it concise and impactful - aim for 2-4 sentences."
         showToolbar={true}
-        enableLists={true}
+        enableLists={false}
       />
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

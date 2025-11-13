@@ -88,9 +88,19 @@ export function RichTextEditor({
   // Update editor content when value changes externally (e.g., from AI tailoring)
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
+      // Save current selection position
+      const { from, to } = editor.state.selection
+
       // Convert markdown to HTML before setting content
       const htmlContent = markdownToHtml(value || '')
-      editor.commands.setContent(htmlContent)
+      editor.commands.setContent(htmlContent, { emitUpdate: false }) // Don't emit update event
+
+      // Restore selection position if possible
+      try {
+        editor.commands.setTextSelection({ from, to })
+      } catch (e) {
+        // Selection position may be invalid after content change, ignore error
+      }
     }
   }, [value, editor])
 

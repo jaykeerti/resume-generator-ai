@@ -112,7 +112,7 @@ export function ExperienceEditor({ experiences, onChange }: ExperienceEditorProp
                   {index > 0 && (
                     <button
                       onClick={() => handleMoveUp(index)}
-                      className="p-1 hover:bg-gray-100 rounded"
+                      className="p-2 hover:bg-gray-100 rounded border border-gray-300 text-gray-700 font-bold text-lg leading-none"
                       title="Move up"
                     >
                       ↑
@@ -121,7 +121,7 @@ export function ExperienceEditor({ experiences, onChange }: ExperienceEditorProp
                   {index < experiences.length - 1 && (
                     <button
                       onClick={() => handleMoveDown(index)}
-                      className="p-1 hover:bg-gray-100 rounded"
+                      className="p-2 hover:bg-gray-100 rounded border border-gray-300 text-gray-700 font-bold text-lg leading-none"
                       title="Move down"
                     >
                       ↓
@@ -188,6 +188,7 @@ function responsibilitiesToHtml(responsibilities: string[]): string {
 
 /**
  * Extract bullet points from HTML back to array
+ * Uses textContent to extract plain text without HTML tags
  */
 function htmlToResponsibilities(html: string): string[] {
   if (!html || typeof html !== 'string' || html.trim() === '') {
@@ -201,8 +202,8 @@ function htmlToResponsibilities(html: string): string[] {
 
   return Array.from(listItems)
     .map(li => {
-      // Get the text content, which handles nested HTML properly
-      const content = li.innerHTML.trim()
+      // Use textContent to get plain text without HTML tags
+      const content = li.textContent?.trim() || ''
       return content
     })
     .filter(text => text && text !== '')
