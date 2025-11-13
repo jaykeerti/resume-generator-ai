@@ -55,6 +55,17 @@ interface Props {
   resumes: Resume[]
 }
 
+/**
+ * Format date as DD-MON-YY (e.g., 14-NOV-25)
+ */
+function formatResumeDate(dateString: string): string {
+  const date = new Date(dateString)
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase()
+  const year = date.getFullYear().toString().slice(-2)
+  return `${day}-${month}-${year}`
+}
+
 export function DashboardContent({ user, profile, baseInfo, resumes: initialResumes }: Props) {
   const { showToast, showModal } = useNotifications()
   const [resumes, setResumes] = useState(initialResumes)
@@ -262,7 +273,7 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
                 >
                   <h3 className="font-semibold">{resume.title}</h3>
                   <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                    Created {new Date(resume.created_at).toLocaleDateString()}
+                    {formatResumeDate(resume.created_at)}
                   </p>
                   <div className="mt-4 flex flex-col gap-2">
                     <div className="flex gap-2">
