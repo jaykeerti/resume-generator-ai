@@ -195,22 +195,28 @@ Key Skills: ${[...(skills.technical || []), ...(skills.soft || [])].slice(0, 10)
 Recent Roles: ${experience.slice(0, 3).map(exp => `${exp.job_title} at ${exp.company}`).join(', ')}
   `.trim()
 
-  const systemPrompt = `You are an expert resume writer. Generate a professional summary that is truthful, compelling, and tailored to the job. Use proper grammar, punctuation, and formatting.`
+  const systemPrompt = `You are an expert resume writer. Generate a concise professional summary that is truthful, compelling, and tailored to the job. Use proper grammar, punctuation, and formatting.`
 
   const userPrompt = mode === 'conservative'
-    ? `Generate a 2-3 sentence professional summary that:
-- Highlights relevant experience and skills for this job
-- MUST incorporate relevant skills from the job description (technical: ${jobDescription.technical_skills.slice(0, 5).join(', ')})
-- MUST incorporate relevant soft skills if applicable (soft skills: ${jobDescription.soft_skills.slice(0, 3).join(', ')})
-- Uses keywords from job description naturally
-- Stays truthful to the candidate's actual background
-- Is professional and concise
+    ? `Write a concise 2-3 sentence professional summary for a resume. Follow these requirements:
+
+CRITICAL:
+- Do NOT include any headings, labels, or titles like "Professional Summary" or "Summary:"
+- Start directly with the first sentence of the summary
+- Keep it to EXACTLY 2-3 sentences maximum
+- Each sentence should be impactful and concise
+
+Content Requirements:
+- Highlight relevant experience and skills for this job
+- MUST incorporate relevant skills from the job description: ${jobDescription.technical_skills.slice(0, 5).join(', ')}
+- Include soft skills if applicable: ${jobDescription.soft_skills.slice(0, 3).join(', ')}
+- Use keywords naturally from job description
+- Stay truthful to candidate's actual background
 - Use proper punctuation, commas, and periods
-- FORMATTING:
-  * Wrap ALL quantifiable metrics (numbers, years, percentages, etc.) with **double asterisks** for bold
-    Examples: "**5+ years**", "**40%**", "**$2M**", "**10,000+ users**"
-  * Use *single asterisks* for emphasis on key skills or achievements (sparingly)
-    Examples: "*expert in*", "*specialized in*", "*proven track record*"
+
+Formatting:
+- Wrap quantifiable metrics with **double asterisks**: "**5+ years**", "**40%**", "**$2M**"
+- Use *single asterisks* sparingly for emphasis: "*expert in*", "*specialized in*"
 
 Candidate Background:
 ${userBackground}
@@ -218,21 +224,27 @@ ${userBackground}
 Target Job:
 ${jobContext}
 
-Return ONLY the professional summary text with markdown formatting, no JSON, no additional commentary.`
-    : `Generate a 2-3 sentence professional summary that:
-- Strongly emphasizes experience and skills relevant to this specific role
-- MUST incorporate key skills from the job description (technical: ${jobDescription.technical_skills.slice(0, 5).join(', ')})
-- MUST incorporate relevant soft skills (soft skills: ${jobDescription.soft_skills.slice(0, 3).join(', ')})
-- Incorporates important keywords from the job description naturally
-- Highlights achievements and strengths that match job requirements
-- Stays completely truthful to the candidate's actual background
-- Uses compelling, professional language
-- Use proper punctuation, commas, and periods throughout
-- FORMATTING:
-  * Wrap ALL quantifiable metrics (numbers, years, percentages, dollar amounts, etc.) with **double asterisks** for bold
-    Examples: "**5+ years**", "**40%**", "**$2M**", "**10,000+ users**", "**3x faster**"
-  * Use *single asterisks* for emphasis on key skills or notable achievements (use sparingly, 1-2 times max)
-    Examples: "*expert in*", "*specialized in*", "*proven track record in*"
+Remember: Return ONLY the 2-3 sentence summary text. NO headings, NO labels, NO extra commentary. Start immediately with the first sentence.`
+    : `Write a concise 2-3 sentence professional summary for a resume. Follow these requirements:
+
+CRITICAL:
+- Do NOT include any headings, labels, or titles like "Professional Summary" or "Summary:"
+- Start directly with the first sentence of the summary
+- Keep it to EXACTLY 2-3 sentences maximum
+- Each sentence should be impactful and concise
+
+Content Requirements:
+- Strongly emphasize experience and skills relevant to this role
+- MUST incorporate key skills: ${jobDescription.technical_skills.slice(0, 5).join(', ')}
+- Include relevant soft skills: ${jobDescription.soft_skills.slice(0, 3).join(', ')}
+- Incorporate important keywords naturally
+- Highlight achievements matching job requirements
+- Stay completely truthful to candidate's background
+- Use compelling, professional language
+
+Formatting:
+- Wrap ALL quantifiable metrics with **double asterisks**: "**5+ years**", "**40%**", "**$2M**", "**3x faster**"
+- Use *single asterisks* sparingly (1-2 times max) for emphasis: "*expert in*", "*proven track record in*"
 
 Candidate Background:
 ${userBackground}
@@ -240,7 +252,7 @@ ${userBackground}
 Target Job:
 ${jobContext}
 
-Return ONLY the professional summary text with markdown formatting, no JSON, no additional commentary.`
+Remember: Return ONLY the 2-3 sentence summary text. NO headings, NO labels, NO extra commentary. Start immediately with the first sentence.`
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o',
