@@ -307,7 +307,7 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
                     <div className="flex gap-2">
                       {resume.job_description && (
                         <Button
-                          variant="ghost"
+                          variant="secondary"
                           size="sm"
                           onClick={() => handleShowJobDescription(resume)}
                           title="View Job Description"
