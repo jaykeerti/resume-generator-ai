@@ -15,7 +15,7 @@ export function SummaryEditor({ summary, onChange }: SummaryEditorProps) {
         label="Professional Summary"
         value={summary}
         onChange={onChange}
-        maxLength={500}
+        maxLength={800}
         showCount
         minHeight="200px"
         placeholder="Write a brief professional summary highlighting your key skills, experience, and career objectives. Keep it concise and impactful - aim for 2-4 sentences."
