@@ -273,7 +273,19 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
                   className="rounded-lg border border-zinc-200 bg-white p-6 transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
                 >
                   <h3 className="font-semibold">{resume.title}</h3>
-                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                  {resume.job_description && (
+                    <div className="mt-2 space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+                      {resume.job_description.company_name && (
+                        <p>
+                          <span className="font-medium">Company:</span> {resume.job_description.company_name}
+                        </p>
+                      )}
+                      <p>
+                        <span className="font-medium">Title:</span> {resume.job_description.job_title}
+                      </p>
+                    </div>
+                  )}
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                     {formatResumeDate(resume.created_at)}
                   </p>
                   <div className="mt-4 flex flex-col gap-2">

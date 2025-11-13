@@ -163,18 +163,14 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
                 {safeWorkExperience.map((exp, index) => (
                   <div key={index}>
                     <div className="flex justify-between items-baseline mb-1">
-                      <p className="text-sm">
-                        <span className="font-semibold text-gray-700">Company:</span>{' '}
-                        <span className="font-semibold" style={{ color: 'var(--accent-color)' }}>{exp.company}</span>
-                      </p>
+                      <h3 className="font-bold text-base text-gray-900">{exp.job_title}</h3>
                       <span className="text-xs text-gray-600">
                         {exp.start_date} - {exp.is_current ? 'Present' : exp.end_date || ''}
                       </span>
                     </div>
                     <div className="flex justify-between items-baseline mb-2">
-                      <p className="text-sm">
-                        <span className="font-semibold text-gray-700">Title:</span>{' '}
-                        <span className="text-gray-900">{exp.job_title}</span>
+                      <p className="text-sm font-semibold" style={{ color: 'var(--accent-color)' }}>
+                        {exp.company}
                       </p>
                       {exp.location && <span className="text-xs text-gray-600">{exp.location}</span>}
                     </div>

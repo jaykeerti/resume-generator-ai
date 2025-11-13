@@ -76,22 +76,16 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
             {safeWorkExperience.map((exp, index) => (
               <div key={index}>
                 <div className="mb-2">
-                  <div className="flex justify-between items-baseline mb-1">
-                    <p className="text-sm">
-                      <span className="font-semibold text-gray-700">Company:</span>{' '}
-                      <span className="font-semibold" style={{ color: 'var(--accent-color)' }}>{exp.company}</span>
-                    </p>
+                  <h3 className="font-semibold text-base mb-1" style={{ color: 'var(--accent-color)' }}>
+                    {exp.job_title}
+                  </h3>
+                  <div className="flex justify-between items-baseline">
+                    <p className="text-sm text-gray-700">{exp.company}</p>
                     <span className="text-xs text-gray-500">
                       {exp.start_date} — {exp.is_current ? 'Present' : exp.end_date || ''}
                     </span>
                   </div>
-                  <div className="flex justify-between items-baseline">
-                    <p className="text-sm">
-                      <span className="font-semibold text-gray-700">Title:</span>{' '}
-                      <span className="text-gray-700">{exp.job_title}</span>
-                    </p>
-                    {exp.location && <span className="text-xs text-gray-500">{exp.location}</span>}
-                  </div>
+                  {exp.location && <p className="text-xs text-gray-500 mt-1">{exp.location}</p>}
                 </div>
                 {exp.responsibilities.length > 0 && (
                   <ul className="space-y-2 mt-3">
