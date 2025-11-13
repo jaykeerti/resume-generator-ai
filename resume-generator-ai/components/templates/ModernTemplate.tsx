@@ -144,7 +144,7 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
         {/* Right Content Area */}
         <main className="p-8 bg-white">
           {/* Professional Summary */}
-          {professional_summary && professional_summary.trim() && (
+          {professional_summary && typeof professional_summary === 'string' && professional_summary.trim() && (
             <section className="mb-8">
               <h2 className="text-lg font-bold uppercase mb-3 pb-1 border-b-2 border-gray-300">
                 Professional Summary
@@ -176,9 +176,11 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
                     </div>
                     {exp.responsibilities.length > 0 && (
                       <ul className="list-disc list-outside ml-5 space-y-1">
-                        {exp.responsibilities.map((resp, i) => (
-                          <li key={i} className="text-sm text-gray-700">{renderContent(resp)}</li>
-                        ))}
+                        {exp.responsibilities
+                          .filter(resp => resp && typeof resp === 'string')
+                          .map((resp, i) => (
+                            <li key={i} className="text-sm text-gray-700">{renderContent(resp)}</li>
+                          ))}
                       </ul>
                     )}
                   </div>

@@ -57,7 +57,7 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
       </header>
 
       {/* Professional Summary */}
-      {professional_summary && professional_summary.trim() && (
+      {professional_summary && typeof professional_summary === 'string' && professional_summary.trim() && (
         <section className="mb-12">
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-4 text-gray-500">
             Profile
@@ -89,11 +89,13 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
                 </div>
                 {exp.responsibilities.length > 0 && (
                   <ul className="space-y-2 mt-3">
-                    {exp.responsibilities.map((resp, i) => (
-                      <li key={i} className="text-sm text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-200">
-                        {renderContent(resp)}
-                      </li>
-                    ))}
+                    {exp.responsibilities
+                      .filter(resp => resp && typeof resp === 'string')
+                      .map((resp, i) => (
+                        <li key={i} className="text-sm text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-200">
+                          {renderContent(resp)}
+                        </li>
+                      ))}
                   </ul>
                 )}
               </div>

@@ -63,7 +63,7 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
       </header>
 
       {/* Professional Summary */}
-      {professional_summary && professional_summary.trim() && (
+      {professional_summary && typeof professional_summary === 'string' && professional_summary.trim() && (
         <TemplateSection title="Professional Summary">
           <div className="text-sm leading-relaxed">{renderContent(professional_summary)}</div>
         </TemplateSection>
@@ -86,9 +86,11 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
               </div>
               {exp.responsibilities.length > 0 && (
                 <ul className="list-disc list-outside ml-5 space-y-1">
-                  {exp.responsibilities.map((resp, i) => (
-                    <li key={i} className="text-sm text-gray-800">{renderContent(resp)}</li>
-                  ))}
+                  {exp.responsibilities
+                    .filter(resp => resp && typeof resp === 'string')
+                    .map((resp, i) => (
+                      <li key={i} className="text-sm text-gray-800">{renderContent(resp)}</li>
+                    ))}
                 </ul>
               )}
             </div>

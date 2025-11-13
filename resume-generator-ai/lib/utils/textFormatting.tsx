@@ -7,7 +7,8 @@ import React from 'react'
  * @returns Array of React elements with formatted text
  */
 export function formatTextWithBold(text: string): (string | React.ReactElement)[] {
-  if (!text) return [text]
+  // Type guard: ensure text is a string
+  if (!text || typeof text !== 'string') return ['']
 
   const parts: (string | React.ReactElement)[] = []
   // Combined regex for both **bold** and *italic* (bold must come first to match correctly)
@@ -49,7 +50,8 @@ export function formatTextWithBold(text: string): (string | React.ReactElement)[
  * @returns React element with rendered HTML
  */
 export function renderHtml(html: string): React.ReactElement {
-  if (!html || html.trim() === '') {
+  // Type guard: ensure html is a string
+  if (!html || typeof html !== 'string' || html.trim() === '') {
     return <></>
   }
 
@@ -72,7 +74,8 @@ export function renderHtml(html: string): React.ReactElement {
  * @returns React element(s) with properly formatted content
  */
 export function renderContent(content: string): React.ReactElement | (string | React.ReactElement)[] {
-  if (!content || content.trim() === '') {
+  // Type guard: ensure content is a string
+  if (!content || typeof content !== 'string' || content.trim() === '') {
     return <></>
   }
 
