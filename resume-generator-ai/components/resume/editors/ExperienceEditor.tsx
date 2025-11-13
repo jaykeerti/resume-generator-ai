@@ -188,7 +188,7 @@ function responsibilitiesToHtml(responsibilities: string[]): string {
 
 /**
  * Extract bullet points from HTML back to array
- * Uses textContent to extract plain text without HTML tags
+ * Converts HTML formatting to markdown before storing
  */
 function htmlToResponsibilities(html: string): string[] {
   if (!html || typeof html !== 'string' || html.trim() === '') {
@@ -202,9 +202,22 @@ function htmlToResponsibilities(html: string): string[] {
 
   return Array.from(listItems)
     .map(li => {
-      // Use textContent to get plain text without HTML tags
-      const content = li.textContent?.trim() || ''
-      return content
+      // Get HTML content first
+      let content = li.innerHTML
+
+      // Convert HTML formatting to markdown
+      // Bold: <strong> and <b> → **text**
+      content = content.replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**')
+      content = content.replace(/<b[^>]*>(.*?)<\/b>/gi, '**$1**')
+
+      // Italic: <em> and <i> → *text*
+      content = content.replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*')
+      content = content.replace(/<i[^>]*>(.*?)<\/i>/gi, '*$1*')
+
+      // Strip remaining HTML tags and get clean text
+      const temp = document.createElement('div')
+      temp.innerHTML = content
+      return temp.textContent?.trim() || ''
     })
     .filter(text => text && text !== '')
 }
