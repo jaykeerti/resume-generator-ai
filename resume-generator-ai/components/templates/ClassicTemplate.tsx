@@ -75,13 +75,19 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
           {safeWorkExperience.map((exp, index) => (
             <div key={index} className="mb-4 last:mb-0">
               <div className="flex justify-between items-baseline mb-1">
-                <h3 className="font-bold text-base">{exp.job_title}</h3>
+                <p className="text-sm">
+                  <span className="font-semibold text-gray-700">Company:</span>{' '}
+                  <span className="font-semibold text-gray-900">{exp.company}</span>
+                </p>
                 <span className="text-sm text-gray-600">
                   {exp.start_date} - {exp.is_current ? 'Present' : exp.end_date || ''}
                 </span>
               </div>
               <div className="flex justify-between items-baseline mb-2">
-                <p className="text-sm font-semibold text-gray-700">{exp.company}</p>
+                <p className="text-sm">
+                  <span className="font-semibold text-gray-700">Title:</span>{' '}
+                  <span className="text-gray-900">{exp.job_title}</span>
+                </p>
                 {exp.location && <span className="text-sm text-gray-600">{exp.location}</span>}
               </div>
               {exp.responsibilities.length > 0 && (
