@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { UserProfileDropdown } from '@/components/ui/UserProfileDropdown'
+import { Button } from '@/components/ui/Button'
 import { ProfileSummaryCard } from './ProfileSummaryCard'
 import { JobDescriptionInput } from './JobDescriptionInput'
 import { JobDescriptionModal } from './JobDescriptionModal'
@@ -276,57 +277,56 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
                     {formatResumeDate(resume.created_at)}
                   </p>
                   <div className="mt-4 flex flex-col gap-2">
+                    {/* Primary Actions Row */}
                     <div className="flex gap-2">
                       <a
                         href={`/resume/editor/${resume.id}`}
-                        className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-center text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                        className="flex-1"
                       >
-                        Edit
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="w-full"
+                        >
+                          Edit
+                        </Button>
                       </a>
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => handleDownload(resume.id, resume.title)}
+                        isLoading={downloadingId === resume.id}
+                        disabled={downloadingId === resume.id}
+                        className="flex-1"
+                      >
+                        {downloadingId === resume.id ? 'Generating...' : 'Download PDF'}
+                      </Button>
+                    </div>
+
+                    {/* Secondary Actions Row */}
+                    <div className="flex gap-2">
                       {resume.job_description && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleShowJobDescription(resume)}
-                          className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-center text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
                           title="View Job Description"
+                          className="flex-1"
                         >
                           📄 Job Info
-                        </button>
+                        </Button>
                       )}
-                      <button
-                        onClick={() => handleDownload(resume.id, resume.title)}
-                        disabled={downloadingId === resume.id}
-                        className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDelete(resume.id, resume.title)}
+                        isLoading={deletingId === resume.id}
+                        disabled={deletingId === resume.id}
+                        className={resume.job_description ? 'flex-1' : 'w-full'}
                       >
-                        {downloadingId === resume.id ? (
-                          <span className="flex items-center justify-center gap-2">
-                            <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Generating...
-                          </span>
-                        ) : (
-                          'Download PDF'
-                        )}
-                      </button>
+                        {deletingId === resume.id ? 'Deleting...' : '🗑️ Delete'}
+                      </Button>
                     </div>
-                    <button
-                      onClick={() => handleDelete(resume.id, resume.title)}
-                      disabled={deletingId === resume.id}
-                      className="w-full rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
-                    >
-                      {deletingId === resume.id ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Deleting...
-                        </span>
-                      ) : (
-                        '🗑️ Delete'
-                      )}
-                    </button>
                   </div>
                 </div>
               ))}
