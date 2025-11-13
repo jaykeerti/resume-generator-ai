@@ -121,18 +121,27 @@ export async function POST(request: NextRequest) {
       (baseInfo.education || []).length > 0
     )
 
+    // Helper function to clean job title by removing level suffix (Associate, Mid-Level, Senior, etc.)
+    const cleanJobTitle = (title: string): string => {
+      if (!title) return title
+      // Remove parentheses and their content (e.g., "(Senior)", "(Mid-Level)", "(Associate)")
+      return title.replace(/\s*\([^)]*\)\s*/g, '').trim()
+    }
+
     // Create original content (untailored)
     // Update professional title to match the job title from job description
+    const cleanedTitle = cleanJobTitle(parsedJD.job_title)
+
     const originalContent = {
       personal_info: hasPersonalInfo ? {
         ...baseInfo.personal_info,
-        professional_title: parsedJD.job_title, // Set professional title from job description
+        professional_title: cleanedTitle, // Set professional title from job description (without level)
       } : {
         full_name: '',
         email: '',
         phone: '',
         location: '',
-        professional_title: parsedJD.job_title, // Set professional title from job description
+        professional_title: cleanedTitle, // Set professional title from job description (without level)
       },
       professional_summary: baseInfo?.professional_summary || '',
       work_experience: baseInfo?.work_experience || [],

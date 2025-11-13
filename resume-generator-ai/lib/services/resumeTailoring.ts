@@ -116,6 +116,7 @@ Keywords for ATS: ${jobDescription.keywords.slice(0, 10).join(', ') || 'None spe
     const summary = await generateProfessionalSummary(
       baseInfo,
       jobContext,
+      jobDescription,
       mode
     )
 
@@ -179,6 +180,7 @@ Keywords for ATS: ${jobDescription.keywords.slice(0, 10).join(', ') || 'None spe
 async function generateProfessionalSummary(
   baseInfo: BaseInformation,
   jobContext: string,
+  jobDescription: ParsedJobDescription,
   mode: TailoringMode
 ): Promise<string> {
   const professionalTitle = baseInfo.personal_info?.professional_title || 'Professional'
@@ -193,16 +195,22 @@ Key Skills: ${[...(skills.technical || []), ...(skills.soft || [])].slice(0, 10)
 Recent Roles: ${experience.slice(0, 3).map(exp => `${exp.job_title} at ${exp.company}`).join(', ')}
   `.trim()
 
-  const systemPrompt = `You are an expert resume writer. Generate a professional summary that is truthful, compelling, and tailored to the job.`
+  const systemPrompt = `You are an expert resume writer. Generate a professional summary that is truthful, compelling, and tailored to the job. Use proper grammar, punctuation, and formatting.`
 
   const userPrompt = mode === 'conservative'
     ? `Generate a 2-3 sentence professional summary that:
 - Highlights relevant experience and skills for this job
-- Uses some keywords from the job description naturally
+- MUST incorporate relevant skills from the job description (technical: ${jobDescription.technical_skills.slice(0, 5).join(', ')})
+- MUST incorporate relevant soft skills if applicable (soft skills: ${jobDescription.soft_skills.slice(0, 3).join(', ')})
+- Uses keywords from job description naturally
 - Stays truthful to the candidate's actual background
 - Is professional and concise
-- IMPORTANT: Wrap ALL quantifiable metrics (numbers, years of experience, percentages, etc.) with **double asterisks** for bold formatting
-  Examples: "**5+ years**", "**40%**", "**$2M**", "**10,000+ users**"
+- Use proper punctuation, commas, and periods
+- FORMATTING:
+  * Wrap ALL quantifiable metrics (numbers, years, percentages, etc.) with **double asterisks** for bold
+    Examples: "**5+ years**", "**40%**", "**$2M**", "**10,000+ users**"
+  * Use *single asterisks* for emphasis on key skills or achievements (sparingly)
+    Examples: "*expert in*", "*specialized in*", "*proven track record*"
 
 Candidate Background:
 ${userBackground}
@@ -210,15 +218,21 @@ ${userBackground}
 Target Job:
 ${jobContext}
 
-Return ONLY the professional summary text with markdown bold formatting, no JSON, no additional commentary.`
+Return ONLY the professional summary text with markdown formatting, no JSON, no additional commentary.`
     : `Generate a 2-3 sentence professional summary that:
 - Strongly emphasizes experience and skills relevant to this specific role
+- MUST incorporate key skills from the job description (technical: ${jobDescription.technical_skills.slice(0, 5).join(', ')})
+- MUST incorporate relevant soft skills (soft skills: ${jobDescription.soft_skills.slice(0, 3).join(', ')})
 - Incorporates important keywords from the job description naturally
 - Highlights achievements and strengths that match job requirements
 - Stays completely truthful to the candidate's actual background
 - Uses compelling, professional language
-- IMPORTANT: Wrap ALL quantifiable metrics (numbers, years of experience, percentages, dollar amounts, etc.) with **double asterisks** for bold formatting
-  Examples: "**5+ years**", "**40%**", "**$2M**", "**10,000+ users**", "**3x faster**"
+- Use proper punctuation, commas, and periods throughout
+- FORMATTING:
+  * Wrap ALL quantifiable metrics (numbers, years, percentages, dollar amounts, etc.) with **double asterisks** for bold
+    Examples: "**5+ years**", "**40%**", "**$2M**", "**10,000+ users**", "**3x faster**"
+  * Use *single asterisks* for emphasis on key skills or notable achievements (use sparingly, 1-2 times max)
+    Examples: "*expert in*", "*specialized in*", "*proven track record in*"
 
 Candidate Background:
 ${userBackground}
@@ -226,7 +240,7 @@ ${userBackground}
 Target Job:
 ${jobContext}
 
-Return ONLY the professional summary text with markdown bold formatting, no JSON, no additional commentary.`
+Return ONLY the professional summary text with markdown formatting, no JSON, no additional commentary.`
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o',
@@ -366,6 +380,7 @@ Return ONLY the rewritten bullets as a JSON array of strings with markdown bold 
 
 /**
  * Reorder skills to prioritize those matching the job description
+ * Also merges JD skills with user's existing skills (deduplicates)
  */
 function optimizeSkills(
   skills: {
@@ -391,15 +406,48 @@ function optimizeSkills(
     jobDescription.technologies.map(t => t.toLowerCase())
   )
 
-  // Score and reorder technical skills
-  const technicalSkills = (skills.technical || []).map(skill => ({
+  // Merge user's technical skills with JD skills (deduplicate by lowercase comparison)
+  const userTechnicalLower = new Set(
+    (skills.technical || []).map(s => s.toLowerCase())
+  )
+  const allTechnicalSkills = [...(skills.technical || [])]
+
+  // Add JD technical skills that user doesn't have
+  for (const jdSkill of jobDescription.technical_skills) {
+    if (!userTechnicalLower.has(jdSkill.toLowerCase())) {
+      allTechnicalSkills.push(jdSkill)
+    }
+  }
+
+  // Add JD technologies that user doesn't have
+  for (const tech of jobDescription.technologies) {
+    if (!userTechnicalLower.has(tech.toLowerCase())) {
+      allTechnicalSkills.push(tech)
+    }
+  }
+
+  // Merge user's soft skills with JD soft skills (deduplicate)
+  const userSoftLower = new Set(
+    (skills.soft || []).map(s => s.toLowerCase())
+  )
+  const allSoftSkills = [...(skills.soft || [])]
+
+  // Add JD soft skills that user doesn't have
+  for (const jdSkill of jobDescription.soft_skills) {
+    if (!userSoftLower.has(jdSkill.toLowerCase())) {
+      allSoftSkills.push(jdSkill)
+    }
+  }
+
+  // Score and reorder technical skills (prioritize matching skills)
+  const technicalSkills = allTechnicalSkills.map(skill => ({
     skill,
     score: calculateSkillScore(skill, requiredTechnicalSkills, requiredTechnologies),
   }))
   technicalSkills.sort((a, b) => b.score - a.score)
 
-  // Score and reorder soft skills
-  const softSkills = (skills.soft || []).map(skill => ({
+  // Score and reorder soft skills (prioritize matching skills)
+  const softSkills = allSoftSkills.map(skill => ({
     skill,
     score: requiredSoftSkills.has(skill.toLowerCase()) ? 1 : 0,
   }))

@@ -1,15 +1,17 @@
 import React from 'react'
 
 /**
- * Formats text by converting markdown bold syntax (**text**) to React-friendly format
- * @param text - Text that may contain **bold** markdown
- * @returns Array of React elements with bold text wrapped in <strong> tags
+ * Formats text by converting markdown syntax to React-friendly format
+ * Supports both bold (**text**) and italic (*text*) markdown
+ * @param text - Text that may contain **bold** and *italic* markdown
+ * @returns Array of React elements with formatted text
  */
 export function formatTextWithBold(text: string): (string | React.ReactElement)[] {
   if (!text) return [text]
 
   const parts: (string | React.ReactElement)[] = []
-  const regex = /\*\*(.+?)\*\*/g
+  // Combined regex for both **bold** and *italic* (bold must come first to match correctly)
+  const regex = /\*\*(.+?)\*\*|\*(.+?)\*/g
   let lastIndex = 0
   let match
   let key = 0
@@ -20,8 +22,14 @@ export function formatTextWithBold(text: string): (string | React.ReactElement)[
       parts.push(text.substring(lastIndex, match.index))
     }
 
-    // Add bold text
-    parts.push(<strong key={key++}>{match[1]}</strong>)
+    // Check if it's bold (**text**) or italic (*text*)
+    if (match[1] !== undefined) {
+      // Bold text (captured by first group)
+      parts.push(<strong key={key++}>{match[1]}</strong>)
+    } else if (match[2] !== undefined) {
+      // Italic text (captured by second group)
+      parts.push(<em key={key++}>{match[2]}</em>)
+    }
 
     lastIndex = regex.lastIndex
   }

@@ -9,14 +9,20 @@ import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
 
 /**
- * Convert markdown bold syntax (**text**) to HTML bold tags
+ * Convert markdown syntax to HTML tags
  * This is needed when AI generates content with markdown that needs to be edited
+ * Supports both **bold** and *italic* markdown
  */
 function markdownToHtml(text: string): string {
   if (!text) return text
 
-  // Convert **bold** to <strong>bold</strong>
-  return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  // Convert **bold** to <strong>bold</strong> (must come first)
+  let html = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+
+  // Convert *italic* to <em>italic</em>
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>')
+
+  return html
 }
 
 interface RichTextEditorProps {
