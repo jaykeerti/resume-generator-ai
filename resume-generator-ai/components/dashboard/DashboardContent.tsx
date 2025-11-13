@@ -288,7 +288,7 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
                           size="sm"
                           className="w-full"
                         >
-                          Edit
+                          ✏️ Edit
                         </Button>
                       </a>
                       <Button
@@ -299,7 +299,7 @@ export function DashboardContent({ user, profile, baseInfo, resumes: initialResu
                         disabled={downloadingId === resume.id}
                         className="flex-1"
                       >
-                        {downloadingId === resume.id ? 'Generating...' : 'Download PDF'}
+                        {downloadingId === resume.id ? 'Generating...' : '📥 Download PDF'}
                       </Button>
                     </div>
 
