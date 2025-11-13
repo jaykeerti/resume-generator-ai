@@ -57,6 +57,7 @@ export function RichTextEditor({
       TextAlign.configure({
         types: ['heading', 'paragraph'],
         alignments: ['left', 'center', 'right', 'justify'],
+        defaultAlignment: 'justify',
       }),
       Placeholder.configure({
         placeholder,
