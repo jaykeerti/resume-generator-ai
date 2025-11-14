@@ -342,6 +342,37 @@ The AI is configured to wrap all quantifiable metrics with markdown bold syntax 
 
 This enhances resume readability and helps quantifiable achievements stand out to recruiters.
 
+### TipTap Formatting Preservation (HTML to Markdown Strategy) ✨ NEW
+**Balances user formatting control with clean data storage:**
+
+The system preserves user-applied formatting from the TipTap rich text editor while maintaining clean, portable text storage:
+
+**Implementation Details:**
+1. **Storage Format**: Plain text with markdown syntax (`**bold**`, `*italic*`)
+2. **Conversion on Save** (`ExperienceEditor.tsx:189-223`):
+   ```typescript
+   // Convert HTML tags to markdown
+   content = content.replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**')
+   content = content.replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*')
+   // Strip remaining HTML tags
+   ```
+3. **Preview Rendering** (`textFormatting.tsx:76-95`): Automatically detects and renders markdown
+4. **AI Compatibility**: AI generates markdown natively, manual edits convert to markdown - consistent format throughout
+
+**Why This Approach:**
+- ✅ Preserves bold/italic formatting from toolbar
+- ✅ Clean text storage (no HTML pollution, no XSS risk)
+- ✅ Consistent with AI-generated markdown
+- ✅ Portable and searchable in database
+- ✅ No additional dependencies
+- ❌ Trade-off: Underline and text alignment not preserved (acceptable for resume use case)
+
+**Alternative Considered:** Full HTML storage (Reactive Resume approach) was rejected because:
+- Requires HTML sanitization (security overhead)
+- Conflicts with AI markdown workflow
+- More complex data handling
+- Not necessary for AI-first resume generator
+
 ## Key Considerations
 
 ### Security
@@ -436,6 +467,16 @@ All templates must avoid:
 - ✅ Performance optimizations (sign-in speed, parallel queries)
 - ✅ Mobile swipeable tabs for resume editor
 
+**Recent UX & Formatting Improvements (Latest Session):**
+- ✅ **TipTap Formatting Preservation** - HTML formatting (bold/italic) now converts to markdown when saving, preserving user formatting in preview (`ExperienceEditor.tsx:189-223`)
+- ✅ **Professional Summary Bullets Removed** - Disabled bullet list options in summary editor for cleaner continuous text format (`SummaryEditor.tsx:23`)
+- ✅ **Skills Text Justification** - Applied justified text alignment across all three templates for better visual balance (`ClassicTemplate.tsx`, `ModernTemplate.tsx`, `MinimalTemplate.tsx`)
+- ✅ **TipTap Selection Retention** - Fixed cursor position loss when content updates externally, preserving user selection state (`RichTextEditor.tsx:89-105`)
+- ✅ **Enhanced Arrow Button Visibility** - Improved up/down arrows for experience reordering with better padding, borders, and font weight (`ExperienceEditor.tsx:115,124`)
+- ✅ **HTML Tag Prevention** - Fixed literal HTML tags appearing in preview by using `textContent` instead of `innerHTML` when converting back to array
+- ✅ **AI Header Prevention** - Added CRITICAL instructions to AI prompts preventing "Professional Summary" headers from being prepended to generated text (`resumeTailoring.ts:198-255`)
+- ✅ **Dashboard Resume Cards Enhancement** - Added "Company:" and "Title:" labels to resume cards in dashboard for better clarity (`DashboardContent.tsx:276-287`)
+
 **Next Phases:**
 - Phase 3: AI Integration (Claude API for job description parsing)
 - Phase 4: Resume Generation (AI-tailored content)
@@ -488,3 +529,31 @@ LOG_LEVEL=INFO
 cp .env.example .env.local
 cp fastapi-backend/.env.example fastapi-backend/.env
 ```
+
+## Known Issues & Future Improvements
+
+### Current Limitations
+- **TipTap Formatting**: Underline and per-paragraph text alignment not preserved when saving (converts to plain markdown)
+- **AI Prompt Iteration**: AI prompts are hardcoded in `resumeTailoring.ts` - consider moving to database (`ai_section_config` table) for easier A/B testing
+- **Template Customization**: Limited to color, font, and size - could expand to spacing, margins, section ordering
+
+### Recommended Next Steps
+1. **Phase 3 - Job Description Parsing**: Implement `/api/job-description/parse` endpoint with Claude API
+2. **Phase 4 - AI Resume Generation**: Complete `/api/resume/generate` with section-by-section AI tailoring
+3. **Phase 7 - Stripe Integration**: Implement subscription management and upgrade flows
+4. **Performance Monitoring**: Add Sentry or similar for error tracking in production
+5. **Analytics**: Track resume generation success rates, template preferences, user drop-off points
+
+### Recent Bug Fixes (Reference)
+- ✅ Fixed `trim()` errors on non-string values with comprehensive type guards
+- ✅ Fixed AI prepending "Professional Summary" headers to generated text
+- ✅ Fixed HTML tags appearing literally in experience preview
+- ✅ Fixed TipTap cursor position loss when content updates externally
+- ✅ Fixed professional summary character limit truncation (increased to 800)
+
+### Testing Recommendations
+- Test resume generation with various job descriptions (technical, non-technical, executive)
+- Test PDF generation across all three templates with different content lengths
+- Test mobile responsiveness of resume editor on various devices
+- Test edge cases: empty sections, very long text, special characters, non-English text
+- Load test: Multiple concurrent PDF generations (serverless Chromium limitations)
