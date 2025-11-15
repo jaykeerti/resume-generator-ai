@@ -149,7 +149,7 @@ export function ModernTemplate({ content, customization }: ModernTemplateProps) 
               <h2 className="text-lg font-bold uppercase mb-3 pb-1 border-b-2 border-gray-300">
                 Professional Summary
               </h2>
-              <div className="text-sm leading-relaxed text-gray-800">{renderContent(professional_summary)}</div>
+              <div className="text-sm leading-relaxed text-gray-800" style={{ textAlign: 'justify' }}>{renderContent(professional_summary)}</div>
             </section>
           )}
 

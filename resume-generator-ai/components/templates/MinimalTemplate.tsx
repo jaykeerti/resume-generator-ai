@@ -62,7 +62,7 @@ export function MinimalTemplate({ content, customization }: MinimalTemplateProps
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-4 text-gray-500">
             Profile
           </h2>
-          <div className="text-sm leading-loose text-gray-800">{renderContent(professional_summary)}</div>
+          <div className="text-sm leading-loose text-gray-800" style={{ textAlign: 'justify' }}>{renderContent(professional_summary)}</div>
         </section>
       )}
 

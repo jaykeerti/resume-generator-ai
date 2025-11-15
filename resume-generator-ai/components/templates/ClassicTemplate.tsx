@@ -65,7 +65,7 @@ export function ClassicTemplate({ content, customization }: ClassicTemplateProps
       {/* Professional Summary */}
       {professional_summary && typeof professional_summary === 'string' && professional_summary.trim() && (
         <TemplateSection title="Professional Summary">
-          <div className="text-sm leading-relaxed">{renderContent(professional_summary)}</div>
+          <div className="text-sm leading-relaxed" style={{ textAlign: 'justify' }}>{renderContent(professional_summary)}</div>
         </TemplateSection>
       )}
 
