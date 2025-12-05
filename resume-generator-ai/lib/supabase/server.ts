@@ -1,5 +1,13 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { Agent, setGlobalDispatcher } from 'undici'
+import { setDefaultResultOrder } from 'dns'
+
+// Configure DNS to prioritize IPv4 addresses
+setDefaultResultOrder('ipv4first')
+
+// Configure Undici with increased timeout to prevent connection timeout errors
+setGlobalDispatcher(new Agent({ connect: { timeout: 20000 } }))
 
 export async function createClient() {
   const cookieStore = await cookies()

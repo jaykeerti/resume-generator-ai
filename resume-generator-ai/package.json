@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "cross-env NODE_OPTIONS='--dns-result-order=ipv4first' next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -21,12 +21,14 @@
     "@tiptap/extension-underline": "^3.10.4",
     "@tiptap/react": "^3.10.4",
     "@tiptap/starter-kit": "^3.10.4",
+    "axios": "^1.13.2",
     "next": "16.0.1",
     "openai": "^6.8.1",
     "puppeteer-core": "^24.28.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-hook-form": "^7.66.0",
+    "undici": "^6.22.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -34,6 +36,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",

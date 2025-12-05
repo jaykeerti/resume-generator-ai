@@ -27,8 +27,8 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // Refreshing the auth token
-  await supabase.auth.getUser()
+  // Refreshing the auth token with cryptographic validation
+  await supabase.auth.getClaims()
 
   return supabaseResponse
 }

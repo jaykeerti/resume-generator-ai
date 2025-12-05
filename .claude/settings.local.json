@@ -21,7 +21,18 @@
       "Bash(cat:*)",
       "Bash(taskkill:*)",
       "Bash(netstat:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(git checkout:*)",
+      "Bash(git log:*)",
+      "Bash(git merge:*)",
+      "Bash(dir:*)",
+      "Bash(git mv:*)",
+      "Bash(ls:*)",
+      "Bash(curl:*)",
+      "Bash(ping:*)",
+      "Bash(nslookup:*)",
+      "Bash(npm install:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

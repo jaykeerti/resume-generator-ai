@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-AI-powered resume generator that tailors resumes based on job descriptions using Claude API. Features a freemium model with 5 free resume generations, then a paid Pro tier. Full specification at `Readme.md`.
+AI-powered resume generator that tailors resumes based on job descriptions using OpenAI GPT-4o mini. Features a freemium model with 5 free PDF exports, then a paid Pro tier with unlimited exports. Full specification at `Readme.md`.
+
+**Key Value Proposition:** Automatically tailors user's resume content to match specific job descriptions while preserving truthfulness - only enhancing and reframing existing content, never fabricating.
 
 ## Tech Stack
 
@@ -23,15 +25,33 @@ AI-powered resume generator that tailors resumes based on job descriptions using
 
 ## Development Commands
 
-### Quick Start (Both Services)
+### Quick Start (Both Services - Recommended)
 ```bash
 ./dev.sh             # Start both Next.js (port 3000) and FastAPI (port 8000)
 ```
+
+**What `dev.sh` does:**
+1. Creates Python virtual environment if it doesn't exist (`fastapi-backend/venv/`)
+2. Installs/updates Python dependencies from `requirements.txt`
+3. Checks for `.env` files in both projects, creates from `.env.example` if missing
+4. Starts FastAPI in background → logs to `logs/fastapi.log`
+5. Waits 3 seconds for FastAPI to initialize
+6. Installs npm dependencies if `node_modules/` doesn't exist
+7. Starts Next.js in background → logs to `logs/nextjs.log`
+8. Displays status and log file locations
+9. Handles graceful shutdown: Press `Ctrl+C` to kill both processes
+
+**Important Notes:**
+- Must run from repository root (where `dev.sh` is located)
+- Logs stored in `logs/` directory (create this directory if it doesn't exist)
+- Script uses bash syntax (may need adjustment for Windows/PowerShell)
 
 ### Individual Services
 
 **Next.js Frontend:**
 ```bash
+cd resume-generator-ai
+npm install          # First time only
 npm run dev          # Start dev server at http://localhost:3000
 npm run build        # Build production bundle
 npm run start        # Start production server
@@ -41,19 +61,21 @@ npm run lint         # Run ESLint
 **FastAPI Backend:**
 ```bash
 cd fastapi-backend
-./run.sh             # Start FastAPI server at http://localhost:8000
+./run.sh             # Automated setup (creates venv, installs deps, starts server)
 
 # Or manually:
 cd fastapi-backend
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate          # Linux/Mac
+# venv\Scripts\activate           # Windows
 pip install -r requirements.txt
-python main.py
+python main.py                     # Runs on port 8000
 ```
 
 **Docker (Both Services):**
 ```bash
 docker-compose up    # Start both services in containers
+docker-compose down  # Stop and remove containers
 ```
 
 ### Deployment
@@ -550,6 +572,9 @@ cp fastapi-backend/.env.example fastapi-backend/.env
 - ✅ Fixed HTML tags appearing literally in experience preview
 - ✅ Fixed TipTap cursor position loss when content updates externally
 - ✅ Fixed professional summary character limit truncation (increased to 800)
+- ✅ Added justify alignment to Professional Summary in all templates (commit d3fd955)
+- ✅ Added Company/Title labels to dashboard resume cards using label:value format (commit 8a9b8d0)
+- ✅ Preserved TipTap formatting by converting HTML to markdown (commit 3f0a70b)
 
 ### Testing Recommendations
 - Test resume generation with various job descriptions (technical, non-technical, executive)
@@ -557,3 +582,147 @@ cp fastapi-backend/.env.example fastapi-backend/.env
 - Test mobile responsiveness of resume editor on various devices
 - Test edge cases: empty sections, very long text, special characters, non-English text
 - Load test: Multiple concurrent PDF generations (serverless Chromium limitations)
+
+## Important Implementation Notes
+
+### PDF Generation with Puppeteer
+- Uses `@sparticuz/chromium` for serverless deployment (Vercel compatible)
+- Downloads Chromium binary from GitHub releases on first use
+- Location: `lib/pdf/generator.ts`
+- All templates currently render with the same HTML generator (visual differentiation exists only in web preview)
+- Watermark added for free tier: "Generated with Resume AI - Upgrade to remove watermark"
+- Each export increments `users_profile.generation_count`
+
+### Database JSONB Structure
+Most content stored as JSONB for flexibility:
+- `base_information.personal_info` - Personal details object
+- `base_information.work_experience` - Array of work history
+- `base_information.education` - Array of education entries
+- `base_information.skills` - Object with technical, soft, languages, certifications arrays
+- `resumes.content` - Complete resume content snapshot
+- `resumes.customization` - Template styling preferences
+
+This allows dynamic sections without schema migrations but requires careful JSONB querying.
+
+### Template System Architecture
+**Three-layer rendering:**
+1. **Editor Components** (`components/resume/ResumeEditor.tsx`) - Editable forms
+2. **Preview Components** (`components/templates/*.tsx`) - Real-time React rendering
+3. **PDF Generator** (`lib/pdf/generator.ts`) - HTML string generation for Puppeteer
+
+Note: Templates 1 and 2 need alignment - PDF generator uses same HTML for all templates currently.
+
+### AI Service Integration
+- **Job Description Parsing:** `lib/services/jobDescriptionParser.ts` extracts skills/keywords
+- **Resume Tailoring:** `lib/services/resumeTailoring.ts` with conservative/moderate modes
+- **Modes:**
+  - Conservative: Subtle keyword insertion, minimal rewriting
+  - Moderate: Aggressive rewriting with metric emphasis
+- All AI calls use OpenAI GPT-4o mini (cost optimization: 20x cheaper than Claude)
+
+### Authentication & Middleware
+- `middleware.ts` intercepts all routes to update Supabase session
+- Matcher pattern excludes static files, images
+- Protected routes check `await createClient()` session
+- Onboarding gate: `users_profile.onboarding_completed` must be true
+
+### Free Tier Enforcement
+Counter tracked in `users_profile.generation_count`:
+- Incremented on successful PDF download (route: `/api/resume/[id]/export`)
+- Dashboard shows "X/5 resumes remaining"
+- Export button disabled when limit reached
+- Pro tier: unlimited exports, no watermark
+
+## Common Development Patterns
+
+### Creating New API Routes
+```typescript
+// app/api/your-endpoint/route.ts
+import { createClient } from '@/lib/supabase/server'
+import { NextResponse } from 'next/server'
+
+export async function GET(request: Request) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { data, error } = await supabase
+    .from('table_name')
+    .select('*')
+    .eq('user_id', user.id)
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  return NextResponse.json(data)
+}
+```
+
+### JSONB Queries in Supabase
+```typescript
+// Query nested JSONB field
+const { data } = await supabase
+  .from('base_information')
+  .select('personal_info->full_name')
+  .eq('user_id', userId)
+  .single()
+
+// Update specific JSONB field
+const { error } = await supabase
+  .from('base_information')
+  .update({
+    'personal_info': {
+      ...existingPersonalInfo,
+      full_name: newName
+    }
+  })
+  .eq('user_id', userId)
+```
+
+### Auto-save Pattern (Used in Resume Editor)
+```typescript
+const debouncedSave = useCallback(
+  debounce(async (content) => {
+    await fetch(`/api/resume/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content })
+    })
+  }, 2000),
+  [id]
+)
+```
+
+## Troubleshooting Common Issues
+
+### "Chromium failed to download" in PDF Generation
+- Check Vercel function timeout (increase to 60s for Puppeteer)
+- Verify `@sparticuz/chromium` version compatibility
+- Check logs: PDF generator includes detailed console.log statements
+- Local testing: Puppeteer downloads to node_modules cache
+
+### "Cannot read property 'trim' of undefined"
+- Add type guards before calling string methods
+- Example: `if (typeof value === 'string' && value.trim())`
+- Common in JSONB data where types aren't enforced
+
+### TipTap Editor Issues
+- **Cursor position loss:** Use transaction approach with selection preservation
+- **Formatting not saving:** Ensure HTML→markdown conversion in save handler
+- **Extensions not loading:** Check extension imports and order
+
+### Database Migration Issues
+- Migrations located in `resume-generator-ai/supabase/migrations/`
+- Apply via Supabase dashboard SQL editor or CLI
+- RLS policies required for all user-facing tables
+- Test with non-admin user to verify RLS works
+
+### FastAPI CORS Errors
+- Verify `NEXTJS_URL` in FastAPI `.env` matches Next.js origin
+- Check `allow_origins` in `fastapi-backend/main.py`
+- Development: `http://localhost:3000`
+- Production: Your Vercel deployment URL
