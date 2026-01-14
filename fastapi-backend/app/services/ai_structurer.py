@@ -7,6 +7,7 @@ import json
 import logging
 from typing import Optional, Dict, Any
 from openai import AsyncOpenAI
+import httpx
 
 from app.models.schemas import StructuredResumeData
 
@@ -27,7 +28,12 @@ class AIStructurer:
             logger.warning("OpenAI API key not provided. AI structuring will not be available.")
             self.client = None
         else:
-            self.client = AsyncOpenAI(api_key=api_key)
+            # Configure HTTP client with increased timeout for slow connections
+            http_client = httpx.AsyncClient(
+                timeout=httpx.Timeout(60.0, connect=20.0),  # 60s total, 20s connect
+                limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
+            )
+            self.client = AsyncOpenAI(api_key=api_key, http_client=http_client)
 
     async def structure_resume(self, raw_text: str) -> Optional[StructuredResumeData]:
         """

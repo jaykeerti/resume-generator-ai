@@ -4,9 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-AI-powered resume generator that tailors resumes based on job descriptions using OpenAI GPT-4o mini. Features a freemium model with 5 free PDF exports, then a paid Pro tier with unlimited exports. Full specification at `Readme.md`.
+AI-powered resume generator that tailors resumes based on job descriptions using OpenAI GPT-4o mini. Features a freemium model with 5 free PDF exports, then a paid Pro tier with unlimited exports. Full specification at `README.md`.
 
 **Key Value Proposition:** Automatically tailors user's resume content to match specific job descriptions while preserving truthfulness - only enhancing and reframing existing content, never fabricating.
+
+**Monorepo Structure:** This repository contains two separate applications:
+1. **Next.js Frontend** (`resume-generator-ai/`) - Main web application
+2. **FastAPI Backend** (`fastapi-backend/`) - Document parsing microservice
+
+Both services run independently and communicate via HTTP. The Next.js app proxies document parsing requests to FastAPI.
 
 ## Tech Stack
 
@@ -45,17 +51,23 @@ AI-powered resume generator that tailors resumes based on job descriptions using
 - Must run from repository root (where `dev.sh` is located)
 - Logs stored in `logs/` directory (create this directory if it doesn't exist)
 - Script uses bash syntax (may need adjustment for Windows/PowerShell)
+- On Windows, use Git Bash or WSL to run the script
 
 ### Individual Services
 
 **Next.js Frontend:**
 ```bash
 cd resume-generator-ai
-npm install          # First time only
-npm run dev          # Start dev server at http://localhost:3000
-npm run build        # Build production bundle
-npm run start        # Start production server
-npm run lint         # Run ESLint
+npm install               # First time only
+npm run dev               # Start dev server at http://localhost:3000
+npm run build             # Build production bundle
+npm run start             # Start production server
+npm run lint              # Run ESLint
+npm run supabase:start    # Start local Supabase (Docker required)
+npm run supabase:stop     # Stop local Supabase
+npm run supabase:status   # Check Supabase status
+npm run supabase:reset    # Reset local database (applies migrations)
+npm run seed:user         # Create test user for local development
 ```
 
 **FastAPI Backend:**
@@ -206,7 +218,8 @@ railway up
 - Test locally first: `cd resume-generator-ai && npm run build && npm start`
 
 ### Path Aliases
-- `@/*` maps to project root (configured in `tsconfig.json`)
+- `@/*` maps to `resume-generator-ai/` project root (configured in `tsconfig.json`)
+  - Example: `@/lib/supabase/server` → `resume-generator-ai/lib/supabase/server.ts`
 
 ## Project Structure
 
@@ -326,18 +339,43 @@ Key tables to implement:
 ✅ GET  /health                   # Backend health check
 ```
 
+**Implemented (Next.js - AI Features):**
+```
+✅ /api/resume/generate           # Parse job description + tailor resume with OpenAI
+```
+
 **To be implemented:**
 ```
 /api/auth/*                      # Authentication endpoints (Supabase handles most)
-/api/job-description/parse       # Parse job posting with Claude
-/api/resume/generate             # Generate AI-tailored resume
 /api/subscription/*              # Stripe integration
 /api/webhook/stripe              # Stripe webhooks
 ```
 
 ### AI Integration Strategy
-- Store AI prompt templates in database (`ai_section_config` table) for easy iteration
-- AI processes sections independently: professional summary, work experience bullets, skills reordering, project descriptions
+
+**Current Implementation (Phase 3 Complete):**
+Resume generation flow in `/api/resume/generate`:
+1. **Parse Job Description** (`lib/services/jobDescriptionParser.ts`):
+   - Accepts raw text or URL
+   - OpenAI extracts: job title, company, location, skills, qualifications, keywords
+   - Saved to `job_descriptions` table with parsed metadata
+2. **Retrieve User Profile** (`base_information` table):
+   - Gets personal info, work experience, education, skills
+   - Creates empty profile if doesn't exist
+3. **AI Tailoring** (`lib/services/resumeTailoring.ts`):
+   - Two modes: conservative (subtle) or moderate (aggressive)
+   - Tailors: professional summary, work experience bullets, skills ordering, projects
+   - Preserves education and personal info (not tailored)
+   - Uses markdown bold (`**text**`) for metrics
+4. **Create Resume Record**:
+   - Stores tailored content in `resumes` table
+   - Keeps original content in `customization.original_content` for revert capability
+   - Sets professional title from job description
+
+**Key Design Decisions:**
+- AI prompts are hardcoded in `resumeTailoring.ts` (not in database yet)
+  - Future: Move to `ai_section_config` table for A/B testing
+- AI processes sections independently for modularity
 - Preserve truthfulness - AI enhances/rewords existing content, never fabricates
 - Target: Resume generation completes in <30 seconds
 
@@ -499,10 +537,18 @@ All templates must avoid:
 - ✅ **AI Header Prevention** - Added CRITICAL instructions to AI prompts preventing "Professional Summary" headers from being prepended to generated text (`resumeTailoring.ts:198-255`)
 - ✅ **Dashboard Resume Cards Enhancement** - Added "Company:" and "Title:" labels to resume cards in dashboard for better clarity (`DashboardContent.tsx:276-287`)
 
+✅ **Phase 3 & 4 - AI Integration** (Complete)
+- Job description parsing with OpenAI
+- AI resume tailoring (conservative and moderate modes)
+- Professional summary generation
+- Work experience bullet optimization
+- Skills reordering and highlighting
+- Project description enhancement
+- Integration with resume generation flow
+
 **Next Phases:**
-- Phase 3: AI Integration (Claude API for job description parsing)
-- Phase 4: Resume Generation (AI-tailored content)
-- Phase 7: Stripe Payments
+- Phase 7: Stripe Payments & Subscription Management
+- Phase 8: Analytics & Performance Monitoring
 
 ## Configuration Files
 
@@ -551,6 +597,31 @@ LOG_LEVEL=INFO
 cp .env.example .env.local
 cp fastapi-backend/.env.example fastapi-backend/.env
 ```
+
+### Local Development with Supabase
+
+**Option 1: Local Supabase (Recommended for Development)**
+```bash
+cd resume-generator-ai
+npm run supabase:start    # Requires Docker
+npm run supabase:status   # Get local credentials
+npm run seed:user         # Create test user
+```
+
+Update `.env.local` with local Supabase credentials:
+```bash
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<from supabase:status>
+SUPABASE_SERVICE_ROLE_KEY=<from supabase:status>
+```
+
+**Option 2: Cloud Supabase (Production-like)**
+Use your cloud Supabase project credentials directly in `.env.local`
+
+**Database Migrations:**
+- Migrations in `resume-generator-ai/supabase/migrations/`
+- Applied automatically on `supabase:start` or `supabase:reset`
+- For cloud: Apply via Supabase dashboard SQL editor
 
 ## Known Issues & Future Improvements
 
@@ -621,10 +692,27 @@ Note: Templates 1 and 2 need alignment - PDF generator uses same HTML for all te
 - All AI calls use OpenAI GPT-4o mini (cost optimization: 20x cheaper than Claude)
 
 ### Authentication & Middleware
+
+**Critical Performance Optimization:**
+The app uses `getValidatedUserId()` instead of `auth.getUser()` for performance:
+- `getValidatedUserId()` validates JWT locally (no network call)
+- First checks `x-user-id` header set by middleware
+- Falls back to `auth.getClaims()` for local validation
+- Location: `lib/supabase/server.ts:49-72`
+- Use this in API routes instead of `auth.getUser()` for 2-3x faster authentication
+
+**Middleware Configuration:**
 - `middleware.ts` intercepts all routes to update Supabase session
-- Matcher pattern excludes static files, images
-- Protected routes check `await createClient()` session
+- Sets `x-user-id` header for downstream performance
+- Matcher pattern excludes static files, images, API routes
+- Protected routes check session via `createClient()`
 - Onboarding gate: `users_profile.onboarding_completed` must be true
+
+**DNS & Connection Optimization:**
+- `lib/supabase/env.ts` detects local vs remote Supabase
+- Remote connections use IPv4-first DNS and 20s timeout (via undici)
+- Local connections skip optimizations (no need)
+- Prevents timeout errors with cloud Supabase
 
 ### Free Tier Enforcement
 Counter tracked in `users_profile.generation_count`:
@@ -633,26 +721,60 @@ Counter tracked in `users_profile.generation_count`:
 - Export button disabled when limit reached
 - Pro tier: unlimited exports, no watermark
 
+## Critical Architecture Decisions
+
+### Why Two Separate AI Services?
+- **FastAPI Backend**: Document parsing (PDF/DOCX → text extraction + structure)
+  - Uses OpenAI GPT-4o mini for structuring raw resume text
+  - Runs as separate microservice (Python ecosystem better for PDF parsing)
+- **Next.js API Routes**: Job description parsing + resume tailoring
+  - Uses OpenAI GPT-4o mini for all AI operations
+  - Integrated directly in Next.js for simpler deployment
+
+### Database Design Philosophy
+- **JSONB Storage**: Most content stored as JSONB for flexibility
+  - Pros: No schema migrations for new fields, easy to iterate
+  - Cons: Requires careful null checking, no type safety at DB level
+  - All content must be validated in TypeScript before storage
+- **Audit Trail**: `resumes.customization.original_content` stores untailored version
+  - Enables "revert to original" functionality
+  - Useful for A/B testing different tailoring strategies
+
+### Template Architecture Trade-offs
+**Current State:** Three-layer rendering with inconsistency
+1. **React Preview Components** (`components/templates/*.tsx`) - Visual differentiation works
+2. **PDF Generator** (`lib/pdf/generator.ts`) - Same HTML for all templates (needs work)
+
+**Known Issue:** Template visual differences only show in web preview, not in PDF export
+**Future Fix:** PDF generator needs template-specific HTML generation
+
+### Performance Optimizations Applied
+1. **Authentication**: Local JWT validation instead of network calls
+2. **DNS**: IPv4-first for remote Supabase connections
+3. **Auto-save**: 2-second debounce prevents excessive API calls
+4. **OpenAI Model**: GPT-4o mini (20x cheaper than GPT-4, 20x cheaper than Claude)
+
 ## Common Development Patterns
 
 ### Creating New API Routes
 ```typescript
 // app/api/your-endpoint/route.ts
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getValidatedUserId } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  // Use getValidatedUserId() for performance (no network call)
+  const userId = await getValidatedUserId()
 
-  if (!user) {
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('table_name')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

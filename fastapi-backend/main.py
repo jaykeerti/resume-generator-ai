@@ -3,6 +3,9 @@ FastAPI Backend for Resume Document Parsing
 Handles PDF, DOCX, and TXT resume parsing with OpenAI (GPT-4o mini) structuring
 """
 
+from dotenv import load_dotenv
+load_dotenv()  # Load .env file
+
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse

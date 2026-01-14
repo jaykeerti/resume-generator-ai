@@ -32,7 +32,22 @@
       "Bash(ping:*)",
       "Bash(nslookup:*)",
       "Bash(npm install:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(timeout:*)",
+      "Bash(grep:*)",
+      "Bash(node --version:*)",
+      "Bash(npm --version:*)",
+      "Bash(docker:*)",
+      "Bash(scoop install:*)",
+      "Bash(choco install:*)",
+      "Bash(npx supabase:*)",
+      "Bash(npm run supabase:start:*)",
+      "Bash(npm run supabase:status:*)",
+      "Bash(copy .env.local .env.local.remote)",
+      "Bash(npm run seed:user:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(test -f .env.local:*)"
     ],
     "deny": [],
     "ask": []
